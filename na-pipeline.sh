@@ -1,8 +1,12 @@
 #!/bin/bash
 
+# Stop on error, if set to 1 will exit program if any of the docker commands fail
+STOPONERROR=0
+
 # set to 1 if you want to enable, 0 otherwise, select just one
-BASELINEP2PALA=1
+BASELINEP2PALA=0
 BASELINELOGHI=0
+BASELINELAYPA=1
 
 #single page
 BASELINEP2PALAHEIGHTWIDTH="1536 1024"
@@ -47,6 +51,8 @@ HTRLOGHIMODEL=/src/loghi-htr-models/model-new10-ijsberg-cer-0.0373
 HTRLOGHIMODEL=/src/loghi-htr-models/model-new10-ijsberg_republicrandom_prizepapers_globalise_val_cer_ijsberg_globalise_0.0329
 HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/new14_generic-2022-12-20-globalise_related-finetune_globalise
 HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/model10-generic-2023-01-02
+HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/model10-generic-2023-01-02
+HTRLOGHIMODEL=/home/stefan/Documents/repos/loghi-htr/src/loghi-htr-models/generic-2023-02-15
 # HTRLOGHIMODEL=/tmp/tmp.eeJOqXEgFX/output/checkpoints/encoder12-saved-model-18-29.1521
 #HTRLOGHIMODEL=model-new10-ijsberg-cer-0.03805
 #HTRLOGHIMODEL=model-new10-ijsberg-cer-0.0879
@@ -68,14 +74,8 @@ DETECTLANGUAGE=1
 #interpolate word locations
 SPLITWORDS=1
 
+#used gpu ids, set to "all" to use all gpus
 GPU=0
-
-DOCKERGPUPARAMS=""
-if [[ $GPU -gt -1 ]] 
-then
-        DOCKERGPUPARAMS="--gpus all"
-        echo "using GPU"
-fi
 
 # DO NO EDIT BELOW THIS LINE
 if [ -z $1 ]; then echo "please provide path to images to be HTR-ed" && exit 1; fi;
@@ -84,6 +84,12 @@ tmpdir=/tmp/tmp.n9vBN73l2e
 tmpdir=/tmp/tmp.limited; mkdir -p $tmpdir
 tmpdir=$(mktemp -d)
 echo $tmpdir
+
+DOCKERGPUPARAMS=""
+if [[ $GPU -gt -1 ]]; then
+        DOCKERGPUPARAMS="--gpus device=${GPU}"
+        echo "using GPU ${GPU}"
+fi
 
 #SRC=/media/rutger/DIFOR1/data/1.05.14/83/
 SRC=/media/rutger/DIFOR1/wic-test/
@@ -155,6 +161,13 @@ then
                                 --num_workers 0 \
                                 --batch_size 1 \
                                 --prod_img_list $file
+
+                        if [[ $STOPONERROR && $? -ne 0 ]]; then
+                                echo "Command has errored has errored, stopping program"
+                                exit 1
+                        fi
+
+                        
                 done
                 echo $tmpdir
                 # exit
@@ -170,6 +183,11 @@ then
                 docker run $DOCKERGPUPARAMS -u $(id -u ${USER}):$(id -g ${USER}) --rm -m 32000m -ti -v $SRC:$SRC -v /scratch/p2pala/:/checkpoints/   -v $tmpdir:$tmpdir  \
                 docker.p2pala python3 /src/P2PaLA/P2PaLA.py --img_size $BASELINEP2PALAHEIGHTWIDTH  --out_mode L --line_alg external   \
                         --prev_model /src/models/baseline_detection-5_checkpoint.pth --work_dir $tmpdir --no-do_train --do_prod --no-do_val --prod_data $SRC --gpu -1 --num_workers 0
+                
+                if [[ $STOPONERROR && $? -ne 0 ]]; then
+                        echo "Command has errored has errored, stopping program"
+                        exit 1
+                fi
         fi
         cp -r $tmpdir/results/prod/page $SRC/
 # invert image for classic P2PaLA
@@ -179,6 +197,11 @@ then
                 -output_path_page $SRC/page/ \
 		-invert_image \
 		-p2palaconfig /tmp/workdir_p2pala/config.json
+        
+        if [[ $STOPONERROR && $? -ne 0 ]]; then
+                echo "Command has errored has errored, stopping program"
+                exit 1
+        fi
 fi
 #option 2: linedetection
 if [[ $BASELINELOGHI -eq 1 ]]
@@ -190,9 +213,62 @@ then
         find $SRC -maxdepth 1 -name '*.JPEG' >> $tmpdir/linedetectionlist.txt
         find $SRC -maxdepth 1 -name '*.png' >> $tmpdir/linedetectionlist.txt
         docker run $DOCKERGPUPARAMS -ti -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir docker.linedetection python3.8 /src/main.py --gpu 0 --do_inference --inference_list $tmpdir/linedetectionlist.txt --existing_model /src/$LINEDETECTIONLOGHIMODEL --output $tmpdir/linedetection/ --compression_level 1 --channels 1
+
+        if [[ $STOPONERROR && $? -ne 0 ]]; then
+                echo "Command has errored has errored, stopping program"
+                exit 1
+        fi
+
         docker run -ti -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir docker.loghi-tooling /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselinesStartEndNew3 \
                 -input_path_png $tmpdir/linedetection/ \
                 -output_path_pagexml $SRC/page/
+
+        if [[ $STOPONERROR && $? -ne 0 ]]; then
+                echo "Command has errored has errored, stopping program"
+                exit 1
+        fi
+fi
+
+if [[ $BASELINELAYPA -eq 1 ]]
+then
+        echo "starting Laypa baseline detection"
+
+        input_dir=$SRC
+        output_dir=$SRC
+
+        if [[ ! -d $input_dir ]]; then
+                echo "Specified input dir (${input_dir}) does not exist, stopping program"
+                exit 1
+        fi
+
+        if [[ ! -d $output_dir ]]; then
+                echo "Could not find output dir (${output_dir}), creating one at specified location"
+                mkdir -p $output_dir
+        fi
+
+        docker run $DOCKERGPUPARAMS --rm -it -m 32000m -v $input_dir:$input_dir -v $output_dir:$output_dir docker.laypa:latest \
+        python run.py \
+        -c configs/segmentation/baseline/baseline_dataset_imagenet_freeze.yaml \
+        -i $input_dir \
+        -o $output_dir \
+        --opts MODEL.WEIGHTS "" TEST.WEIGHTS pretrained_models/baseline_model_best_mIoU.pth
+        # > /dev/null
+
+        if [[ $STOPONERROR && $? -ne 0 ]]; then
+                echo "Command has errored has errored, stopping program"
+                exit 1
+        fi
+
+        docker run --rm -v $output_dir:$output_dir docker.loghi-tooling /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines \
+        -input_path_png $output_dir/page/ \
+        -input_path_page $output_dir/page/ \
+        -output_path_page $output_dir/page/ \
+        -as_single_region true
+
+        if [[ $STOPONERROR && $? -ne 0 ]]; then
+                echo "Command has errored has errored, stopping program"
+                exit 1
+        fi
 fi
 
 #option 3: P2PaLA+start+end
@@ -215,6 +291,12 @@ then
        -output_type png \
        -channels 4 \
        -threads 4
+
+        if [[ $STOPONERROR && $? -ne 0 ]]; then
+                echo "Command has errored has errored, stopping program"
+                exit 1
+        fi
+
        find $tmpdir/imagesnippets/ -type f -name '*.png' > $tmpdir/lines.txt
 
 	LOGHIDIR="$(dirname "${HTRLOGHIMODEL}")"
@@ -233,12 +315,22 @@ then
         --config_file_output $tmpdir/output/config.json \
         --beam_width 1 \
 	--greedy
+
+        if [[ $STOPONERROR && $? -ne 0 ]]; then
+                echo "Command has errored has errored, stopping program"
+                exit 1
+        fi
         # docker run --rm -m 32000m --gpus all --shm-size 10240m -ti -v $tmpdir:$tmpdir docker.htr python3 /src/src/main.py --do_inference --channels 4 --height $HTR_LOGHI_MODEL_HEIGHT --existing_model /src/$HTR_LOGHI_MODEL  --batch_size 32 --use_mask --inference_list $tmpdir/lines.txt --results_file $tmpdir/results.txt --charlist /src/$HTR_LOGHI_MODEL.charlist --gpu $GPU
         # docker run --rm -m 32000m --shm-size 10240m --gpus all -ti -v $tmpdir:$tmpdir docker.htr python3 /src/src/main.py --do_inference --channels 4 --height $HTR_LOGHI_MODEL_HEIGHT --existing_model /src/$HTR_LOGHI_MODEL  --batch_size 32 --use_mask --inference_list $tmpdir/lines.txt --results_file $tmpdir/results.txt --charlist /src/$HTR_LOGHI_MODEL.charlist --gpu $GPU --beam_width 1
         docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir docker.loghi-tooling /src/loghi-tooling/minions/target/appassembler/bin/MinionLoghiHTRMergePageXML \
                 -input_path $SRC/page \
                 -results_file $tmpdir/results.txt \
                 -config_file $tmpdir/output/config.json
+
+        if [[ $STOPONERROR && $? -ne 0 ]]; then
+                echo "Command has errored has errored, stopping program"
+                exit 1
+        fi
 fi
 
 #HTR option2 pylaia
@@ -254,13 +346,28 @@ then
 		-threads 4
         >$tmpdir/results.txt
 
+        if [[ $STOPONERROR && $? -ne 0 ]]; then
+                echo "Command has errored has errored, stopping program"
+                exit 1
+        fi
+
         for dir in $(find $tmpdir/imagesnippets/ -type d) ; do
                 ls $dir/*.jpg > $dir.txt && \
                 docker run $DOCKERGPUPARAMS -u $(id -u ${USER}):$(id -g ${USER}) --rm -m 32000m --shm-size 10240m -ti -v $tmpdir:$tmpdir docker.pylaia \
                         bash -c "pylaia-htr-decode-ctc syms.txt $dir.txt --common.model_filename model_h128 --config=decode_config.yaml --img_dirs=[$dir] >> $tmpdir/results.txt"
+
+                if [[ $STOPONERROR && $? -ne 0 ]]; then
+                        echo "Command has errored has errored, stopping program"
+                        exit 1
+                fi
         done;
         docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir docker.loghi-tooling /src/loghi-tooling/minions/target/appassembler/bin/MinionPyLaiaMergePageXML \
                 $SRC/page $tmpdir/results.txt
+
+        if [[ $STOPONERROR && $? -ne 0 ]]; then
+                echo "Command has errored has errored, stopping program"
+                exit 1
+        fi
 fi
 
 if [[ $RECALCULATEREADINGORDER -eq 1 ]]
@@ -274,11 +381,21 @@ then
 			-border_margin $RECALCULATEREADINGORDERBORDERMARGIN \
 			-clean_borders \
 			-threads $RECALCULATEREADINGORDERTHREADS
+                
+                if [[ $STOPONERROR && $? -ne 0 ]]; then
+                        echo "Command has errored has errored, stopping program"
+                        exit 1
+                fi
         else
                 docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir docker.loghi-tooling /src/loghi-tooling/minions/target/appassembler/bin/MinionRecalculateReadingOrderNew \
                         -input_dir $SRC/page/ \
 			-border_margin $RECALCULATEREADINGORDERBORDERMARGIN \
 			-threads $RECALCULATEREADINGORDERTHREADS
+                
+                if [[ $STOPONERROR && $? -ne 0 ]]; then
+                        echo "Command has errored has errored, stopping program"
+                        exit 1
+                fi
         fi
 fi
 if [[ $DETECTLANGUAGE -eq 1 ]]
@@ -286,6 +403,11 @@ then
         echo "detecting language..."
         docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir docker.loghi-tooling /src/loghi-tooling/minions/target/appassembler/bin/MinionDetectLanguageOfPageXml \
                 -page $SRC/page/
+
+        if [[ $STOPONERROR && $? -ne 0 ]]; then
+                echo "Command has errored has errored, stopping program"
+                exit 1
+        fi
 fi
 
 
@@ -294,6 +416,11 @@ then
         echo "MinionSplitPageXMLTextLineIntoWords..."
         docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir docker.loghi-tooling /src/loghi-tooling/minions/target/appassembler/bin/MinionSplitPageXMLTextLineIntoWords \
                 -input_path $SRC/page/
+        
+        if [[ $STOPONERROR && $? -ne 0 ]]; then
+                echo "Command has errored has errored, stopping program"
+                exit 1
+        fi
 fi
 
 # cleanup results
