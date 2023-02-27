@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # set to 1 if you want to enable, 0 otherwise, select just one
-BASELINEP2PALA=1
+BASELINEP2PALA=0
 BASELINELOGHI=0
 
 #single page
@@ -177,8 +177,7 @@ then
                 -input_path_png $SRC/page/ \
                 -input_path_page $SRC/page/ \
                 -output_path_page $SRC/page/ \
-		-invert_image \
-		-p2palaconfig /tmp/workdir_p2pala/config.json
+		-invert_image
 fi
 #option 2: linedetection
 if [[ $BASELINELOGHI -eq 1 ]]
@@ -231,8 +230,7 @@ then
         --gpu $GPU \
         --output $tmpdir/output/ \
         --config_file_output $tmpdir/output/config.json \
-        --beam_width 1 \
-	--greedy
+        --beam_width 1
         # docker run --rm -m 32000m --gpus all --shm-size 10240m -ti -v $tmpdir:$tmpdir docker.htr python3 /src/src/main.py --do_inference --channels 4 --height $HTR_LOGHI_MODEL_HEIGHT --existing_model /src/$HTR_LOGHI_MODEL  --batch_size 32 --use_mask --inference_list $tmpdir/lines.txt --results_file $tmpdir/results.txt --charlist /src/$HTR_LOGHI_MODEL.charlist --gpu $GPU
         # docker run --rm -m 32000m --shm-size 10240m --gpus all -ti -v $tmpdir:$tmpdir docker.htr python3 /src/src/main.py --do_inference --channels 4 --height $HTR_LOGHI_MODEL_HEIGHT --existing_model /src/$HTR_LOGHI_MODEL  --batch_size 32 --use_mask --inference_list $tmpdir/lines.txt --results_file $tmpdir/results.txt --charlist /src/$HTR_LOGHI_MODEL.charlist --gpu $GPU --beam_width 1
         docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir docker.loghi-tooling /src/loghi-tooling/minions/target/appassembler/bin/MinionLoghiHTRMergePageXML \
