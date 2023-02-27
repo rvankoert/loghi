@@ -313,8 +313,7 @@ then
         --gpu $GPU \
         --output $tmpdir/output/ \
         --config_file_output $tmpdir/output/config.json \
-        --beam_width 1 \
-	--greedy
+        --beam_width 1
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
                 echo "Command has errored has errored, stopping program"
