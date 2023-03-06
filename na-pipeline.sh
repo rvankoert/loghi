@@ -19,6 +19,10 @@ BASELINEP2PALAHEIGHTWIDTH="2048 1536"
 #set to 1 to enable automatic detection of height/width
 BASELINEP2PALAAUTO=1
 
+
+LAYPAMODEL=/home/rutger/src/laypa-models/ijsberg/config.yaml
+LAYPAMODELWEIGHTS=/home/rutger/src/laypa-models/ijsberg/model_best_mIoU.pth
+
 # set to 1 if you want to enable, 0 otherwise, select just one
 HTRLOGHI=1
 HTRPYLAIA=0
@@ -52,7 +56,7 @@ HTRLOGHIMODEL=/src/loghi-htr-models/model-new10-ijsberg_republicrandom_prizepape
 HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/new14_generic-2022-12-20-globalise_related-finetune_globalise
 HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/model10-generic-2023-01-02
 HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/model10-generic-2023-01-02
-HTRLOGHIMODEL=/home/stefan/Documents/repos/loghi-htr/src/loghi-htr-models/generic-2023-02-15
+#HTRLOGHIMODEL=/home/stefan/Documents/repos/loghi-htr/src/loghi-htr-models/generic-2023-02-15
 # HTRLOGHIMODEL=/tmp/tmp.eeJOqXEgFX/output/checkpoints/encoder12-saved-model-18-29.1521
 #HTRLOGHIMODEL=model-new10-ijsberg-cer-0.03805
 #HTRLOGHIMODEL=model-new10-ijsberg-cer-0.0879
@@ -235,6 +239,7 @@ then
 
         input_dir=$SRC
         output_dir=$SRC
+        LAYPADIR="$(dirname "${LAYPAMODEL}")"
 
         if [[ ! -d $input_dir ]]; then
                 echo "Specified input dir (${input_dir}) does not exist, stopping program"
@@ -246,12 +251,12 @@ then
                 mkdir -p $output_dir
         fi
 
-        docker run $DOCKERGPUPARAMS --rm -it -m 32000m -v $input_dir:$input_dir -v $output_dir:$output_dir docker.laypa:latest \
+        docker run $DOCKERGPUPARAMS --rm -it -m 32000m -v $LAYPADIR:$LAYPADIR -v $input_dir:$input_dir -v $output_dir:$output_dir docker.laypa:latest \
         python run.py \
-        -c configs/segmentation/baseline/baseline_dataset_imagenet_freeze.yaml \
+        -c $LAYPAMODEL \
         -i $input_dir \
         -o $output_dir \
-        --opts MODEL.WEIGHTS "" TEST.WEIGHTS pretrained_models/baseline_model_best_mIoU.pth
+        --opts MODEL.WEIGHTS "" TEST.WEIGHTS $LAYPAMODELWEIGHTS
         # > /dev/null
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
@@ -302,7 +307,8 @@ then
 	LOGHIDIR="$(dirname "${HTRLOGHIMODEL}")"
         # CUDA_VISIBLE_DEVICES=-1 python3 ~/src/htr/src/main.py --do_inference --channels 4 --height $HTR_LOGHI_MODEL_HEIGHT --existing_model ~/src/htr/$HTR_LOGHI_MODEL  --batch_size 32 --use_mask --inference_list $tmpdir/lines.txt --results_file $tmpdir/results.txt --charlist ~/src/htr/$HTR_LOGHI_MODEL.charlist --gpu $GPU
 #        docker run $DOCKERGPUPARAMS --rm -m 32000m --shm-size 10240m -ti -v $tmpdir:$tmpdir docker.htr python3 /src/src/main.py --do_inference --channels 4 --height $HTRLOGHIMODELHEIGHT --existing_model /src/loghi-htr-models/$HTRLOGHIMODEL  --batch_size 10 --use_mask --inference_list $tmpdir/lines.txt --results_file $tmpdir/results.txt --charlist /src/loghi-htr-models/$HTRLOGHIMODEL.charlist --gpu $GPU --output $tmpdir/output/ --config_file_output $tmpdir/output/config.txt --beam_width 10
-        docker run $DOCKERGPUPARAMS -u $(id -u ${USER}):$(id -g ${USER}) --rm -m 32000m --shm-size 10240m -ti -v /tmp:/tmp -v $tmpdir:$tmpdir -v $LOGHIDIR:$LOGHIDIR docker.htr python3 /src/src/main.py \
+        docker run $DOCKERGPUPARAMS -u $(id -u ${USER}):$(id -g ${USER}) --rm -m 32000m --shm-size 10240m -ti -v /tmp:/tmp -v $tmpdir:$tmpdir -v $LOGHIDIR:$LOGHIDIR docker.htr \
+	bash -c "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 python3 /src/src/main.py \
         --do_inference \
         --existing_model $HTRLOGHIMODEL  \
         --batch_size 64 \
@@ -313,7 +319,7 @@ then
         --gpu $GPU \
         --output $tmpdir/output/ \
         --config_file_output $tmpdir/output/config.json \
-        --beam_width 1
+        --beam_width 1 "
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
                 echo "Command has errored has errored, stopping program"
