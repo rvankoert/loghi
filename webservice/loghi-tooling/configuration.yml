@@ -1,0 +1,41 @@
+uploadLocation: ${STORAGE_LOCATION:- /tmp/upload}
+
+p2palaConfigFile: ${P2PALA_CONFIG_FILE:- /data/P2Pala_trainset/config.json}
+
+extractBaseLinesExecutorServiceConfig:
+  maxThreads: ${EXTRACT_BASELINES_MAX_THREADS:- 1}
+  name: ExtractBaselines
+  queueLength: ${EXTRACT_BASELINES_QUEUE_LENGTH:- 50}
+
+cutFromImageBasedOnPageXmlExecutorServiceConfig:
+  maxThreads: ${CUT_FROM_IMAGE_MAX_THREADS:- 1}
+  name: CutFromImage
+  queueLength: ${CUT_FROM_IMAGE_QUEUE_LENGTH:- 50}
+
+loghiHTRMergePageXMLResourceExecutorServiceConfig:
+  maxThreads: ${LOGHI_HTR_MERGE_PAGE_MAX_THREADS:- 1}
+  name: LoghiHTRMergePageXML
+  queueLength: ${LOGHI_HTR_MERGE_PAGE_QUEUE_LENGTH:- 50}
+
+recalculateReadingOrderNewResourceExecutorServiceConfig:
+  maxThreads: ${RECALCULATE_READING_ORDER_NEW_MAX_THREADS:- 1}
+  name: RecalculateReadingOrderNew
+  queueLength: ${RECALCULATE_READING_ORDER_NEW_QUEUE_LENGTH:- 50}
+
+splitPageXMLTextLineIntoWordsResourceExecutorServiceConfig:
+  maxThreads: ${SPLIT_PAGE_TEXT_LINE_INTO_WORDS_MAX_THREADS:- 1}
+  name: SplitPageXMLTextLineIntoWords
+  queueLength: ${SPLIT_PAGE_TEXT_LINE_INTO_WORDS_QUEUE_LENGTH:- 50}
+
+detectLanguageOfPageXmlResourceExecutorService:
+  maxThreads: ${DETECT_LANGUAGE_OF_PAGE_XML_MAX_THREADS:- 1}
+  name: DetectLanguageOfPageXml
+  queueLength: ${DETECT_LANGUAGE_OF_PAGE_XML_QUEUE_LENGTH:- 50}
+
+server:
+  applicationConnectors:
+    - type: http
+      port: ${APPLICATION_PORT:- 8080}
+  adminConnectors:
+    - type: http
+      port: ${ADMIN_PORT:- 8081}
