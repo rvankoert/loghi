@@ -8,6 +8,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
+              count: 1
               capabilities: [gpu]
     container_name: 'laypa'
     ports:
@@ -62,7 +63,8 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              capabilities: [gpu]    
+              count: 1
+              capabilities: [gpu]
     container_name: 'htr'
     ports:
       - '5001:5000'
