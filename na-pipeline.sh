@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Stop on error, if set to 1 will exit program if any of the docker commands fail
-STOPONERROR=0
+STOPONERROR=1
 
 # set to 1 if you want to enable, 0 otherwise, select just one
 BASELINEP2PALA=0
@@ -32,8 +32,6 @@ LINEDETECTIONLOGHIMODEL=model_globalise
 LINEDETECTIONLOGHIMODEL=model-republicrandomprint-val-0.03344
 # first try on rotated model
 LINEDETECTIONLOGHIMODEL=model-rotated-val-0.0XXXX
-# current WIP
-#LINEDETECTION_LOGHI_MODEL=model-current
 
 HTRLOGHIMODEL=model-new7-republicprint-height48-cer-0.0009
 #height 64, mixed model, but still training....
@@ -43,29 +41,11 @@ HTRLOGHIMODEL=model-new8-ijsberg-valcer-0.045
 #height 64
 HTRLOGHIMODEL=model-new8-ijsberg-valcer-0.0415
 # faily high quality generic 18th century model
-HTRLOGHIMODEL=model-new8-ijsberg_republicrandom_prizepapers_64_val_loss_5.6246
 
-HTRLOGHIMODEL=model-current
-HTRLOGHIMODEL=model-new-10-ijsberg-cer-0.0519
-HTRLOGHIMODEL=model-new10-ijsberg-cer-0.0488
-HTRLOGHIMODEL=model-new10-ijsberg-cer-0.0476
-HTRLOGHIMODEL=model-new10-ijsberg-cer-0.0488
-# HTRLOGHIMODEL=model-new10-ijsberg-cer-0.0443
-HTRLOGHIMODEL=/src/loghi-htr-models/model-new10-ijsberg-cer-0.0373
-HTRLOGHIMODEL=/src/loghi-htr-models/model-new10-ijsberg_republicrandom_prizepapers_globalise_val_cer_ijsberg_globalise_0.0329
-HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/new14_generic-2022-12-20-globalise_related-finetune_globalise
 HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/model10-generic-2023-01-02
-HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/model10-generic-2023-01-02
-#HTRLOGHIMODEL=/home/stefan/Documents/repos/loghi-htr/src/loghi-htr-models/generic-2023-02-15
-# HTRLOGHIMODEL=/tmp/tmp.eeJOqXEgFX/output/checkpoints/encoder12-saved-model-18-29.1521
-#HTRLOGHIMODEL=model-new10-ijsberg-cer-0.03805
-#HTRLOGHIMODEL=model-new10-ijsberg-cer-0.0879
-#HTRLOGHIMODEL=model-new12-generic
-#HTRLOGHIMODEL=/src/loghi-htr-models/model-new12-generic_synthetic
-#HTRLOGHIMODEL=/src/loghi-htr-models/model12-all-withouth_synthetic_valcer_0.0477
 
 # set this to 1 for recalculating reading order, line clustering and cleaning.
-RECALCULATEREADINGORDER=0
+RECALCULATEREADINGORDER=1
 # if the edge of baseline is closer than x pixels...
 RECALCULATEREADINGORDERBORDERMARGIN=50
 # clean if 1
@@ -83,9 +63,6 @@ GPU=0
 
 # DO NO EDIT BELOW THIS LINE
 if [ -z $1 ]; then echo "please provide path to images to be HTR-ed" && exit 1; fi;
-tmpdir=/media/rutger/HDI0001/tmp/tmp.prizepapers/
-tmpdir=/tmp/tmp.n9vBN73l2e
-tmpdir=/tmp/tmp.limited; mkdir -p $tmpdir
 tmpdir=$(mktemp -d)
 echo $tmpdir
 
