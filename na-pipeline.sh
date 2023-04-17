@@ -251,7 +251,7 @@ then
                 mkdir -p $output_dir
         fi
 
-        docker run $DOCKERGPUPARAMS --rm -it -m 32000m -v $LAYPADIR:$LAYPADIR -v $input_dir:$input_dir -v $output_dir:$output_dir docker.laypa:latest \
+        docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m -v $LAYPADIR:$LAYPADIR -v $input_dir:$input_dir -v $output_dir:$output_dir docker.laypa:latest \
         python run.py \
         -c $LAYPAMODEL \
         -i $input_dir \
@@ -264,7 +264,7 @@ then
                 exit 1
         fi
 
-        docker run --rm -v $output_dir:$output_dir docker.loghi-tooling /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines \
+        docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) -v $output_dir:$output_dir docker.loghi-tooling /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines \
         -input_path_png $output_dir/page/ \
         -input_path_page $output_dir/page/ \
         -output_path_page $output_dir/page/ \
