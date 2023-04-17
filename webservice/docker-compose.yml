@@ -33,6 +33,7 @@ services:
     container_name: 'loghi-tooling'
     ports:
       - '8080:8080'
+      - '8081:8081'
     environment:
       STORAGE_LOCATION: /tmp/upload
       P2PALA_CONFIG_FILE: /doesnotexist
@@ -72,9 +73,14 @@ services:
       FLASK_DEBUG: 'true'
       FLASK_APP: 'api.app.py'
       FLASK_RUN_HOST: '0.0.0.0'
+      LOGHI_MODEL_PATH: '/home/rutger/src/loghi-htr-models/republic-2023-01-02-base-generic_new14-2022-12-20-valcer-0.0062'
+      LOGHI_CHARLIST_PATH: '/home/rutger/src/loghi-htr-models/republic-2023-01-02-base-generic_new14-2022-12-20-valcer-0.0062.charlist'
+      LOGHI_BEAMWIDTH: 1
+      LOGHI_BATCHSIZE: 64
+      LOGHI_OUTPUT_PATH: '/tmp/output/loghi-htr2'
     volumes:
       - '/home/rutger/src/loghi-htr-models/:/home/rutger/src/loghi-htr-models/'
-      - '/tmp/output/loghi-htr:/tmp/output/loghi-htr'
+      - '/tmp/output/loghi-htr2:/tmp/output/loghi-htr2'
     networks:
       - pipeline
     shm_size: 512mb
