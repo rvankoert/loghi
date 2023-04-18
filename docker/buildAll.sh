@@ -29,7 +29,7 @@ cd docker.base
 cd ..
 echo "building docker.loghi-tooling"
 cd docker.loghi-tooling/
-./buildImage.sh $BASE/../../prima-core-libs/ $BASE/loghi-tooling/
+./buildImage.sh $BASE/prima-core-libs/ $BASE/loghi-tooling/
 cd ..
 echo "building docker.htr"
 cd docker.htr
