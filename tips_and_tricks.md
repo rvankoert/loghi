@@ -49,11 +49,7 @@ https://github.com/rvankoert/P2PaLA/blob/master/docs/help.md and https://github.
 
 #### Convert Data to format usable for Loghi Framework
 ```bash
-docker run --rm -v \$SRC/:\$SRC/ -v \$tmpdir:\$tmpdir
-dockeranalyzerwebservice_analyzerwebservice
-/src/agenttesseract/target/appassembler/bin/MinionCutFromImageBasedOnPageXMLNew
--input_path \$SRC -outputbase \$tmpdir/imagesnippets/ -output_type png
--channels 4 -threads 4
+docker run --rm -v \$SRC/:\$SRC/ -v \$tmpdir:\$tmpdir docker.loghi-tooling /src/loghi-tooling/minions//target/appassembler/bin/MinionCutFromImageBasedOnPageXMLNew -input_path \$SRC -outputbase \$tmpdir/imagesnippets/ -output_type png -channels 4 -threads 4
 ```
 
 Replace \$SRC with the dir where images and page are. 
@@ -289,13 +285,13 @@ See the "na-pipeline.sh" for an example.
 using defaults (this will produce mwah results):
 
 ```bash
-docker run --rm -v \$SRC/:\$SRC/ dockeranalyzerwebservice_analyzerwebservice /src/agenttesseract/target/appassembler/bin/MinionDetectLanguageOfPageXml \$SRC/page/
+docker run --rm -v \$SRC/:\$SRC/ docker.loghi-tooling /src/loghi-tooling/minions/target/appassembler/bin/MinionDetectLanguageOfPageXml \$SRC/page/
 ```
 
 Using custom training files for language inference.
 
 ```bash
-docker run --rm -v \$SRC/:\$SRC/ dockeranalyzerwebservice_analyzerwebservice /src/agenttesseract/target/appassembler/bin/MinionDetectLanguageOfPageXml \$SRC/page/ \$pathOfTrainingSet
+docker run --rm -v \$SRC/:\$SRC/ docker.loghi-tooling /src/loghi-tooling/minions/target/appassembler/bin/MinionDetectLanguageOfPageXml \$SRC/page/ \$pathOfTrainingSet
 ```
 
 *pathOfTrainingSet should be a folder with text files.
@@ -305,8 +301,8 @@ Make sure to add the correct -v option to docker if you use this*
 A training file is a plain text file. 
 That should have a name that is a language name that is supported by PageXML. 
 So only one language is supported in a file. 
-Choose one of the following names:
-[[https://github.com/PRImA-Research-Lab/PAGE-XML/blob/master/pagecontent/schema/pagecontent.xsd\#L1675]{.underline}](https://github.com/PRImA-Research-Lab/PAGE-XML/blob/master/pagecontent/schema/pagecontent.xsd#L1675)
+Choose one of the following names: \
+https://github.com/PRImA-Research-Lab/PAGE-XML/blob/master/pagecontent/schema/pagecontent.xsd#L1675
 
 The file may have an extension like *.txt*, but it is not mandatory. 
 The contents of a file may look something like this:
@@ -418,7 +414,7 @@ The above workflow is available as a bash script calling docker containers which
 The following dockers are currently available for HTR and related purposes:
 * docker.p2pala_stable.dump (contains stable p2pala)
 * docker.p2pala.dump (contains most recent p2pala)
-* dockeranalyzerwebservice_analyzerwebservice.dump (contains all java-code, needs to be split up into separate dockers)
+* docker.loghi-tooling.dump (contains all java-code, needs to be split up into separate dockers)
 * docker.htr_stable (contains stable Loghi-HTR)
 * docker.htr (contains most recent Loghi-HTR)
 * docker.pylaia.dump (contains pylaia-HTR, needs some work)
@@ -427,18 +423,8 @@ The following dockers are currently available for HTR and related purposes:
 The stable versions are preferred for production. 
 The most recent versions are for testing only and might contain serious bugs.
 
-The following elements are trainable:
-- Region detection using P2PaLA. 
-See https://github.com/rvankoert/P2PaLA
 
-- Baseline detection, the P2PaLA part. 
-See https://github.com/rvankoert/P2PaLA
-
-- HTR, see this document:
-     https://docs.google.com/document/d/1XotkusLCzgjWRjuBk21E17mgGi05jGUhrJfLc7mmTZM/edit?usp=sharing
-
-And for the actual code (not yet public as of 2022-08-02):
-https://github.com/rvankoert/loghi-htr}
+https://github.com/knaw-huc/loghi-htr
 
 Several convenience scripts are available which help in the setting up
 and actual inference and training.
@@ -488,7 +474,7 @@ This docker can be used to create transcriptions for HTR. Scripts for inference 
 Provides Loghi linedetection. Should be used in conjunction with NVIDIA Container Toolkit to make use of GPU.
 This docker can be used to create pixelmaps for baseline detection. Scripts for inference are provided, scripts for training are not yet available.
 
-###### dockeranalyzerwebservice_analyzerwebservice
+###### docker.loghi-tooling
 
 Provides various tools written in Java. 
 Not all tools are directly usable for HTR, but are used for other projects. 
@@ -576,31 +562,11 @@ that the two-stage-processing is always done.
 It is possible to tweak P2PaLA to additionally also detect the beginning
 and end of baselines. This is only implemented via two-stage processing.
 
-#### Loghi-linedetection
-
-Provided via docker: docker.linedetection
-\
-Source: https://github.com/rvankoert/linedetection
-\
-Language: Python
-\
-Runs on: GPU/CPU
-\
-[inferencing]
-\
-Requires: scans and a trained model
-\
-Provides: 3 channel pixel maps
-
-An alternative to baseline detection via P2PaLA. 
-Several data augmentations are available allowing the learning of detection of rotated textlines, including start and end.
-This currently is in beta-testing and yields promising results, but for production P2PaLA is still preferred.
-
 #### MinionExtractBaselines
 
-Provided via docker: dockeranalyzerwebservice_analyzerwebservice
+Provided via docker: docker.loghi-tooling
 
-Source: https://github.com/rvankoert/opencvtest2
+Source: https://github.com/knaw-huc/loghi-tooling
 \
 Language: Java
 \
@@ -614,9 +580,9 @@ Baseline-extraction from pixelmaps (uses pixelmaps to detect baselines,java/CPU)
 
 #### MinionExtractBaselinesStartEndNew3
 
-Provided via docker: dockeranalyzerwebservice_analyzerwebservice
+Provided via docker: docker.loghi-tooling
 \
-Source: https://github.com/rvankoert/opencvtest2
+Source: https://github.com/knaw-huc/loghi-tooling
 \
 Language: Java
 \
@@ -636,9 +602,9 @@ These easily can go wrong with a single channel approach, but are separated quit
 
 #### MinionCutFromImageBasedOnPageXMLNew
 
-Provided via docker: dockeranalyzerwebservice_analyzerwebservice
+Provided via docker: docker.loghi-tooling
 \
-Source: https://github.com/rvankoert/opencvtest2
+Source: https://github.com/knaw-huc/loghi-tooling
 \
 Language: Java
 \
@@ -674,9 +640,9 @@ This is the core of Loghi HTR and contains neural networks that be trained to re
 
 #### MinionLoghiHTRMergePageXML (previous name: MinionRutgerHTRMergePageXML)
 
-Provided via docker: dockeranalyzerwebservice_analyzerwebservice
+Provided via docker: docker.loghi-tooling
 \
-Source: https://github.com/rvankoert/opencvtest2
+Source: https://github.com/knaw-huc/loghi-tooling
 \
 Language: Java
 \
@@ -709,9 +675,9 @@ It can convert images of text lines into text using a trained model.
 
 #### MinionPyLaiaMergePageXML
 
-Provided via docker: dockeranalyzerwebservice_analyzerwebservice
+Provided via docker: docker.loghi-tooling
 \
-Source: https://github.com/rvankoert/opencvtest2
+Source: https://github.com/knaw-huc/loghi-tooling
 \
 Language: Java
 \
@@ -726,9 +692,9 @@ This is required if you want PyLaia to produce PageXML.
 
 #### MinionRecalculateReadingOrderNew
 
-Provided via docker: dockeranalyzerwebservice_analyzerwebservice
+Provided via docker: docker.loghi-tooling
 \
-Source: https://github.com/rvankoert/opencvtest2
+Source: https://github.com/knaw-huc/loghi-tooling
 \
 Language: Java
 \
@@ -744,9 +710,9 @@ Provides: PageXML
 
 #### MinionDetectLanguageOfPageXml
 
-Provided via docker: dockeranalyzerwebservice_analyzerwebservice
+Provided via docker: docker.loghi-tooling
 \
-Source: https://github.com/rvankoert/opencvtest2
+Source: https://github.com/knaw-huc/loghi-tooling
 \
 Language: Java
 \
@@ -761,9 +727,9 @@ The language is detected on TextLine-level, TextRegion-level and Page-level.
 
 #### MinionSplitPageXMLTextLineIntoWords
 
-Provided via docker: dockeranalyzerwebservice_analyzerwebservice
+Provided via docker: docker.loghi-tooling
 \
-Source: https://github.com/rvankoert/opencvtest2
+Source: https://github.com/knaw-huc/loghi-tooling
 \
 Language: Java
 \
@@ -804,97 +770,6 @@ Using the provided password
 - Download the convenience scripts for inferencing and training
 - Optionally tweak some parameters in the scripts to use different models/settings and run against some data.
 
-### Pipeline Installation of Loghi-framework
-
-Pipeline installation requires the same dockers and nvidia-runtime as the Workstation Installation.
-
-It is possible to set up the Loghi framework for bulk processing optimizing GPU/CPU-usage. 
-Instead of going through all the steps in a serial manner the flow can be rearranged to become parallel. 
-An example: process an inventory number for baseline pixel labeling using GPU, while another GPU is running HTR on a different inventory number while Textline extraction is running using 8 CPU cores on another inventory number. A (to be thoroughly tested) setup is available on request. 
-This setup was made to have queues for GPU and CPU maximizing CPU and GPU utilization. 
-As the processing takes up lots of IO fast disks are necessary to get the full benefit of parallelization. 
-After setting up the pipeline all that is required is to place complete inventory numbers in an input directory. 
-And processed PageXML should appear after a while in the output directory.
-
-[This currently is in beta testing]
-
-The pipeline was created for inferencing only. The code can be found at: \
-https://github.com/MMaas3/loghi-pipeline \
-At this time (2022-08-03) the project is not yet public. 
-\
-The best way to use the loghi-pipeline is in combination with gpu-executor: \
-https://github.com/MMaas3/gpu-executor \
-At this time (2022-08-03) this project is not yet public.
-
-The loghi-pipeline cuts up the jobs to make the most out of a GPU. 
-Where the loghi-pipeline analyzes a certain folder, the loghi-pipeline will schedule a line detection job for a GPU. 
-The gpu-executor will execute that job on a GPU when it is idle.
-
-#### Installation
-
-We expect a computer that has *git* and *docker* installed.
-
-1. Install nvidia container runtime:
-    https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker
-
-    a.  Current dockers support up until Cuda 11.6.
-
-2. Download
-     *dockeranalyzerwebservice_analyzerwebservice*, *docker.p2pala_stable.dump*, *docker.htr_stable.dump* from  surfdrive
-
-    a.  Use the *stable* dockers, these are well tested and are less
-        > likely to contain bugs.
-
-3. Execute *docker load \< docker.p2pala_stable.dump*
-
-4. Execute *docker load \< dockeranalyzerwebservice_analyzerwebservice.dump*
-
-5. Execute *docker load \< docker.htr_stable.dump*
-
-6. Git clone https://github.com/MMaas3/loghi-pipeline
-
-7. Git clone https://github.com/MMaas3/gpu-executor
-
-8. Make sure *gpu.queue* in the *loghi-pipeline*-folder will point to the folder *jobs* in the *gpu-executor-*folder. 
-And make sure this folder exists.
-
-#### How to use
-
-Scheduling jobs
-
-There are two main scripts *schedule_linedetection_gpu.sh* and *schedule_htr_gpu.sh*. *schedule_linedetection_gpu.sh* will trigger *schedule_htr_gpu.sh* when done. 
-The combination of the scripts will do the same of the loghi-pipeline.
-
-The call should be *./schedule_linedetection_gpu.sh p2pala path/to/p2pala_model /path/to/folder_with_images/*
-
-This will put a job in the queue described in *gpu.queue*. 
-The file should contain the path to the queue of the gpu-executor. 
-This should be something like */path/to/gpu-executor/jobs*
-
-*schedule_linedetection_gpu.sh* also uses a configuration file called
-*tmp.root*. This file contains the path that will be used as root to
-create temporary directories.
-
-*/path/to/folder_with_images/* is expected to look like this:
-```
-folder_with_images
-|- image1.jpg
-|- image2.jpg
-|-page
-    |- image1.xml
-    |- image2.xml
-```
-Running jobs
-
-The jobs will be run by the *gpu-executor*. One *gpu-executor* will work for one GPU. 
-It is strongly advised to give each *gpu-executor* its own queue. 
-The script *start_run_gpu_job.sh* uses a file called *gpu.queue*. 
-This file contains the number of the GPU to use to execute the GPU-jobs.
-
-The logs will be stored in */path/to/gpu-executor/logs*. 
-For debugging purposes *run_gpu_job.sh* can be used. 
-This will run one scheduled job and will output the logs to stdout.
-
 ## Source Installation
 
 [incomplete]
@@ -905,8 +780,7 @@ mkdir \~/src
 
 cd \~/src
 ```
-Install htr using instruction on: https://github.com/rvankoert/htr
+Install loghi-htr using instruction on: https://github.com/knaw-huc/loghi-htr
 \
-Install opencvtest2 using instruction on: https://github.com/rvankoert/opencvtest2
-\
-Clone dockerize-images from: https://github.com/MMaas3/dockerize-images
+Install loghi-tooling using instruction on: https://github.com/knaw-huc/loghi-tooling
+
