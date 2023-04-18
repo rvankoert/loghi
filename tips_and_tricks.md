@@ -447,17 +447,9 @@ These scripts call the docker containers and link the various outputs to inputs 
 
 All the actual software is packaged in docker containers to ease the deployment and interoperability between systems. 
 For the actual Dockerfiles and build-scripts please refer to:
-https://github.com/MMaas3/dockerize-images
-
-This repository is still private as of 2022-08-07, but access can be granted on incidental cases.
+https://github.com/knaw-huc/loghi/tree/main/docker
 
 The following dockers are part of the HTR related processes:
-
-###### Docker.p2pala
-
-Provides P2PaLA. Should be used in conjunction with NVIDIA Container Toolkit to make use of GPU. 
-This docker can be used to create pixelmaps for baseline detection and PageXML for region detection. 
-It is trainable.
 
 ###### Docker.pylaia
 
