@@ -1,0 +1,6 @@
+version: '2'
+services:
+  analyzerwebservice:
+    build: .
+    ports:
+     - "9006:9006"

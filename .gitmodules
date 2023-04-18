@@ -1,0 +1,12 @@
+[submodule "loghi-htr"]
+	path = loghi-htr
+	url = git@github.com:knaw-huc/loghi-htr.git
+[submodule "loghi-tooling"]
+	path = loghi-tooling
+	url = git@github.com:knaw-huc/loghi-tooling.git
+[submodule "laypa"]
+	path = laypa
+	url = git@github.com:knaw-huc/laypa.git
+[submodule "prima-core-libs"]
+	path = prima-core-libs
+	url = git@github.com:knaw-huc/prima-core-libs.git
