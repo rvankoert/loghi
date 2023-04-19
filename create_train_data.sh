@@ -32,7 +32,7 @@ mkdir -p $outputdir
 echo "inputfiles: " `find $inputdir|wc -l`
 
 
-docker run --rm -v $inputdir/:$inputdir/ -v $outputdir:$outputdir $DOCKERLOGHITOOLING \
+docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) -v $inputdir/:$inputdir/ -v $outputdir:$outputdir $DOCKERLOGHITOOLING \
   /src/loghi-tooling/minions/target/appassembler/bin/MinionCutFromImageBasedOnPageXMLNew -input_path $inputdir -outputbase $outputdir -channels 4 -output_type png -write_text_contents -threads $numthreads
 
 echo "outputfiles: " `find $outputdir|wc -l`
