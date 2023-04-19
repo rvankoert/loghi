@@ -64,19 +64,38 @@ When it finishes without errors a new folder called "page" should be created in 
 Expected structure
 ```text
 training_data_folder
-|- train_list.txt
-|- val_list.txt
+|- training_all_train.txt
+|- training_all_val.txt
 |- image1_snippets
     |-snippet1.png
     |-snippet2.png
 ```
 
-`train_list.txt` should look something something like:
+`training_all_train.txt` should look something something like:
 ```text
 /path/to/training_data_folder/image1_snippets/snippet1.png	textual representation of snippet 1
 /path/to/training_data_folder/image1_snippets//snippet2.png text on snippet 2
 ```
 n.b. path to image and textual representation should be separated by a tab.
+
+##### Create training data
+You can create training data with the following command:
+```bash
+./create_train_data.sh /full/path/to/input /full/path/to/output
+```
+`/full/path/to/output` is `/full/path/to/training_data_folder` in this example
+`/full/path/to/input` is expected to look like:
+```text
+input
+|- image1.png
+|- image2.png
+|- page
+    |- image1.xml
+    |- image2.xml
+```
+`page/image1.xml` should contain information about the baselines and should have the textual representation of the text lines.  
+
+### Change script
 
 ```bash
 nano na-pipeline-train.sh
@@ -88,12 +107,14 @@ listdir=INSERT_FULL_PATH_TO_TRAINING_DATA_FOLDER
 trainlist=INSERT_FULL_PATH_TO_TRAINING_DATA_LIST
 validationlist=INSERT_FULL_PATH_TO_VALIDATION_DATA_LIST
 ```
-In this exampole: 
+In this example: 
 ```text
 listdir=/full/path/to/training_data_folder
 trainlist=/full/path/to/training_data_folder/train_list.txt
 validationlist=/full/path/to/training_data_folder/val_list.txt
 ```
+
+### Run script
 
 ```bash
 ./na-pipline-train.sh
