@@ -1,4 +1,5 @@
 # Tips & Tricks for training Loghi
+# THIS FILE IS IN NEED OF AN UPDATE AS IT STILL REFERENCES OLDER LOGHI-TOOLING.
 
 ## Training
 
