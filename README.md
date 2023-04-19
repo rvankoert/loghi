@@ -7,6 +7,7 @@ git clone git@github.com:knaw-huc/loghi.git
 cd loghi
 ```
 
+## Get the dockers
 If you want to build the dockers yourself with the latest code:
 ```bash
 # for initial pulling of submodules use:
@@ -17,6 +18,9 @@ cd docker
 ```
 
 otherwise just go ahead and use the default dockers on dockerhub.
+
+## Inference
+
 But first go to:
 https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP
 and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR).
@@ -53,8 +57,47 @@ The file should run for a short while if you have a good nvidia GPU and nvidia-d
 
 When it finishes without errors a new folder called "page" should be created in the directory with the images. This contains the PageXML output.
 
+## Training an HTR model
 
+### Input data
 
+Expected structure
+```text
+training_data_folder
+|- train_list.txt
+|- val_list.txt
+|- image1_snippets
+    |-snippet1.png
+    |-snippet2.png
+```
+
+`train_list.txt` should look something something like:
+```text
+/path/to/training_data_folder/image1_snippets/snippet1.png	textual representation of snippet 1
+/path/to/training_data_folder/image1_snippets//snippet2.png text on snippet 2
+```
+n.b. path to image and textual representation should be separated by a tab.
+
+```bash
+nano na-pipeline-train.sh
+```
+
+Find the following lines:
+```text
+listdir=INSERT_FULL_PATH_TO_TRAINING_DATA_FOLDER
+trainlist=INSERT_FULL_PATH_TO_TRAINING_DATA_LIST
+validationlist=INSERT_FULL_PATH_TO_VALIDATION_DATA_LIST
+```
+In this exampole: 
+```text
+listdir=/full/path/to/training_data_folder
+trainlist=/full/path/to/training_data_folder/train_list.txt
+validationlist=/full/path/to/training_data_folder/val_list.txt
+```
+
+```bash
+./na-pipline-train.sh
+```
 
 # for later updates use:
 ```bash

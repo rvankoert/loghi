@@ -31,9 +31,11 @@ USEBASEMODEL=0
 channels=1
 
 GPU=0
-listdir=/data/htr_train_notdeeds
-trainlist=/data/htr_train_notdeeds/training_all_train.txt
-validationlist=/data/htr_train_notdeeds/training_all_train.txt
+
+listdir=INSERT_FULL_PATH_TO_TRAINING_DATA_FOLDER
+trainlist=INSERT_FULL_PATH_TO_TRAINING_DATA_LIST
+validationlist=INSERT_FULL_PATH_TO_VALIDATION_DATA_LIST
+
 charlist=/data/htr_train_notdeeds/output_charlist.charlist
 
 epochs=20
