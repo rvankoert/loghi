@@ -1,12 +1,16 @@
 [submodule "loghi-htr"]
 	path = loghi-htr
 	url = git@github.com:knaw-huc/loghi-htr.git
+	branch = master
 [submodule "loghi-tooling"]
 	path = loghi-tooling
 	url = git@github.com:knaw-huc/loghi-tooling.git
+	branch = main
 [submodule "laypa"]
 	path = laypa
 	url = git@github.com:knaw-huc/laypa.git
+	branch = main
 [submodule "prima-core-libs"]
 	path = prima-core-libs
 	url = git@github.com:knaw-huc/prima-core-libs.git
+	branch = master
