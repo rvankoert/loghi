@@ -7,17 +7,17 @@ STOPONERROR=1
 BASELINELAYPA=1
 
 #
-LAYPAMODEL=/home/rutger/src/laypa-models/general/baseline/config.yaml
-LAYPAMODELWEIGHTS=/home/rutger/src/laypa-models/general/baseline/model_best_mIoU.pth
+#LAYPAMODEL=/home/rutger/src/laypa-models/general/baseline/config.yaml
+#LAYPAMODELWEIGHTS=/home/rutger/src/laypa-models/general/baseline/model_best_mIoU.pth
 
-#LAYPAMODEL=INSERT_FULL_PATH_TO_YAML_HERE
-#LAYPAMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
+LAYPAMODEL=INSERT_FULL_PATH_TO_YAML_HERE
+LAYPAMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
 
 # set to 1 if you want to enable, 0 otherwise, select just one
 HTRLOGHI=1
 
-HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/republic-2023-01-02-base-generic_new14-2022-12-20-valcer-0.0062/
-#HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
+#HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/republic-2023-01-02-base-generic_new14-2022-12-20-valcer-0.0062/
+HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
 
 # set this to 1 for recalculating reading order, line clustering and cleaning.
 RECALCULATEREADINGORDER=1
@@ -36,9 +36,9 @@ SPLITWORDS=1
 #used gpu ids, set to "-1" to use CPU, "0" for first, "1" for second, etc
 GPU=0
 
-DOCKERLOGHITOOLING=rutgervankoert/docker.loghi-tooling
-DOCKERLAYPA=rutgervankoert/docker.laypa
-DOCKERLOGHIHTR=rutgervankoert/docker.htr
+DOCKERLOGHITOOLING=loghi/docker.loghi-tooling
+DOCKERLAYPA=loghi/docker.laypa
+DOCKERLOGHIHTR=loghi/docker.htr
 
 # DO NO EDIT BELOW THIS LINE
 if [ -z $1 ]; then echo "please provide path to images to be HTR-ed" && exit 1; fi;
