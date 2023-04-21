@@ -18,7 +18,13 @@ cd docker
 ```
 
 otherwise just go ahead and use the default dockers on dockerhub.
+They are usually pulled auatomatically when running na-pipeline.sh mentioned later in this document, but you can pull them separately
 
+```bash
+docker pull loghi/docker.laypa
+docker pull loghi/docker.htr
+docker pull loghi/docker.loghi-tooling
+```
 ## Inference
 
 But first go to:
