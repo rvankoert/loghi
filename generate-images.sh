@@ -9,7 +9,7 @@ docker run -ti \
  -v $FONTSDIR:$FONTSDIR \
  -v $TEXTDIR:$TEXTDIR \
  -v /tmp/synthetic:/tmp/synthetic \
- docker.loghi-tooling \
+ loghi/docker.loghi-tooling \
  /src/loghi-tooling/minions/target/appassembler/bin/MinionGeneratePageImages \
  -add_salt_and_pepper \
  -font_path $FONTSDIR \

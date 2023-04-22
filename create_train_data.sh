@@ -18,7 +18,7 @@ filelisttrain=$outputdir/training_all_train.txt
 filelistval=$outputdir/training_all_val.txt
 #90 percent for training
 trainsplit=90
-DOCKERLOGHITOOLING=rutgervankoert/docker.loghi-tooling
+DOCKERLOGHITOOLING=loghi/docker.loghi-tooling
 
 echo $inputdir
 echo $outputdir
