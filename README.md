@@ -52,6 +52,18 @@ HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
 ```
 and update those paths with the location of the files you just downloaded. If you downloaded a zip: you should unzip it first.
 
+if you do not have a NVIDIA-GPU and nvidia-docker setup additionally change
+
+```text
+GPU=0
+```
+to
+```text
+GPU=-1
+```
+It will then run on CPU, which will be very slow.
+
+
 Save the file and run it:
 ```bash
 ./na-pipeline.sh /PATH_TO_FOLDER_CONTAINING_IMAGES
