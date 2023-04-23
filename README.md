@@ -120,6 +120,18 @@ trainlist=/full/path/to/training_data_folder/train_list.txt
 validationlist=/full/path/to/training_data_folder/val_list.txt
 ```
 
+if you do not have a NVIDIA-GPU and nvidia-docker setup additionally change
+
+```text
+GPU=0
+```
+to
+```text
+GPU=-1
+```
+It will then run on CPU, which will be very slow.
+
+
 ### Run script
 
 ```bash
