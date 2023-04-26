@@ -122,7 +122,7 @@ cd ..
 
 echo "Building docker image..."
 # docker build --squash --no-cache . -t docker.laypa
-docker build --no-cache . -t docker.laypa
+docker build --no-cache . -t loghi/docker.laypa
 
 rm -rf laypa
 docker system prune -f
