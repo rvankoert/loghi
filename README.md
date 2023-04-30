@@ -1,14 +1,22 @@
 # Loghi
 
+Loghi is a set of tools for Handwritten Text Recognition. 
+
+Two sample scripts are provided to make starting everything a little bit easier. 
+na-pipeline.sh: for transcribing scans
+na-pipeline-train.sh: for training new models. 
+
+## Quick start
+
 Install Loghi so that you can use its pipeline script.
 ```bash
 git clone git@github.com:knaw-huc/loghi.git
 cd loghi
 ```
 
-## Get the dockers
-The easiest method to run Loghi is to use the default dockers on [Docker Hub](https://hub.docker.com/u/loghi).
-They are usually pulled automatically when running [`na-pipeline.sh`](na-pipeline.sh) mentioned later in this document, but you can pull them separately with the following commands:
+## Use the docker images
+The easiest method to run Loghi is to use the default dockers images on [Docker Hub](https://hub.docker.com/u/loghi).
+The docker images are usually pulled automatically when running [`na-pipeline.sh`](na-pipeline.sh) mentioned later in this document, but you can pull them separately with the following commands:
 
 ```bash
 docker pull loghi/docker.laypa
