@@ -71,7 +71,7 @@ to
 ```text
 GPU=-1
 ```
-It will then run on CPU, which will be very slow.
+It will then run on CPU, which will be very slow. If you are using the pretrained model and run on CPU: please make sure to download the Loghi-htr model starting with "float32-". This will run faster on CPU than the default mixed_float16 models.
 
 
 Save the file and run it:
