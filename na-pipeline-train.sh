@@ -31,10 +31,10 @@ USEBASEMODEL=0
 channels=1
 
 GPU=0
-listdir=/home/rutger/train_data_tmpdir
-trainlist=/home/rutger/train_data_tmpdir/training_all_train.txt
-validationlist=/home/rutger/train_data_tmpdir/training_all_val.txt
-charlist=/home/rutger/train_data_tmpdir/output_charlist.charlist
+listdir=/data/htr_train_notdeeds
+trainlist=/data/htr_train_notdeeds/training_all_train.txt
+validationlist=/data/htr_train_notdeeds/training_all_train.txt
+charlist=/data/htr_train_notdeeds/output_charlist.charlist
 
 epochs=20
 height=$HTRLOGHIMODELHEIGHT
@@ -43,7 +43,7 @@ multiply=2
 rnn_layers=3
 #minimum ??? maximum 1024?, bij kleine datasets wat lager.
 rnn_units=1024
-batch_size=32
+batch_size=2
 model_name=myfirstmodel
 # tussen de 0.001 en 0.00001
 learning_rate=0.0003
@@ -65,35 +65,36 @@ if [[ $HTRLOGHI -eq 1 ]]
 then
         echo "starting Loghi HTR"
         # #pylaia takes 3 channels, rutgerhtr 4channels png or 3 with new models
-        echo docker run --gpus all --rm -m 32000m --shm-size 10240m -ti -v /tmp:/tmp -v $tmpdir:$tmpdir -v $listdir:$listdir docker.htr python3.8 /src/src/main.py --do_train --train_list $trainlist --validation_list $validationlist --learning_rate $learning_rate --channels 4 --batch_size $batch_size --epochs $epochs --do_validate --gpu $GPU --height $height --memory_limit 6000 --use_mask --seed 1  --beam_width 10 --model new10 --rnn_layers $rnn_layers --rnn_units $rnn_units --use_gru --decay_steps 5000 --batch_normalization --multiply $multiply --charlist $charlist --output $listdir --model_name $model_name --output_charlist $tmpdir/output_charlist.charlist --output $tmpdir/output
-        docker run --gpus all --rm -m 32000m --shm-size 10240m -ti -v $tmpdir:$tmpdir -v $listdir:$listdir docker.htr python3.8 /src/src/main.py --do_train --train_list $trainlist \
-$BASEMODEL --validation_list $validationlist \
---learning_rate $learning_rate \
---channels $channels \
---batch_size $batch_size \
---epochs $epochs \
---do_validate \
---gpu $GPU \
---height $height \
---memory_limit 0 \
---use_mask \
---seed 1  \
---beam_width 10 \
---model new10 \
---decay_steps $DECAYSTEPS \
---multiply $multiply \
---charlist $charlist \
---output $listdir \
---model_name $model_name \
---output_charlist $tmpdir/output_charlist.charlist \
---output $tmpdir/output \
---random_width \
---replace_final \
---use_gru \
---augment \
---rnn_layers $rnn_layers \
---rnn_units $rnn_units \
---elastic_transform
+        echo docker run --gpus all --rm -m 32000m --shm-size 10240m -ti -v /tmp:/tmp -v $tmpdir:$tmpdir -v $listdir:$listdir docker.htr python3 /src/src/main.py --do_train --train_list $trainlist --validation_list $validationlist --learning_rate $learning_rate --channels 4 --batch_size $batch_size --epochs $epochs --do_validate --gpu $GPU --height $height --use_mask --seed 1  --beam_width 10 --model new10 --rnn_layers $rnn_layers --rnn_units $rnn_units --use_gru --decay_steps 5000 --batch_normalization --multiply $multiply --output $listdir --model_name $model_name --output_charlist $tmpdir/output_charlist.charlist --output $tmpdir/output
+	#docker run --gpus all --rm -m 32000m --shm-size 10240m -ti -v /tmp:/tmp -v $tmpdir:$tmpdir -v $listdir:$listdir docker.htr python3 /src/src/main.py --do_train --train_list $trainlist \
+#$BASEMODEL --validation_list $validationlist \
+#--learning_rate $learning_rate \
+#--channels $channels \
+#--batch_size $batch_size \
+#--epochs $epochs \
+#--do_validate \
+#--gpu $GPU \
+#--height $height \
+#--use_mask \
+#--seed 1  \
+#--beam_width 10 \
+#--model new10 \
+#--decay_steps $DECAYSTEPS \
+#--multiply $multiply \
+#--output $listdir \
+#--model_name $model_name \
+#--output $tmpdir/output \
+#--random_width \
+#--replace_final \
+#--use_gru \
+#--augment \
+#--rnn_layers $rnn_layers \
+#--rnn_units $rnn_units \
+#--elastic_transform \
+#--check_missing_files
+
+docker run --gpus all --rm -m 32000m --shm-size 10240m -ti -v /tmp:/tmp -v $tmpdir:$tmpdir -v $listdir:$listdir docker.htr python3 /src/src/main.py --do_train --train_list $trainlist --validation_list $validationlist --learning_rate $learning_rate --channels 4 --batch_size $batch_size --epochs $epochs --do_validate --gpu $GPU --height $height --use_mask --seed 1  --beam_width 10 --model new10 --rnn_layers $rnn_layers --rnn_units $rnn_units --use_gru --decay_steps 5000 --batch_normalization --multiply $multiply --output $listdir --model_name $model_name --output_charlist $tmpdir/output_charlist.charlist --output $tmpdir/output
+
 
 # --replace_recurrent_layer \
 # --use_rnn_dropout \
