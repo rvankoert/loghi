@@ -43,9 +43,10 @@ HTRLOGHIMODEL=model-new8-ijsberg-valcer-0.0415
 # faily high quality generic 18th century model
 
 HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/model10-generic-2023-01-02
+HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/republic-2023-01-02-base-generic_new14-2022-12-20-valcer-0.0062
 
 # set this to 1 for recalculating reading order, line clustering and cleaning.
-RECALCULATEREADINGORDER=1
+RECALCULATEREADINGORDER=0
 # if the edge of baseline is closer than x pixels...
 RECALCULATEREADINGORDERBORDERMARGIN=50
 # clean if 1
@@ -241,11 +242,12 @@ then
                 exit 1
         fi
 
-        docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) -v $output_dir:$output_dir docker.loghi-tooling /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines \
+        docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) -v $LAYPADIR:$LAYPADIR -v $output_dir:$output_dir docker.loghi-tooling /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines \
         -input_path_png $output_dir/page/ \
         -input_path_page $output_dir/page/ \
         -output_path_page $output_dir/page/ \
-        -as_single_region true
+        -as_single_region true \
+        -laypaconfig $LAYPAMODEL
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
                 echo "Command has errored has errored, stopping program"
@@ -292,11 +294,11 @@ then
         --use_mask \
         --inference_list $tmpdir/lines.txt \
         --results_file $tmpdir/results.txt \
-        --charlist $HTRLOGHIMODEL.charlist \
+        --charlist $HTRLOGHIMODEL/charlist.txt \
         --gpu $GPU \
         --output $tmpdir/output/ \
         --config_file_output $tmpdir/output/config.json \
-        --beam_width 1 "
+        --beam_width 10 "
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
                 echo "Command has errored has errored, stopping program"
