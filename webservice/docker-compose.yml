@@ -1,8 +1,8 @@
 version: '3.1'
 services:
   laypa:
-    image: 'docker.laypa'
-    command: 'flask run'
+    image: 'loghi/docker.laypa'
+    command: 'python api/gunicorn_app.py'
     deploy:
       resources:
         reservations:
@@ -17,9 +17,14 @@ services:
       LAYPA_MAX_QUEUE_SIZE: 128
       LAYPA_MODEL_BASE_PATH: /home/rutger/src/laypa-models/
       LAYPA_OUTPUT_BASE_PATH: /tmp/output/laypa/
-      FLASK_DEBUG: 'true'
-      FLASK_APP: 'api.app.py'
-      FLASK_RUN_HOST: '0.0.0.0'
+      # FLASK_DEBUG: 'true'
+      # FLASK_APP: 'api.app.py'
+      # FLASK_RUN_HOST: '0.0.0.0'
+      #
+      GUNICORN_RUN_HOST: '0.0.0.0:5000'
+      GUNICORN_WORKERS: 1
+      GUNICORN_THREADS: 1
+      GUNICORN_ACCESSLOG: '-'
     volumes:
       - '/home/rutger/src/laypa-models/:/home/rutger/src/laypa-models/'
       - '/tmp/output/laypa:/tmp/output/laypa'
@@ -28,7 +33,7 @@ services:
     shm_size: 512mb
     restart: always
   loghi-tooling:
-    image: 'docker.loghi-tooling'
+    image: 'loghi/docker.loghi-tooling'
     command: '/src/loghi-tooling/loghiwebservice/target/appassembler/bin/LoghiWebserviceApplication server /home/rutger/src/loghi/webservice/loghi-tooling/configuration.yml'
     container_name: 'loghi-tooling'
     ports:
@@ -57,7 +62,7 @@ services:
     shm_size: 512mb
     restart: always
   htr:
-    image: 'docker.htr'
+    image: 'loghi/docker.htr'
     command: 'python3 app.py'
     deploy:
       resources:
