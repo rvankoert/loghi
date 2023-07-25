@@ -38,6 +38,9 @@ run actual HTR on snippets:
 find /tmp/output/loghi-htr/NL_HaNa_2.12.03_3105_0094/ -name '*.txt' -type f -exec cat {} + > NL_HaNa_2.12.03_3105_0094.txt
 
 
+#merge results with pageXML
+./loghi-htr-merge-page-xml.sh /scratch/3105/page/NL_HaNa_2.12.03_3105_0094.xml NL_HaNa_2.12.03_3105_0094.txt /home/rutger/src/loghi-htr-models/generic_new_17_2023_05_25_4channel/config.json 
+
 
 
 Known issues:
