@@ -5,20 +5,22 @@ if [ -z $2 ]; then echo "please provide output path" && exit 1; fi;
 if [ -z $3 ]; then
         echo "setting numthreads=4"
         numthreads=4
-else 
+else
         numthreads=$3
-        echo $numthreads
+        echo "setting numthreads=$numthreads"
 fi;
 
 #directory containing images and pagexml. The pageXML must be one level deeper than the images in a directory called "page"
-inputdir=$1/
-outputdir=$2/
+inputdir=$(realpath $1/)
+outputdir=$(realpath $2/)
 filelist=$outputdir/training_all.txt
 filelisttrain=$outputdir/training_all_train.txt
 filelistval=$outputdir/training_all_val.txt
 #90 percent for training
 trainsplit=90
 DOCKERLOGHITOOLING=loghi/docker.loghi-tooling
+INCLUDETEXTSTYLES=" -include_text_styles " # translate the text styles defined in transkribus to loghi htr training data with text styles
+SKIP_UNCLEAR=" -skip_unclear " # skip all lines that have a tag unclear
 
 echo $inputdir
 echo $outputdir
@@ -32,8 +34,12 @@ mkdir -p $outputdir
 echo "inputfiles: " `find $inputdir|wc -l`
 
 
-docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) -v $inputdir/:$inputdir/ -v $outputdir:$outputdir $DOCKERLOGHITOOLING \
-  /src/loghi-tooling/minions/target/appassembler/bin/MinionCutFromImageBasedOnPageXMLNew -input_path $inputdir -outputbase $outputdir -channels 4 -output_type png -write_text_contents -threads $numthreads
+#echo /home/rutger/src/opencvtest2/agenttesseract/target/appassembler/bin/MinionCutFromImageBasedOnPageXMLNew -input_path $inputdir -outputbase $outputdir -channels 4 -output_type png -write_text_contents -threads $numthreads
+#/home/rutger/src/opencvtest2/agenttesseract/target/appassembler/bin/MinionCutFromImageBasedOnPageXMLNew -input_path $inputdir -outputbase $outputdir -channels 4 -output_type png -write_text_contents -threads $numthreads
+echo docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $inputdir/:$inputdir/ -v $outputdir:$outputdir $DOCKERLOGHITOOLING \
+  /src/loghi-tooling/minions/target/appassembler/bin/MinionCutFromImageBasedOnPageXMLNew -input_path $inputdir -outputbase $outputdir -channels 4 -output_type png -write_text_contents -threads $numthreads $INCLUDETEXTSTYLES
+docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $inputdir/:$inputdir/ -v $outputdir:$outputdir $DOCKERLOGHITOOLING \
+  /src/loghi-tooling/minions/target/appassembler/bin/MinionCutFromImageBasedOnPageXMLNew -input_path $inputdir -outputbase $outputdir -channels 4 -output_type png -write_text_contents -threads $numthreads $INCLUDETEXTSTYLES -no_page_update $SKIP_UNCLEAR
 
 echo "outputfiles: " `find $outputdir|wc -l`
 
@@ -45,10 +51,10 @@ do
         filename=$(basename -- "$input_path")
         filename="${filename%.*}"
         base="${input_path%.*}"
-        text=`cat $base.box|colrm 2|tr -d '\n'`
+#        text=`cat $base.box|colrm 2|tr -d '\n'`
+        text=`cat $base.txt`
         echo -e "$input_path\t$text" >>$filelist
 done
 
 
 shuf $filelist | split -l $(( $(wc -l <$filelist) * $trainsplit / 100 )); mv xab $filelistval; mv xaa $filelisttrain
-

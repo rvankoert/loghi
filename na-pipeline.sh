@@ -16,11 +16,11 @@ LAYPAMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
 # set to 1 if you want to enable, 0 otherwise, select just one
 HTRLOGHI=1
 
-#HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/republic-2023-01-02-base-generic_new14-2022-12-20-valcer-0.0062/
+HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/republic-2023-01-02-base-generic_new14-2022-12-20-valcer-0.0062
 HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
 
 # set this to 1 for recalculating reading order, line clustering and cleaning.
-RECALCULATEREADINGORDER=1
+RECALCULATEREADINGORDER=0
 # if the edge of baseline is closer than x pixels...
 RECALCULATEREADINGORDERBORDERMARGIN=50
 # clean if 1
@@ -84,7 +84,8 @@ then
         -c $LAYPAMODEL \
         -i $input_dir \
         -o $output_dir \
-        --opts MODEL.WEIGHTS "" TEST.WEIGHTS $LAYPAMODELWEIGHTS
+        --opts MODEL.WEIGHTS "" TEST.WEIGHTS $LAYPAMODELWEIGHTS | tee -a $tmpdir/log.txt
+
         # > /dev/null
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
@@ -96,7 +97,9 @@ then
         -input_path_png $output_dir/page/ \
         -input_path_page $output_dir/page/ \
         -output_path_page $output_dir/page/ \
-        -as_single_region true
+        -as_single_region true \
+        -laypaconfig $LAYPAMODEL | tee -a $tmpdir/log.txt
+
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
                 echo "Command has errored has errored, stopping program"
@@ -118,7 +121,8 @@ then
        -outputbase $tmpdir/imagesnippets/ \
        -output_type png \
        -channels 4 \
-       -threads 4
+       -threads 4 | tee -a $tmpdir/log.txt
+
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
                 echo "Command has errored has errored, stopping program"
@@ -128,8 +132,10 @@ then
        find $tmpdir/imagesnippets/ -type f -name '*.png' > $tmpdir/lines.txt
 
 	LOGHIDIR="$(dirname "${HTRLOGHIMODEL}")"
+        # CUDA_VISIBLE_DEVICES=-1 python3 ~/src/htr/src/main.py --do_inference --channels 4 --height $HTR_LOGHI_MODEL_HEIGHT --existing_model ~/src/htr/$HTR_LOGHI_MODEL  --batch_size 32 --use_mask --inference_list $tmpdir/lines.txt --results_file $tmpdir/results.txt --charlist ~/src/htr/$HTR_LOGHI_MODEL.charlist --gpu $GPU
+#        docker run $DOCKERGPUPARAMS --rm -m 32000m --shm-size 10240m -ti -v $tmpdir:$tmpdir docker.htr python3 /src/src/main.py --do_inference --channels 4 --height $HTRLOGHIMODELHEIGHT --existing_model /src/loghi-htr-models/$HTRLOGHIMODEL  --batch_size 10 --use_mask --inference_list $tmpdir/lines.txt --results_file $tmpdir/results.txt --charlist /src/loghi-htr-models/$HTRLOGHIMODEL.charlist --gpu $GPU --output $tmpdir/output/ --config_file_output $tmpdir/output/config.txt --beam_width 10
         docker run $DOCKERGPUPARAMS -u $(id -u ${USER}):$(id -g ${USER}) --rm -m 32000m --shm-size 10240m -ti -v /tmp:/tmp -v $tmpdir:$tmpdir -v $LOGHIDIR:$LOGHIDIR $DOCKERLOGHIHTR \
-	bash -c "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 python3 /src/src/main.py \
+	bash -c "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 python3 /src/loghi-htr/src/main.py \
         --do_inference \
         --existing_model $HTRLOGHIMODEL  \
         --batch_size 64 \
@@ -140,7 +146,7 @@ then
         --gpu $GPU \
         --output $tmpdir/output/ \
         --config_file_output $tmpdir/output/config.json \
-        --beam_width 10 "
+        --beam_width 10 " | tee -a $tmpdir/log.txt
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
                 echo "Command has errored has errored, stopping program"
@@ -149,14 +155,14 @@ then
         docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionLoghiHTRMergePageXML \
                 -input_path $SRC/page \
                 -results_file $tmpdir/results.txt \
-                -config_file $tmpdir/output/config.json
+                -config_file $tmpdir/output/config.json | tee -a $tmpdir/log.txt
+
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
                 echo "Command has errored has errored, stopping program"
                 exit 1
         fi
 fi
-
 
 if [[ $RECALCULATEREADINGORDER -eq 1 ]]
 then
@@ -168,8 +174,8 @@ then
                         -input_dir $SRC/page/ \
 			-border_margin $RECALCULATEREADINGORDERBORDERMARGIN \
 			-clean_borders \
-			-threads $RECALCULATEREADINGORDERTHREADS
-                
+			-threads $RECALCULATEREADINGORDERTHREADS | tee -a $tmpdir/log.txt
+
                 if [[ $STOPONERROR && $? -ne 0 ]]; then
                         echo "Command has errored has errored, stopping program"
                         exit 1
@@ -178,8 +184,8 @@ then
                 docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionRecalculateReadingOrderNew \
                         -input_dir $SRC/page/ \
 			-border_margin $RECALCULATEREADINGORDERBORDERMARGIN \
-			-threads $RECALCULATEREADINGORDERTHREADS
-                
+			-threads $RECALCULATEREADINGORDERTHREADS | tee -a $tmpdir/log.txt
+
                 if [[ $STOPONERROR && $? -ne 0 ]]; then
                         echo "Command has errored has errored, stopping program"
                         exit 1
@@ -190,7 +196,8 @@ if [[ $DETECTLANGUAGE -eq 1 ]]
 then
         echo "detecting language..."
         docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionDetectLanguageOfPageXml \
-                -page $SRC/page/
+                -page $SRC/page/ | tee -a $tmpdir/log.txt
+
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
                 echo "Command has errored has errored, stopping program"
@@ -203,8 +210,8 @@ if [[ $SPLITWORDS -eq 1 ]]
 then
         echo "MinionSplitPageXMLTextLineIntoWords..."
         docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionSplitPageXMLTextLineIntoWords \
-                -input_path $SRC/page/
-        
+                -input_path $SRC/page/ | tee -a $tmpdir/log.txt
+
         if [[ $STOPONERROR && $? -ne 0 ]]; then
                 echo "Command has errored has errored, stopping program"
                 exit 1

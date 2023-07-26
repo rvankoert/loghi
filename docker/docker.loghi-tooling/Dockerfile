@@ -19,7 +19,7 @@ COPY prima-core-libs /src/prima-core-libs
 WORKDIR /src/prima-core-libs/java
 #USER builder
   RUN apt-get update && apt-get --no-install-recommends install -y openjdk-11-jre maven postgresql-client libdc1394-22 libavcodec58 libavformat58 libswscale5 libtbb2 \
-  && mvn deploy:deploy-file -Durl=file:///home/root/repo -Dfile=/usr/local/share/java/opencv4/opencv-453.jar -DgroupId=org.opencv -DartifactId=opencv -Dpackaging=jar -Dversion=4.5.3 \
+  && mvn deploy:deploy-file -Durl=file:///home/$USER/repo -Dfile=/usr/local/share/java/opencv4/opencv-480.jar -DgroupId=org.opencv -DartifactId=opencv -Dpackaging=jar -Dversion=4.8.0 \
   && mvn clean package \
   && cd /src/loghi-tooling \
   && mvn clean package \

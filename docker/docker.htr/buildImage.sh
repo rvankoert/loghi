@@ -38,9 +38,6 @@ rm -rf ./$htr_folder/src/test15
 
 echo "Building docker image..."
 docker build --no-cache . -t loghi/docker.htr
-#docker build . -t loghi/docker.htr
-#docker build . -t docker.htr
-#docker build --squash --no-cache . -t docker.htr
 
 rm -rf ./$htr_folder
 #rm -rf ./$models_folder

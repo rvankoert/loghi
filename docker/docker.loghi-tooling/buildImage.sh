@@ -25,9 +25,8 @@ rm -rf ./loghi-tooling/layoutds/target
 rm -rf ./loghi-tooling/layoutanalyzer/src/test/resources/in/*.png
 
 echo "Building docker image..."
-#docker build --squash --no-cache . -t docker.loghi-tooling
+
 docker build --no-cache --squash . -t loghi/docker.loghi-tooling
-#echo "Saving docker image..."
 
 echo "cleaning up!"
 rm -rf prima-core-libs
