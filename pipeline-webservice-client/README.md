@@ -41,7 +41,11 @@ find /tmp/output/loghi-htr/NL_HaNa_2.12.03_3105_0094/ -name '*.txt' -type f -exe
 #merge results with pageXML
 ./loghi-htr-merge-page-xml.sh /scratch/3105/page/NL_HaNa_2.12.03_3105_0094.xml NL_HaNa_2.12.03_3105_0094.txt /home/rutger/src/loghi-htr-models/generic_new_17_2023_05_25_4channel/config.json 
 
+#recalculate reading order
+./recalculate_reading_order.sh /scratch/3105/page/
 
+#split into words
+./split_into_words.sh /scratch/3105/page/
 
 Known issues:
 -PyTorch based code seems to break down on MIG-enabled GPU's (LayPa, PyLaia, P2PaLA)
