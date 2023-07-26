@@ -16,7 +16,7 @@ git --git-dir=$SMT/.git log --format="%H" -n 1 > $htr_folder/src/version_info
 rm -rf ./$htr_folder/venv
 rm -rf ./$htr_folder/checkpoints
 rm -rf ./$htr_folder/__pycache__
-rm -rf ./$htr_folder/.git
+#	rm -rf ./$htr_folder/.git
 rm -rf ./$htr_folder/.idea
 rm -rf ./$htr_folder/src/output
 rm -rf ./$htr_folder/src/.idea

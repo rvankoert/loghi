@@ -23,7 +23,7 @@ RUN cd /src \
   && pip install . \
   && apt autoremove -y \
   && cd /src/loghi-htr/src \
-  && git --git-dir=../.git log --format="%H" -n 1 > version_info \
+  && git --git-dir=/src/loghi-htr/.git log --format="%H" -n 1 > version_info \
   && python3 -m pip --no-cache-dir install -r requirements.txt \
   && apt autoremove -y \
   && rm -rf /src/CTCWordBeamSearch /root
