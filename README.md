@@ -164,6 +164,6 @@ Finally, to run the HTR training run the script:
 ## For later updates use:
 To update the submodules to the head of their branch (the latest/possibly unstable version) run the following command:
 ```bash
-git submodule update --recurse --remote
+git submodule update --recursive --remote
 ```
 
