@@ -16,11 +16,11 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-#COPY loghi-htr /src
+COPY loghi-htr /src/loghi-htr
 # COPY loghi-htr-models/ /src/loghi-htr-models/
 #COPY loghi-htr-models/model-new10-ijsberg_republicrandom_prizepapers_globalise_val_cer_ijsberg_globalise_0.0329 /src/loghi-htr-models/model-new10-ijsberg_republicrandom_prizepapers_globalise_val_cer_ijsberg_globalise_0.0329/
 #COPY loghi-htr-models/model-new10-ijsberg_republicrandom_prizepapers_globalise_val_cer_ijsberg_globalise_0.0329.charlist /src/loghi-htr-models/model-new10-ijsberg_republicrandom_prizepapers_globalise_val_cer_ijsberg_globalise_0.0329.charlist
-WORKDIR /src/src
+WORKDIR /src/loghi-htr/src
 #apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub \
 # tensorrt
 RUN apt-get update && apt-get install -y software-properties-common wget git python3-pip python3 python3-dev
@@ -30,7 +30,6 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/libnvinfer.so.8 /usr/lib/x86_64-linux-gnu/li
   && ln -s /usr/lib/x86_64-linux-gnu/libnvinfer_plugin.so.8 /usr/lib/x86_64-linux-gnu/libnvinfer_plugin.so.7
 RUN python3 -m pip --no-cache-dir install --upgrade pip
 RUN cd /src \
-  && git clone https://github.com/rvankoert/loghi-htr.git \
   && git clone https://github.com/rvankoert/CTCWordBeamSearch.git \
   && cd /src/CTCWordBeamSearch \
   && pip install . \
@@ -47,3 +46,4 @@ WORKDIR /src/loghi-htr/src
 #  && apt-get remove -y x11-common x11-utils nvidia-visual-profiler openjdk-8-jre default-jre-headless g++ gcc \
 #  && ln -s /usr/local/cuda-11/targets/x86_64-linux/lib/libcusolver.so.11 /usr/lib/libcusolver.so.10 \
 #  && apt remove -y git wget software-properties-common g++ \
+#  && git clone https://github.com/rvankoert/loghi-htr.git \
