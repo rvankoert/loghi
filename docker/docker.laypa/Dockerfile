@@ -29,7 +29,7 @@ SHELL ["conda", "run", "-n", "laypa", "/bin/bash", "-c"]
 ENV PATH /opt/conda/envs/laypa/bin:$PATH
 ENV CONDA_DEFAULT_ENV laypa
 ENV ENV_NAME=laypa
-#RUN chmod go+rx /opt/conda/envs/laypa/pkgs/cuda-toolkit/
+RUN chmod go+rx /opt/conda/envs/laypa/pkgs/cuda-toolkit/
 
 ENTRYPOINT ["/usr/local/bin/_entrypoint.sh"]
 CMD ["/bin/bash"]
