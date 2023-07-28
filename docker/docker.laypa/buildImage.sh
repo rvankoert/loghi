@@ -118,6 +118,7 @@ cp -r -T $LAYPA/ laypa
 # Checkout to make sure you are not on dev branch
 cd laypa
 git checkout main
+git rev-parse HEAD > version_info
 # git checkout dev
 #git pull
 cd ..
