@@ -7,17 +7,17 @@ STOPONERROR=1
 BASELINELAYPA=1
 
 #
-#LAYPAMODEL=/home/rutger/src/laypa-models/general/baseline/config.yaml
-#LAYPAMODELWEIGHTS=/home/rutger/src/laypa-models/general/baseline/model_best_mIoU.pth
+LAYPAMODEL=/home/rutger/src/laypa-models/general/baseline/config.yaml
+LAYPAMODELWEIGHTS=/home/rutger/src/laypa-models/general/baseline/model_best_mIoU.pth
 
-LAYPAMODEL=INSERT_FULL_PATH_TO_YAML_HERE
-LAYPAMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
+#LAYPAMODEL=INSERT_FULL_PATH_TO_YAML_HERE
+#LAYPAMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
 
 # set to 1 if you want to enable, 0 otherwise, select just one
 HTRLOGHI=1
 
 HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/republic-2023-01-02-base-generic_new14-2022-12-20-valcer-0.0062
-HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
+#HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
 
 # set this to 1 for recalculating reading order, line clustering and cleaning.
 RECALCULATEREADINGORDER=0
@@ -79,7 +79,7 @@ then
                 mkdir -p $output_dir
         fi
 
-        docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -shm-size 8G -m 32000m -v $LAYPADIR:$LAYPADIR -v $input_dir:$input_dir -v $output_dir:$output_dir $DOCKERLAYPA \
+        docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) --shm-size 8G -m 32000m -v $LAYPADIR:$LAYPADIR -v $input_dir:$input_dir -v $output_dir:$output_dir $DOCKERLAYPA \
         python run.py \
         -c $LAYPAMODEL \
         -i $input_dir \
