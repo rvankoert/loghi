@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   laypa:
-    image: 'loghi/docker.laypa'
+    image: 'loghi/docker.laypa:1.2'
     command: 'python api/gunicorn_app.py'
     deploy:
       resources:
@@ -33,7 +33,7 @@ services:
     shm_size: 512mb
     restart: always
   loghi-tooling:
-    image: 'loghi/docker.loghi-tooling'
+    image: 'loghi/docker.loghi-tooling:1.2'
     command: '/src/loghi-tooling/loghiwebservice/target/appassembler/bin/LoghiWebserviceApplication server /home/rutger/src/loghi/webservice/loghi-tooling/configuration.yml'
     container_name: 'loghi-tooling'
     ports:
@@ -62,7 +62,7 @@ services:
     shm_size: 512mb
     restart: always
   htr:
-    image: 'loghi/docker.htr'
+    image: 'loghi/docker.htr:1.2'
     command: '/usr/local/bin/gunicorn --workers=1 -b :5000 wsgi:app'
     deploy:
       resources:
@@ -78,8 +78,8 @@ services:
       FLASK_DEBUG: 'true'
       FLASK_APP: 'api.app.py'
       FLASK_RUN_HOST: '0.0.0.0'
-      LOGHI_MODEL_PATH: '/home/rutger/src/loghi-htr-models/republic-2023-01-02-base-generic_new14-2022-12-20-valcer-0.0062'
-      LOGHI_CHARLIST_PATH: '/home/rutger/src/loghi-htr-models/republic-2023-01-02-base-generic_new14-2022-12-20-valcer-0.0062/charlist.txt'
+      LOGHI_MODEL_PATH: '/home/rutger/src/loghi-htr-models/float32-generic-2023-02-15'
+      LOGHI_CHARLIST_PATH: '/home/rutger/src/loghi-htr-models/float32-generic-2023-02-15/charlist.txt'
       LOGHI_BEAMWIDTH: 1
       LOGHI_BATCHSIZE: 64
       LOGHI_OUTPUT_PATH: '/tmp/output/loghi-htr2'
