@@ -119,6 +119,7 @@ cp -r -T $LAYPA/ laypa.micromamba
 # Checkout to make sure you are not on dev branch
 cd laypa.micromamba
 git checkout main
+git rev-parse HEAD > version_info
 # git checkout dev
 cd ..
 
