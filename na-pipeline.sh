@@ -145,7 +145,7 @@ then
                                 --prod_img_list $file | tee -a $tmpdir/log.txt
 
                         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                                echo "Command has errored has errored, stopping program"
+                                echo "P2PaLA has errored, stopping program"
                                 exit 1
                         fi
 
@@ -167,7 +167,7 @@ then
                         --prev_model /src/models/baseline_detection-5_checkpoint.pth --work_dir $tmpdir --no-do_train --do_prod --no-do_val --prod_data $SRC --gpu -1 --num_workers 0 | tee -a $tmpdir/log.txt
 
                 if [[ $STOPONERROR && $? -ne 0 ]]; then
-                        echo "Command has errored has errored, stopping program"
+                        echo "P2PaLA has errored, stopping program"
                         exit 1
                 fi
         fi
@@ -181,7 +181,7 @@ then
 		-p2palaconfig /tmp/workdir_p2pala/config.json | tee -a $tmpdir/log.txt
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Command has errored has errored, stopping program"
+                echo "MinionExtractBaselines (P2PaLA) has errored, stopping program"
                 exit 1
         fi
 fi
@@ -208,7 +208,7 @@ then
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Command has errored has errored, stopping program"
+                echo "MinionExtractBaselinesStartEndNew3 (Loghi baselinedetection) has errored, stopping program"
                 exit 1
         fi
 fi
@@ -231,7 +231,7 @@ then
                 mkdir -p $output_dir
         fi
 
-        docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m -v $LAYPADIR:$LAYPADIR -v $input_dir:$input_dir -v $output_dir:$output_dir docker.laypa:latest \
+        docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m -v $LAYPADIR:$LAYPADIR -v $input_dir:$input_dir -v $output_dir:$output_dir docker.laypa:latest \
         python run.py \
         -c $LAYPAMODEL \
         -i $input_dir \
@@ -241,7 +241,7 @@ then
         # > /dev/null
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Command has errored has errored, stopping program"
+                echo "Laypa errored has errored, stopping program"
                 exit 1
         fi
 
@@ -254,7 +254,7 @@ then
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Command has errored has errored, stopping program"
+                echo "MinionExtractBaselines (Laypa) errored has errored, stopping program"
                 exit 1
         fi
 fi
@@ -282,7 +282,7 @@ then
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Command has errored has errored, stopping program"
+                echo "MinionCutFromImageBasedOnPageXMLNew has errored, stopping program"
                 exit 1
         fi
 
@@ -307,7 +307,7 @@ then
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Command has errored has errored, stopping program"
+                echo "Loghi-HTR has errored, stopping program"
                 exit 1
         fi
         # docker run --rm -m 32000m --gpus all --shm-size 10240m -ti -v $tmpdir:$tmpdir docker.htr python3 /src/src/main.py --do_inference --channels 4 --height $HTR_LOGHI_MODEL_HEIGHT --existing_model /src/$HTR_LOGHI_MODEL  --batch_size 32 --use_mask --inference_list $tmpdir/lines.txt --results_file $tmpdir/results.txt --charlist /src/$HTR_LOGHI_MODEL.charlist --gpu $GPU
@@ -319,7 +319,7 @@ then
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Command has errored has errored, stopping program"
+                echo "MinionLoghiHTRMergePageXML has errored, stopping program"
                 exit 1
         fi
 fi
@@ -339,7 +339,7 @@ then
         >$tmpdir/results.txt
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Command has errored has errored, stopping program"
+                echo "MinionCutFromImageBasedOnPageXMLNew has errored, stopping program"
                 exit 1
         fi
 
@@ -349,7 +349,7 @@ then
                         bash -c "pylaia-htr-decode-ctc syms.txt $dir.txt --common.model_filename model_h128 --config=decode_config.yaml --img_dirs=[$dir] >> $tmpdir/results.txt" | tee -a $tmpdir/log.txt
 
                 if [[ $STOPONERROR && $? -ne 0 ]]; then
-                        echo "Command has errored has errored, stopping program"
+                        echo "Pylaia has errored, stopping program"
                         exit 1
                 fi
         done;
@@ -358,7 +358,7 @@ then
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Command has errored has errored, stopping program"
+                echo "MinionPyLaiaMergePageXML has errored, stopping program"
                 exit 1
         fi
 fi
@@ -376,7 +376,7 @@ then
 			-threads $RECALCULATEREADINGORDERTHREADS | tee -a $tmpdir/log.txt
 
                 if [[ $STOPONERROR && $? -ne 0 ]]; then
-                        echo "Command has errored has errored, stopping program"
+                        echo "MinionRecalculateReadingOrderNew has errored, stopping program"
                         exit 1
                 fi
         else
@@ -386,7 +386,7 @@ then
 			-threads $RECALCULATEREADINGORDERTHREADS | tee -a $tmpdir/log.txt
 
                 if [[ $STOPONERROR && $? -ne 0 ]]; then
-                        echo "Command has errored has errored, stopping program"
+                        echo "MinionRecalculateReadingOrderNew has errored, stopping program"
                         exit 1
                 fi
         fi
@@ -399,7 +399,7 @@ then
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Command has errored has errored, stopping program"
+                echo "MinionDetectLanguageOfPageXml has errored, stopping program"
                 exit 1
         fi
 fi
@@ -412,7 +412,7 @@ then
                 -input_path $SRC/page/ | tee -a $tmpdir/log.txt
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Command has errored has errored, stopping program"
+                echo "MinionSplitPageXMLTextLineIntoWords has errored, stopping program"
                 exit 1
         fi
 fi
