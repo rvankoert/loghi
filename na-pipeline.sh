@@ -79,7 +79,7 @@ then
                 mkdir -p $output_dir
         fi
 
-        docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) --shm-size 8G -m 32000m -v $LAYPADIR:$LAYPADIR -v $input_dir:$input_dir -v $output_dir:$output_dir $DOCKERLAYPA \
+        docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m -v $LAYPADIR:$LAYPADIR -v $input_dir:$input_dir -v $output_dir:$output_dir docker.laypa:latest \
         python run.py \
         -c $LAYPAMODEL \
         -i $input_dir \
@@ -89,7 +89,7 @@ then
         # > /dev/null
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Command has errored has errored, stopping program"
+                echo "Laypa errored has errored, stopping program"
                 exit 1
         fi
 
@@ -102,7 +102,7 @@ then
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Command has errored has errored, stopping program"
+                echo "MinionExtractBaselines (Laypa) errored has errored, stopping program"
                 exit 1
         fi
 fi
@@ -125,7 +125,7 @@ then
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Command has errored has errored, stopping program"
+                echo "MinionCutFromImageBasedOnPageXMLNew has errored, stopping program"
                 exit 1
         fi
 
@@ -149,7 +149,7 @@ then
         --beam_width 10 " | tee -a $tmpdir/log.txt
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Command has errored has errored, stopping program"
+                echo "Loghi-HTR has errored, stopping program"
                 exit 1
         fi
         docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionLoghiHTRMergePageXML \
@@ -159,7 +159,7 @@ then
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Command has errored has errored, stopping program"
+                echo "MinionLoghiHTRMergePageXML has errored, stopping program"
                 exit 1
         fi
 fi
@@ -177,7 +177,7 @@ then
 			-threads $RECALCULATEREADINGORDERTHREADS | tee -a $tmpdir/log.txt
 
                 if [[ $STOPONERROR && $? -ne 0 ]]; then
-                        echo "Command has errored has errored, stopping program"
+                        echo "MinionRecalculateReadingOrderNew has errored, stopping program"
                         exit 1
                 fi
         else
@@ -187,7 +187,7 @@ then
 			-threads $RECALCULATEREADINGORDERTHREADS | tee -a $tmpdir/log.txt
 
                 if [[ $STOPONERROR && $? -ne 0 ]]; then
-                        echo "Command has errored has errored, stopping program"
+                        echo "MinionRecalculateReadingOrderNew has errored, stopping program"
                         exit 1
                 fi
         fi
@@ -200,7 +200,7 @@ then
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Command has errored has errored, stopping program"
+                echo "MinionDetectLanguageOfPageXml has errored, stopping program"
                 exit 1
         fi
 fi
@@ -213,7 +213,7 @@ then
                 -input_path $SRC/page/ | tee -a $tmpdir/log.txt
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Command has errored has errored, stopping program"
+                echo "MinionSplitPageXMLTextLineIntoWords has errored, stopping program"
                 exit 1
         fi
 fi
