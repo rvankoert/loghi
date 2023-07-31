@@ -26,8 +26,7 @@ RUN mamba env create -p /env -f environment.yml && \
     mamba clean -y --all
 
 # Removing the nsight-compute folder, hope it does nothing for runtime
-# RUN rm -r /env/nsight-compute
-# RUN rm -r /env/nsightee_plugins
+RUN rm -r /env/pkgs/cuda-toolkit/nsight*
 
 ENV PATH /env/bin:$PATH
 ENV CONDA_DEFAULT_ENV /env
