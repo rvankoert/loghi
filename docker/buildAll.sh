@@ -10,22 +10,22 @@ BASE="$(realpath $DIR_OF_SCRIPT/..)"
 # TODO Maybe this needs to also update the submodules (Rutger?)
 cd $BASE
 git pull
+git submodule update --recursive --remote
 
-
-cd $BASE/prima-core-libs
-git pull
-cd $BASE/loghi-tooling
-git pull
-cd $BASE/loghi-htr
-git pull
-cd $BASE/laypa
-git pull
+#cd $BASE/prima-core-libs
+#git pull
+#cd $BASE/loghi-tooling
+#git pull
+#cd $BASE/loghi-htr
+#git pull
+#cd $BASE/laypa
+#git pull
 
 cd $DIR_OF_SCRIPT
 
 echo "building docker.base"
 cd docker.base
-./buildImage.sh
+#./buildImage.sh
 cd ..
 echo "building docker.loghi-tooling"
 cd docker.loghi-tooling/

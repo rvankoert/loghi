@@ -1,5 +1,5 @@
 #!/bin/sh
-docker rmi docker.base
+#docker rmi docker.base
 
 echo "Building docker image..."
 docker build --no-cache . -t docker.base

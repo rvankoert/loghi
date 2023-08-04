@@ -16,7 +16,7 @@ git --git-dir=$SMT/.git log --format="%H" -n 1 > $htr_folder/src/version_info
 rm -rf ./$htr_folder/venv
 rm -rf ./$htr_folder/checkpoints
 rm -rf ./$htr_folder/__pycache__
-rm -rf ./$htr_folder/.git
+#	rm -rf ./$htr_folder/.git
 rm -rf ./$htr_folder/.idea
 rm -rf ./$htr_folder/src/output
 rm -rf ./$htr_folder/src/.idea
@@ -38,9 +38,7 @@ rm -rf ./$htr_folder/src/test15
 
 echo "Building docker image..."
 docker build --no-cache . -t loghi/docker.htr
-#docker build . -t docker.htr
-#docker build --squash --no-cache . -t loghi/docker.htr
 
 rm -rf ./$htr_folder
 #rm -rf ./$models_folder
-docker system prune -f
+#docker system prune -f

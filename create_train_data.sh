@@ -18,6 +18,7 @@ filelisttrain=$outputdir/training_all_train.txt
 filelistval=$outputdir/training_all_val.txt
 #90 percent for training
 trainsplit=90
+DOCKERLOGHITOOLING=loghi/docker.loghi-tooling
 INCLUDETEXTSTYLES=" -include_text_styles " # translate the text styles defined in transkribus to loghi htr training data with text styles
 SKIP_UNCLEAR=" -skip_unclear " # skip all lines that have a tag unclear
 
@@ -35,9 +36,9 @@ echo "inputfiles: " `find $inputdir|wc -l`
 
 #echo /home/rutger/src/opencvtest2/agenttesseract/target/appassembler/bin/MinionCutFromImageBasedOnPageXMLNew -input_path $inputdir -outputbase $outputdir -channels 4 -output_type png -write_text_contents -threads $numthreads
 #/home/rutger/src/opencvtest2/agenttesseract/target/appassembler/bin/MinionCutFromImageBasedOnPageXMLNew -input_path $inputdir -outputbase $outputdir -channels 4 -output_type png -write_text_contents -threads $numthreads
-echo docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $inputdir/:$inputdir/ -v $outputdir:$outputdir docker.loghi-tooling \
+echo docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $inputdir/:$inputdir/ -v $outputdir:$outputdir $DOCKERLOGHITOOLING \
   /src/loghi-tooling/minions/target/appassembler/bin/MinionCutFromImageBasedOnPageXMLNew -input_path $inputdir -outputbase $outputdir -channels 4 -output_type png -write_text_contents -threads $numthreads $INCLUDETEXTSTYLES
-docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $inputdir/:$inputdir/ -v $outputdir:$outputdir docker.loghi-tooling \
+docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $inputdir/:$inputdir/ -v $outputdir:$outputdir $DOCKERLOGHITOOLING \
   /src/loghi-tooling/minions/target/appassembler/bin/MinionCutFromImageBasedOnPageXMLNew -input_path $inputdir -outputbase $outputdir -channels 4 -output_type png -write_text_contents -threads $numthreads $INCLUDETEXTSTYLES -no_page_update $SKIP_UNCLEAR
 
 echo "outputfiles: " `find $outputdir|wc -l`
