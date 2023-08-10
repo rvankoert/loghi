@@ -79,7 +79,7 @@ then
                 mkdir -p $output_dir
         fi
 
-        docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m -v $LAYPADIR:$LAYPADIR -v $input_dir:$input_dir -v $output_dir:$output_dir docker.laypa:latest \
+        docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m -v $LAYPADIR:$LAYPADIR -v $input_dir:$input_dir -v $output_dir:$output_dir $DOCKERLAYPA \
         python run.py \
         -c $LAYPAMODEL \
         -i $input_dir \
