@@ -25,7 +25,7 @@ cd $DIR_OF_SCRIPT
 
 echo "building docker.base"
 cd docker.base
-#./buildImage.sh
+./buildImage.sh
 cd ..
 echo "building docker.loghi-tooling"
 cd docker.loghi-tooling/
