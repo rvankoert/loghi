@@ -23,7 +23,7 @@ WORKDIR /src/laypa
 # RUN conda update -y --all
 # RUN conda init bash
 RUN mamba env create -f environment.yml && \
-    mamba clean -y --all
+    mamba clean -y --all --force-pkgs-dirs
 
 # SHELL ["conda", "run", "-n", "laypa", "/bin/bash", "-c"]
 ENV PATH /opt/conda/envs/laypa/bin:$PATH

@@ -23,7 +23,7 @@ WORKDIR /src/laypa
 # RUN conda update -y --all
 # RUN conda init bash
 RUN mamba env create -p /env -f environment.yml && \
-    mamba clean -y --all
+    mamba clean -y --all --force-pkgs-dirs
 
 # Removing the nsight-compute folder, hope it does nothing for runtime
 RUN rm -r /env/pkgs/cuda-toolkit/nsight*
