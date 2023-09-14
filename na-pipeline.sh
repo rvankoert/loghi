@@ -1,6 +1,6 @@
 #!/bin/bash
-
 # Stop on error, if set to 1 will exit program if any of the docker commands fail
+set -e
 STOPONERROR=1
 
 # set to 1 if you want to enable, 0 otherwise, select just one
@@ -20,7 +20,7 @@ HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/republic-2023-01-02-base-generic
 #HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
 
 # set this to 1 for recalculating reading order, line clustering and cleaning.
-RECALCULATEREADINGORDER=0
+RECALCULATEREADINGORDER=1
 # if the edge of baseline is closer than x pixels...
 RECALCULATEREADINGORDERBORDERMARGIN=50
 # clean if 1
@@ -36,9 +36,9 @@ SPLITWORDS=1
 #used gpu ids, set to "-1" to use CPU, "0" for first, "1" for second, etc
 GPU=0
 
-DOCKERLOGHITOOLING=loghi/docker.loghi-tooling
-DOCKERLAYPA=loghi/docker.laypa
-DOCKERLOGHIHTR=loghi/docker.htr
+DOCKERLOGHITOOLING=loghi/docker.loghi-tooling:1.2.2
+DOCKERLAYPA=loghi/docker.laypa:1.2.2
+DOCKERLOGHIHTR=loghi/docker.htr:1.2.2
 
 # DO NO EDIT BELOW THIS LINE
 if [ -z $1 ]; then echo "please provide path to images to be HTR-ed" && exit 1; fi;
