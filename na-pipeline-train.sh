@@ -40,6 +40,32 @@ fi
 # LoghiHTR option
 if [[ $HTRLOGHI -eq 1 ]]; then
     echo "Starting Loghi HTR"
+    echo docker run --gpus all --rm  -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m -ti \
+        -v /tmp:/tmp \
+        -v $tmpdir:$tmpdir \
+        -v $listdir:$listdir \
+        -v $datadir:$datadir \
+        loghi/docker.htr python3 /src/loghi-htr/src/main.py \
+        --do_train \
+        --train_list $trainlist \
+        --do_validate \
+        --validation_list $validationlist \
+        --learning_rate $learning_rate \
+        --channels $channels \
+        --batch_size $batch_size \
+        --epochs $epochs \
+        --gpu $GPU \
+        --height $height \
+        --use_mask \
+        --seed 1 \
+        --beam_width 10 \
+        --model "$HTRNEWMODEL" \
+        --decay_steps 5000 \
+        --multiply $multiply \
+        --output $listdir \
+        --model_name $model_name \
+        --output_charlist $tmpdir/output_charlist.charlist \
+        --output $tmpdir/output
     docker run --gpus all --rm  -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m -ti \
         -v /tmp:/tmp \
         -v $tmpdir:$tmpdir \
