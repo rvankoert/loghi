@@ -1,17 +1,18 @@
 #!/bin/bash
-
+VERSION=1.2.3
 # Configuration for HTR mode selection
 HTRLOGHI=1
 
 # Model configuration
 HTRLOGHIMODELHEIGHT=64
-HTRBASEMODEL=/src/loghi-htr-models/model-new12-generic_synthetic
-USEBASEMODEL=0
+HTRBASEMODEL=PATH_TO_HTR_BASE_MODEL
+USEBASEMODEL=1
 
 # Define a VGSL model
 # This is equivalent to model10 in the model library
 HTRNEWMODEL="None,64,None,3 Cr3,3,24 Bn Mp2,2,2,2 Cr3,3,48 Bn Mp2,2,2,2 Cr3,3,96 Bn Cr3,3,96 Bn Mp2,2,2,2 Rc Bg256 Bg256 Bg256 Bg256 Bg256 O1s92"
-channels=3
+# set channels to 1 to process input as grayscale, 3 for color, 4 for color and mask
+channels=4
 
 GPU=0
 
@@ -24,6 +25,7 @@ charlist=PATH_TO_EXISTING_CHARLIST_FINETUNE
 epochs=1
 height=$HTRLOGHIMODELHEIGHT
 multiply=1
+# best not to go lower than 2 with batchsize
 batch_size=4
 model_name=myfirstmodel
 learning_rate=0.0003
@@ -33,19 +35,22 @@ tmpdir=$(mktemp -d)
 mkdir $tmpdir/output
 
 BASEMODEL=""
+BASEMODELDIR=""
 if [[ $USEBASEMODEL -eq 1 ]]; then
     BASEMODEL=" --existing_model "$HTRBASEMODEL
+    BASEMODELDIR="-v $(dirname "${HTRBASEMODEL}"):$(dirname "${HTRBASEMODEL}")"
+
 fi
 
 # LoghiHTR option
 if [[ $HTRLOGHI -eq 1 ]]; then
     echo "Starting Loghi HTR"
     echo docker run --gpus all --rm  -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m -ti \
-        -v /tmp:/tmp \
+	$BASEMODELDIR \
         -v $tmpdir:$tmpdir \
         -v $listdir:$listdir \
         -v $datadir:$datadir \
-        loghi/docker.htr python3 /src/loghi-htr/src/main.py \
+        loghi/docker.htr:$VERSION python3 /src/loghi-htr/src/main.py \
         --do_train \
         --train_list $trainlist \
         --do_validate \
@@ -58,20 +63,19 @@ if [[ $HTRLOGHI -eq 1 ]]; then
         --height $height \
         --use_mask \
         --seed 1 \
-        --beam_width 10 \
+        --beam_width 1 \
         --model "$HTRNEWMODEL" \
-        --decay_steps 5000 \
         --multiply $multiply \
         --output $listdir \
         --model_name $model_name \
         --output_charlist $tmpdir/output_charlist.charlist \
-        --output $tmpdir/output
+        --output $tmpdir/output $BASEMODEL
     docker run --gpus all --rm  -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m -ti \
-        -v /tmp:/tmp \
+	$BASEMODELDIR \
         -v $tmpdir:$tmpdir \
         -v $listdir:$listdir \
         -v $datadir:$datadir \
-        loghi/docker.htr python3 /src/loghi-htr/src/main.py \
+        loghi/docker.htr:$VERSION python3 /src/loghi-htr/src/main.py \
         --do_train \
         --train_list $trainlist \
         --do_validate \
@@ -84,14 +88,13 @@ if [[ $HTRLOGHI -eq 1 ]]; then
         --height $height \
         --use_mask \
         --seed 1 \
-        --beam_width 10 \
+        --beam_width 1 \
         --model "$HTRNEWMODEL" \
-        --decay_steps 5000 \
         --multiply $multiply \
         --output $listdir \
         --model_name $model_name \
         --output_charlist $tmpdir/output_charlist.charlist \
-        --output $tmpdir/output
+        --output $tmpdir/output $BASEMODEL
 fi
 
 echo "Results can be found at:"
