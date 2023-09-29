@@ -37,10 +37,10 @@ cd docker.htr
 ./buildImage.sh $BASE/loghi-htr
 cd ..
 # TODO Building for wsl not working, missing folder
-# echo "building docker.htr-wsl"
-# cd docker.htr-wsl
-# ./buildImage.sh
-# cd ..
+echo "building docker.htr-wsl"
+cd docker.htr-wsl
+./buildImage.sh
+cd ..
 echo "building docker.laypa"
 cd docker.laypa
 ./buildImage.sh $BASE/laypa
