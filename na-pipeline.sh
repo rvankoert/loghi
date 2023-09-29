@@ -1,5 +1,5 @@
 #!/bin/bash
-
+VERSION=1.2.3
 # Stop on error, if set to 1 will exit program if any of the docker commands fail
 STOPONERROR=1
 
@@ -36,9 +36,9 @@ SPLITWORDS=1
 #used gpu ids, set to "-1" to use CPU, "0" for first, "1" for second, etc
 GPU=0
 
-DOCKERLOGHITOOLING=loghi/docker.loghi-tooling
-DOCKERLAYPA=loghi/docker.laypa
-DOCKERLOGHIHTR=loghi/docker.htr
+DOCKERLOGHITOOLING=loghi/docker.loghi-tooling:$VERSION
+DOCKERLAYPA=loghi/docker.laypa:$VERSION
+DOCKERLOGHIHTR=loghi/docker.htr:$VERSION
 
 # DO NO EDIT BELOW THIS LINE
 if [ -z $1 ]; then echo "please provide path to images to be HTR-ed" && exit 1; fi;
