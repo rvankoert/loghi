@@ -6,7 +6,8 @@ HTRLOGHI=1
 # Model configuration
 HTRLOGHIMODELHEIGHT=64
 HTRBASEMODEL=PATH_TO_HTR_BASE_MODEL
-USEBASEMODEL=1
+#set to 1 to actually use basemodel, 0 to not use basemodel
+USEBASEMODEL=0
 
 # Define a VGSL model
 # This is equivalent to model10 in the model library
