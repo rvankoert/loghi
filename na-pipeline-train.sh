@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 VERSION=1.2.3
 # Configuration for HTR mode selection
 HTRLOGHI=1
@@ -33,9 +35,10 @@ learning_rate=0.0003
 
 # DO NOT EDIT BELOW THIS LINE
 tmpdir=$(mktemp -d)
-mkdir $tmpdir/output
 
 #PLACEHOLDER#
+
+mkdir -p $tmpdir/output
 
 BASEMODEL=""
 BASEMODELDIR=""
