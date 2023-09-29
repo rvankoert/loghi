@@ -35,6 +35,8 @@ learning_rate=0.0003
 tmpdir=$(mktemp -d)
 mkdir $tmpdir/output
 
+#PLACEHOLDER#
+
 BASEMODEL=""
 BASEMODELDIR=""
 if [[ $USEBASEMODEL -eq 1 ]]; then
