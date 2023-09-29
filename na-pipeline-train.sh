@@ -16,11 +16,11 @@ channels=3
 GPU=0
 
 # Dataset and training configuration
-listdir=/home/tim/Downloads/ijsberg-split/
-trainlist=$listdir/training_mini.txt
+listdir=PATH_TO_LISTDIR
+trainlist=$listdir/training_all_train.txt
 validationlist=$listdir/training_all_val.txt
 datadir=/scratch/republicprint
-charlist=/data/htr_train_notdeeds/output_charlist.charlist
+charlist=PATH_TO_EXISTING_CHARLIST_FINETUNE
 epochs=1
 height=$HTRLOGHIMODELHEIGHT
 multiply=1
