@@ -1,5 +1,6 @@
 #!/bin/bash
-
+set -e
+VERSION=1.2.3
 CURRENT=$(pwd)
 
 DIR_OF_SCRIPT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -36,11 +37,17 @@ cd docker.htr
 ./buildImage.sh $BASE/loghi-htr
 cd ..
 # TODO Building for wsl not working, missing folder
-# echo "building docker.htr-wsl"
-# cd docker.htr-wsl
-# ./buildImage.sh
-# cd ..
+echo "building docker.htr-wsl"
+cd docker.htr-wsl
+./buildImage.sh
+cd ..
 echo "building docker.laypa"
 cd docker.laypa
 ./buildImage.sh $BASE/laypa
 cd ..
+
+docker tag loghi/docker.loghi-tooling:latest loghi/docker.loghi-tooling:$VERSION
+docker tag loghi/docker.htr:latest loghi/docker.htr:$VERSION
+docker tag loghi/docker.htr-wsl:latest loghi/docker.htr-wsl:$VERSION
+docker tag loghi/docker.laypa:latest loghi/docker.laypa:$VERSION
+

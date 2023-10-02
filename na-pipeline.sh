@@ -1,4 +1,7 @@
 #!/bin/bash
+set -e
+
+VERSION=1.2.3
 # Stop on error, if set to 1 will exit program if any of the docker commands fail
 set -e
 STOPONERROR=1
@@ -7,17 +10,17 @@ STOPONERROR=1
 BASELINELAYPA=1
 
 #
-LAYPAMODEL=/home/rutger/src/laypa-models/general/baseline/config.yaml
-LAYPAMODELWEIGHTS=/home/rutger/src/laypa-models/general/baseline/model_best_mIoU.pth
+#LAYPAMODEL=/home/rutger/src/laypa-models/general/baseline/config.yaml
+#LAYPAMODELWEIGHTS=/home/rutger/src/laypa-models/general/baseline/model_best_mIoU.pth
 
-#LAYPAMODEL=INSERT_FULL_PATH_TO_YAML_HERE
-#LAYPAMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
+LAYPAMODEL=INSERT_FULL_PATH_TO_YAML_HERE
+LAYPAMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
 
 # set to 1 if you want to enable, 0 otherwise, select just one
 HTRLOGHI=1
 
-HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/republic-2023-01-02-base-generic_new14-2022-12-20-valcer-0.0062
-#HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
+#HTRLOGHIMODEL=/home/rutger/src/loghi-htr-models/republic-2023-01-02-base-generic_new14-2022-12-20-valcer-0.0062
+HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
 
 # set this to 1 for recalculating reading order, line clustering and cleaning.
 RECALCULATEREADINGORDER=1
@@ -32,13 +35,14 @@ RECALCULATEREADINGORDERTHREADS=4
 DETECTLANGUAGE=1
 #interpolate word locations
 SPLITWORDS=1
-
+#BEAMWIDTH: higher makes results slightly better at the expense of lot of computation time. In general don't set higher than 10
+BEAMWIDTH=1
 #used gpu ids, set to "-1" to use CPU, "0" for first, "1" for second, etc
 GPU=0
 
-DOCKERLOGHITOOLING=loghi/docker.loghi-tooling:1.2.2
-DOCKERLAYPA=loghi/docker.laypa:1.2.2
-DOCKERLOGHIHTR=loghi/docker.htr:1.2.2
+DOCKERLOGHITOOLING=loghi/docker.loghi-tooling:$VERSION
+DOCKERLAYPA=loghi/docker.laypa:$VERSION
+DOCKERLOGHIHTR=loghi/docker.htr:$VERSION
 
 # DO NO EDIT BELOW THIS LINE
 if [ -z $1 ]; then echo "please provide path to images to be HTR-ed" && exit 1; fi;
@@ -146,7 +150,7 @@ then
         --gpu $GPU \
         --output $tmpdir/output/ \
         --config_file_output $tmpdir/output/config.json \
-        --beam_width 10 " | tee -a $tmpdir/log.txt
+        --beam_width $BEAMWIDTH " | tee -a $tmpdir/log.txt
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
                 echo "Loghi-HTR has errored, stopping program"
