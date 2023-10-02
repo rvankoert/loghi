@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+
 VERSION=1.2.3
 CURRENT=$(pwd)
 
@@ -13,14 +14,18 @@ cd $BASE
 git pull
 git submodule update --recursive --remote
 
-#cd $BASE/prima-core-libs
-#git pull
-#cd $BASE/loghi-tooling
-#git pull
-#cd $BASE/loghi-htr
-#git pull
-#cd $BASE/laypa
-#git pull
+cd $BASE/prima-core-libs
+git switch master
+git pull
+cd $BASE/loghi-tooling
+git switch main
+git pull
+cd $BASE/loghi-htr
+git switch master
+git pull
+cd $BASE/laypa
+git switch main
+git pull
 
 cd $DIR_OF_SCRIPT
 
