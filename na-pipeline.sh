@@ -3,6 +3,7 @@ set -e
 
 VERSION=1.2.3
 # Stop on error, if set to 1 will exit program if any of the docker commands fail
+set -e
 STOPONERROR=1
 
 # set to 1 if you want to enable, 0 otherwise, select just one
@@ -22,7 +23,7 @@ HTRLOGHI=1
 HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
 
 # set this to 1 for recalculating reading order, line clustering and cleaning.
-RECALCULATEREADINGORDER=0
+RECALCULATEREADINGORDER=1
 # if the edge of baseline is closer than x pixels...
 RECALCULATEREADINGORDERBORDERMARGIN=50
 # clean if 1
