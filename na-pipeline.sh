@@ -43,6 +43,7 @@ GPU=0
 DOCKERLOGHITOOLING=loghi/docker.loghi-tooling:$VERSION
 DOCKERLAYPA=loghi/docker.laypa:$VERSION
 DOCKERLOGHIHTR=loghi/docker.htr:$VERSION
+USE2013NAMESPACE=" -use_2013_namespace "
 
 # DO NO EDIT BELOW THIS LINE
 if [ -z $1 ]; then echo "please provide path to images to be HTR-ed" && exit 1; fi;
@@ -102,7 +103,7 @@ then
         -input_path_page $output_dir/page/ \
         -output_path_page $output_dir/page/ \
         -as_single_region true \
-        -laypaconfig $LAYPAMODEL | tee -a $tmpdir/log.txt
+        -laypaconfig $LAYPAMODEL $USE2013NAMESPACE | tee -a $tmpdir/log.txt
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
@@ -125,7 +126,7 @@ then
        -outputbase $tmpdir/imagesnippets/ \
        -output_type png \
        -channels 4 \
-       -threads 4 | tee -a $tmpdir/log.txt
+       -threads 4 $USE2013NAMESPACE| tee -a $tmpdir/log.txt
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
@@ -159,7 +160,7 @@ then
         docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionLoghiHTRMergePageXML \
                 -input_path $SRC/page \
                 -results_file $tmpdir/results.txt \
-                -config_file $tmpdir/output/config.json | tee -a $tmpdir/log.txt
+                -config_file $tmpdir/output/config.json $USE2013NAMESPACE | tee -a $tmpdir/log.txt
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
@@ -178,7 +179,7 @@ then
                         -input_dir $SRC/page/ \
 			-border_margin $RECALCULATEREADINGORDERBORDERMARGIN \
 			-clean_borders \
-			-threads $RECALCULATEREADINGORDERTHREADS | tee -a $tmpdir/log.txt
+			-threads $RECALCULATEREADINGORDERTHREADS $USE2013NAMESPACE | tee -a $tmpdir/log.txt
 
                 if [[ $STOPONERROR && $? -ne 0 ]]; then
                         echo "MinionRecalculateReadingOrderNew has errored, stopping program"
@@ -188,7 +189,7 @@ then
                 docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionRecalculateReadingOrderNew \
                         -input_dir $SRC/page/ \
 			-border_margin $RECALCULATEREADINGORDERBORDERMARGIN \
-			-threads $RECALCULATEREADINGORDERTHREADS | tee -a $tmpdir/log.txt
+			-threads $RECALCULATEREADINGORDERTHREADS $USE2013NAMESPACE| tee -a $tmpdir/log.txt
 
                 if [[ $STOPONERROR && $? -ne 0 ]]; then
                         echo "MinionRecalculateReadingOrderNew has errored, stopping program"
@@ -200,7 +201,7 @@ if [[ $DETECTLANGUAGE -eq 1 ]]
 then
         echo "detecting language..."
         docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionDetectLanguageOfPageXml \
-                -page $SRC/page/ | tee -a $tmpdir/log.txt
+                -page $SRC/page/ $USE2013NAMESPACE | tee -a $tmpdir/log.txt
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
@@ -214,7 +215,7 @@ if [[ $SPLITWORDS -eq 1 ]]
 then
         echo "MinionSplitPageXMLTextLineIntoWords..."
         docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionSplitPageXMLTextLineIntoWords \
-                -input_path $SRC/page/ | tee -a $tmpdir/log.txt
+                -input_path $SRC/page/ $USE2013NAMESPACE | tee -a $tmpdir/log.txt
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
                 echo "MinionSplitPageXMLTextLineIntoWords has errored, stopping program"
