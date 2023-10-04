@@ -18,7 +18,7 @@ filelisttrain=$outputdir/training_all_train.txt
 filelistval=$outputdir/training_all_val.txt
 #90 percent for training
 trainsplit=90
-DOCKERLOGHITOOLING=loghi/docker.loghi-tooling:1.2.3
+DOCKERLOGHITOOLING=loghi/docker.loghi-tooling:1.2.4
 INCLUDETEXTSTYLES=" -include_text_styles " # translate the text styles defined in transkribus to loghi htr training data with text styles
 SKIP_UNCLEAR=" -skip_unclear " # skip all lines that have a tag unclear
 
