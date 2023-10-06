@@ -11,7 +11,7 @@ else
 fi;
 
 #directory containing images and pagexml. The pageXML must be one level deeper than the images in a directory called "page"
-mkdir -p $outputdir
+mkdir -p $2
 inputdir=$(realpath $1/)
 outputdir=$(realpath $2/)
 filelist=$outputdir/training_all.txt
