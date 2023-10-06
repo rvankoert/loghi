@@ -11,6 +11,7 @@ else
 fi;
 
 #directory containing images and pagexml. The pageXML must be one level deeper than the images in a directory called "page"
+mkdir -p $outputdir
 inputdir=$(realpath $1/)
 outputdir=$(realpath $2/)
 filelist=$outputdir/training_all.txt
@@ -30,7 +31,6 @@ echo $filelistval
 
 find $inputdir -name '*.done' -exec rm {} \;
 
-mkdir -p $outputdir
 echo "inputfiles: " `find $inputdir|wc -l`
 
 
