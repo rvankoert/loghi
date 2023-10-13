@@ -1,5 +1,5 @@
 #!/bin/bash
-
+VERSION=1.2.6
 if [ -z $1 ]; then echo "please provide path to images and pagexml to be converted. The pageXML must be one level deeper than the images in a directory called \"page\"" && exit 1; fi;
 if [ -z $2 ]; then echo "please provide output path" && exit 1; fi;
 if [ -z $3 ]; then
@@ -19,7 +19,7 @@ filelisttrain=$outputdir/training_all_train.txt
 filelistval=$outputdir/training_all_val.txt
 #90 percent for training
 trainsplit=90
-DOCKERLOGHITOOLING=loghi/docker.loghi-tooling:1.2.4
+DOCKERLOGHITOOLING=loghi/docker.loghi-tooling:$VERSION
 INCLUDETEXTSTYLES=" -include_text_styles " # translate the text styles defined in transkribus to loghi htr training data with text styles
 SKIP_UNCLEAR=" -skip_unclear " # skip all lines that have a tag unclear
 
