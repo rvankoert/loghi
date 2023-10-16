@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-VERSION=1.2.5
+VERSION=1.2.6
 # Stop on error, if set to 1 will exit program if any of the docker commands fail
 set -e
 STOPONERROR=1
