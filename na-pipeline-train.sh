@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-VERSION=1.2.8
+VERSION=1.2.9
 # Configuration for HTR mode selection
 HTRLOGHI=1
 
