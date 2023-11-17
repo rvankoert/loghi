@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-VERSION=1.2.10
+VERSION=1.3.2
 # Stop on error, if set to 1 will exit program if any of the docker commands fail
 set -e
 STOPONERROR=1
@@ -83,6 +83,13 @@ then
                 echo "Could not find output dir (${output_dir}), creating one at specified location"
                 mkdir -p $output_dir
         fi
+
+	echo docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m -v $LAYPADIR:$LAYPADIR -v $input_dir:$input_dir -v $output_dir:$output_dir $DOCKERLAYPA \
+        python run.py \
+        -c $LAYPAMODEL \
+        -i $input_dir \
+        -o $output_dir \
+        --opts MODEL.WEIGHTS "" TEST.WEIGHTS $LAYPAMODELWEIGHTS | tee -a $tmpdir/log.txt
 
         docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m -v $LAYPADIR:$LAYPADIR -v $input_dir:$input_dir -v $output_dir:$output_dir $DOCKERLAYPA \
         python run.py \
