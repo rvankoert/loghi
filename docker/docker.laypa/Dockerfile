@@ -6,9 +6,9 @@ RUN apt-get update -y && \
     apt-get dist-upgrade -y && \
     apt-get clean -y && \
     apt-get install -y \
-        apt-utils git \
-        ninja-build gcc g++ \
-        ffmpeg libsm6 libxext6 && \
+    apt-utils git \
+    ninja-build gcc g++ \
+    ffmpeg libsm6 libxext6 && \
     apt-get clean -y && \
     apt-get autoremove -y
 
@@ -33,7 +33,7 @@ ENV ENV_NAME=laypa
 # Fix cuda permissions with the docker
 # RUN chmod go+rx /opt/conda/envs/laypa/pkgs/cuda-toolkit/
 # Fix git permissions with the docker
-RUN git config --system --add safe.directory /src/laypa
+# RUN git config --system --add safe.directory /src/laypa
 
 ENTRYPOINT ["/_entrypoint.sh"]
 CMD ["/bin/bash"]
