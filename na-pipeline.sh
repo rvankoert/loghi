@@ -1,6 +1,7 @@
 #!/bin/bash
-VERSION=1.2.7
-set -e
+VERSION=1.3.4
+# set -e
+set -o pipefail
 
 # Stop on error, if set to 1 will exit program if any of the docker commands fail
 STOPONERROR=1
@@ -37,7 +38,7 @@ SPLITWORDS=1
 #BEAMWIDTH: higher makes results slightly better at the expense of lot of computation time. In general don't set higher than 10
 BEAMWIDTH=1
 #used gpu ids, set to "-1" to use CPU, "0" for first, "1" for second, etc
-GPU=0
+GPU=-1
 
 DOCKERLOGHITOOLING=loghi/docker.loghi-tooling:$VERSION
 DOCKERLAYPA=loghi/docker.laypa:$VERSION
