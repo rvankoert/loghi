@@ -108,8 +108,7 @@ then
         -input_path_png $output_dir/page/ \
         -input_path_page $output_dir/page/ \
         -output_path_page $output_dir/page/ \
-        -as_single_region true \
-        -laypaconfig $LAYPAMODEL $USE2013NAMESPACE | tee -a $tmpdir/log.txt
+        -as_single_region true $USE2013NAMESPACE | tee -a $tmpdir/log.txt
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
