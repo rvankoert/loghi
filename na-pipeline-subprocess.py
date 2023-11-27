@@ -55,7 +55,7 @@ def get_arguments() -> argparse.Namespace:
 
     io_args = parser.add_argument_group("IO")
     io_args.add_argument("-i", "--input", nargs="+", help="Input folder", type=str, action="extend", required=True)
-    io_args.add_argument("-o", "--output", help="Output folder", type=str, required=True)
+    io_args.add_argument("-o", "--output", help="Output folder", type=str)
 
     process_args = parser.add_argument_group("Process")
     process_args.add_argument("--docker_version", help="Version of docker release to use", default=docker_version, type=str)
@@ -99,6 +99,9 @@ def get_arguments() -> argparse.Namespace:
     loghi_tooling_args.add_argument(
         "--detect_language", help="Recalculate reading order threads", default=detect_language, type=str2bool
     )
+    loghi_tooling_args.add_argument(
+        "--split_words", help="Split text lines into words based on heuristics", default=split_words, type=str2bool
+    )
 
     gpu_args = parser.add_argument_group("GPU")
     gpu_args.add_argument("--gpu", help="GPU", default=gpu)
@@ -109,7 +112,13 @@ def get_arguments() -> argparse.Namespace:
 
 
 def execute_command(command):
-    return subprocess.run(command, shell=True, capture_output=True, text=True)
+    print(command)
+    with subprocess.Popen(
+        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1, universal_newlines=True
+    ) as p:
+        for line in p.stdout:
+            print(line, end="")
+        return p
 
 
 def main(args):
@@ -124,12 +133,20 @@ def main(args):
 
     tmp_dir_creator = tempfile.TemporaryDirectory()
     tmp_dir = Path(tmp_dir_creator.name)
+    tmp_dir = Path("/tmp/test_overwrite")
     print(f"Temporary dir {tmp_dir}")
 
     input_dir = Path(args.input[0])
-    output_dir = Path(args.output)
+    output_dir = Path(args.output) if args.output else input_dir
 
     user_command = "-u $(id -u ${USER}):$(id -g ${USER})"
+
+    remove_done_command = f"find {input_dir} {output_dir} -name '*.done' -exec rm -f \"{{}}\" \\;"
+    remove_done_output = execute_command(remove_done_command)
+
+    if args.stop_on_error and remove_done_output.returncode != 0:
+        print(f"Laypa has errored, stopping program: {remove_done_output.stderr}")
+        raise subprocess.CalledProcessError(remove_done_output.returncode, remove_done_command)
 
     if args.baseline_laypa:
         print("Starting Laypa baseline detection")
@@ -148,16 +165,17 @@ def main(args):
             f"-c {laypa_model_path} "
             f"-i {input_dir} "
             f"-o {output_dir} "
-            f"--opts MODEL.WEIGHTS {laypa_model_weights_path} "
-            f'TEST.WEIGHTS "" '
+            f'--opts MODEL.WEIGHTS "" '
+            f"TEST.WEIGHTS {laypa_model_weights_path} "
             # f"| tee -a \"{tmp_dir.joinpath('log.txt')}\" "
         )
 
-        print(laypa_command)
         laypa_output = execute_command(laypa_command)
+        # print(laypa_output.stdout)
 
         if args.stop_on_error and laypa_output.returncode != 0:
             print(f"Laypa has errored, stopping program: {laypa_output.stderr}")
+            raise subprocess.CalledProcessError(laypa_output.returncode, laypa_command)
 
         extract_baseline_command = (
             f"docker run --rm {user_command} -v {output_dir}:{output_dir} {docker_loghi_tooling} /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines "
@@ -168,21 +186,22 @@ def main(args):
             # f"| tee -a \"{tmp_dir.joinpath('log.txt')}\" "
         )
 
-        print(extract_baseline_command)
         extract_baseline_output = execute_command(extract_baseline_command)
+        # print(extract_baseline_output.stdout)
 
         if args.stop_on_error and extract_baseline_output.returncode != 0:
             print(f"MinionExtractBaselines has errored (Laypa), stopping program: {extract_baseline_output.stderr}")
+            raise subprocess.CalledProcessError(extract_baseline_output.returncode, extract_baseline_command)
 
     if args.htr_loghi:
         print("Starting Loghi HTR")
 
         cut_from_image_command = (
             f"docker run {user_command} --rm "
-            f"-v {input_dir}/:{input_dir} "
+            f"-v {output_dir}/:{output_dir} "
             f"-v {tmp_dir}:{tmp_dir} "
             f"{docker_loghi_tooling} /src/loghi-tooling/minions/target/appassembler/bin/MinionCutFromImageBasedOnPageXMLNew "
-            f"-input_path {input_dir} "
+            f"-input_path {output_dir} "
             f"-outputbase {tmp_dir.joinpath('imagesnippets')} "
             f"-output_type png "
             f"-channels 4 "
@@ -190,26 +209,39 @@ def main(args):
             # f"| tee -a \"{tmp_dir.joinpath('log.txt')}\" "
         )
 
-        print(cut_from_image_command)
         cut_from_image_output = execute_command(cut_from_image_command)
+        # print(cut_from_image_output.stdout)
 
         if args.stop_on_error and cut_from_image_output.returncode != 0:
             print(
                 f"MinionCutFromImageBasedOnPageXMLNew has errored (Loghi-HTR), stopping program: {cut_from_image_output.stderr}"
             )
+            raise subprocess.CalledProcessError(cut_from_image_output.returncode, cut_from_image_command)
 
         loghi_htr_model_path = Path(loghi_htr_model)
         loghi_htr_dir = loghi_htr_model_path.parent
 
+        list_images_command = (
+            f"find {tmp_dir.joinpath('imagesnippets')} -type f -name '*.png' > {tmp_dir.joinpath('lines.txt')}"
+        )
+
+        list_images_output = execute_command(list_images_command)
+        # print(list_images_command.stdout)
+
+        if args.stop_on_error and list_images_output.returncode != 0:
+            print(f"listing images has errored (Loghi-HTR), stopping program: {list_images_output.stderr}")
+            raise subprocess.CalledProcessError(cut_from_image_output.returncode, cut_from_image_command)
+
         loghi_htr_command = (
-            f"docker run $DOCKERGPUPARAMS {user_command} --rm -m 32000m --shm-size 10240m -ti -v {tmp_dir}:{tmp_dir} -v {loghi_htr_dir}:{loghi_htr_dir} {docker_loghi_htr} "
-            f"bash -c LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 python3 /src/loghi-htr/src/main.py "
+            f"docker run {docker_gpu_params} {user_command} --rm -m 32000m --shm-size 10240m -ti -v {tmp_dir}:{tmp_dir} -v {loghi_htr_dir}:{loghi_htr_dir} {docker_loghi_htr} "
+            # f"bash -c LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 "
+            f"python3 /src/loghi-htr/src/main.py "
             f"--do_inference "
             f"--existing_model {loghi_htr_model_path}  "
             f"--batch_size 64 "
             f"--use_mask "
             f"--inference_list {tmp_dir.joinpath('lines.txt')} "
-            f"--results_file{tmp_dir.joinpath('results.txt')} "
+            f"--results_file {tmp_dir.joinpath('results.txt')} "
             f"--charlist {loghi_htr_model_path.joinpath('charlist.txt')} "
             f"--gpu {args.gpu} "
             f"--output {tmp_dir.joinpath('output')} "
@@ -218,25 +250,27 @@ def main(args):
             # f"| tee -a \"{tmp_dir.joinpath('log.txt')}\" "
         )
 
-        print(loghi_htr_command)
         loghi_htr_output = execute_command(loghi_htr_command)
+        # print(loghi_htr_output.stdout)
 
         if args.stop_on_error and loghi_htr_output.returncode != 0:
             print(f"Loghi-HTR has errored, stopping program: {loghi_htr_output.stderr}")
+            raise subprocess.CalledProcessError(loghi_htr_output.returncode, loghi_htr_command)
 
         merge_page_command = (
             f"docker run {user_command} --rm -v{output_dir}:{output_dir} -v {tmp_dir}:{tmp_dir} {docker_loghi_tooling} /src/loghi-tooling/minions/target/appassembler/bin/MinionLoghiHTRMergePageXML "
             f"-input_path {output_dir.joinpath('page')} "
             f"-results_file {tmp_dir.joinpath('results.txt')} "
-            f"-config_file{tmp_dir.joinpath('output', 'config.json')} {use_2013_namespace} "
+            f"-config_file {tmp_dir.joinpath('output', 'config.json')} {use_2013_namespace} "
             # f"| tee -a \"{tmp_dir.joinpath('log.txt')}\" "
         )
 
-        print(merge_page_command)
         merge_page_output = execute_command(merge_page_command)
+        # print(merge_page_output.stdout)
 
         if args.stop_on_error and merge_page_output.returncode != 0:
             print(f"MinionLoghiHTRMergePageXML has errored (Loghi-HTR), stopping program: {merge_page_output.stderr}")
+            raise subprocess.CalledProcessError(merge_page_output.returncode, merge_page_command)
 
     if args.recalculate_reading_order:
         print("Recalculating reading order")
@@ -251,11 +285,12 @@ def main(args):
             # f"| tee -a \"{tmp_dir.joinpath('log.txt')}\" "
         )
 
-        print(recalculate_reading_order_command)
         recalculate_reading_order_output = execute_command(recalculate_reading_order_command)
+        # print(recalculate_reading_order_output.stdout)
 
         if args.stop_on_error and recalculate_reading_order_output.returncode != 0:
             print(f"MinionRecalculateReadingOrderNew has errored, stopping program: {recalculate_reading_order_output.stderr}")
+            raise subprocess.CalledProcessError(recalculate_reading_order_output.returncode, recalculate_reading_order_command)
 
     if args.detect_language:
         print("Detecting language")
@@ -265,24 +300,28 @@ def main(args):
             # f"| tee -a \"{tmp_dir.joinpath('log.txt')}\" "
         )
 
-        print(detect_language_command)
         detect_language_output = execute_command(detect_language_command)
+        # print(detect_language_output.stdout)
 
         if args.stop_on_error and detect_language_output.returncode != 0:
             print(f"MinionDetectLanguageOfPageXml has errored, stopping program: {detect_language_output.stderr}")
+            raise subprocess.CalledProcessError(detect_language_output.returncode, detect_language_command)
 
     if args.split_words:
+        print("Splitting words")
         split_words_command = (
             f"docker run {user_command} --rm -v {output_dir}/:{output_dir} {docker_loghi_tooling} /src/loghi-tooling/minions/target/appassembler/bin/MinionSplitPageXMLTextLineIntoWords "
             f"-input_path {output_dir.joinpath('page')} {use_2013_namespace} "
             # f"| tee -a \"{tmp_dir.joinpath('log.txt')}\" "
         )
 
-        print(split_words_command)
         split_words_output = execute_command(split_words_command)
+        # print(split_words_output.stdout)
 
+        # TODO Except Error is easier, probably
         if args.stop_on_error and split_words_output.returncode != 0:
             print(f"MinionSplitPageXMLTextLineIntoWords has errored, stopping program: {split_words_output.stderr}")
+            raise subprocess.CalledProcessError(split_words_output.returncode, split_words_command)
 
     tmp_dir_creator.cleanup()
 
