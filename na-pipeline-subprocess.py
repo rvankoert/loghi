@@ -174,6 +174,7 @@ def main(args):
         # print(laypa_output.stdout)
 
         if args.stop_on_error and laypa_output.returncode != 0:
+            # TODO stderr is currently None
             print(f"Laypa has errored, stopping program: {laypa_output.stderr}")
             raise subprocess.CalledProcessError(laypa_output.returncode, laypa_command)
 
