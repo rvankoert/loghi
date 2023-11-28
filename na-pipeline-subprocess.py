@@ -133,7 +133,6 @@ def main(args):
 
     tmp_dir_creator = tempfile.TemporaryDirectory()
     tmp_dir = Path(tmp_dir_creator.name)
-    tmp_dir = Path("/tmp/test_overwrite")
     print(f"Temporary dir {tmp_dir}")
 
     input_dir = Path(args.input[0])
@@ -160,8 +159,11 @@ def main(args):
             output_dir.mkdir(exist_ok=True, parents=True)
 
         laypa_command = (
-            f"docker run {docker_gpu_params} --rm -it {user_command} -m 32000m --shm-size 10240m -v {laypa_dir}:{laypa_dir} -v {input_dir}:{input_dir} -v {output_dir}:{output_dir} {docker_laypa} "
-            f"python run.py "
+            f"docker run {docker_gpu_params} --rm -it {user_command} -m 32000m --shm-size 10240m "
+            f"-v {laypa_dir}:{laypa_dir} "
+            f"-v {input_dir}:{input_dir} "
+            f"-v {output_dir}:{output_dir} "
+            f"{docker_laypa} python run.py "
             f"-c {laypa_model_path} "
             f"-i {input_dir} "
             f"-o {output_dir} "
@@ -179,7 +181,10 @@ def main(args):
             raise subprocess.CalledProcessError(laypa_output.returncode, laypa_command)
 
         extract_baseline_command = (
-            f"docker run --rm {user_command} -v {output_dir}:{output_dir} {docker_loghi_tooling} /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines "
+            f"docker run --rm {user_command} "
+            f"-v {input_dir}:{input_dir} "
+            f"-v {output_dir}:{output_dir} "
+            f"{docker_loghi_tooling} /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines "
             f"-input_path_png {output_dir.joinpath('page')} "
             f"-input_path_page {output_dir.joinpath('page')} "
             f"-output_path_page {output_dir.joinpath('page')} "
@@ -234,9 +239,11 @@ def main(args):
             raise subprocess.CalledProcessError(cut_from_image_output.returncode, cut_from_image_command)
 
         loghi_htr_command = (
-            f"docker run {docker_gpu_params} {user_command} --rm -m 32000m --shm-size 10240m -ti -v {tmp_dir}:{tmp_dir} -v {loghi_htr_dir}:{loghi_htr_dir} {docker_loghi_htr} "
+            f"docker run {docker_gpu_params} {user_command} --rm -m 32000m --shm-size 10240m -ti "
+            f"-v {tmp_dir}:{tmp_dir} "
+            f"-v {loghi_htr_dir}:{loghi_htr_dir} "
             # f"bash -c LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 "
-            f"python3 /src/loghi-htr/src/main.py "
+            f"{docker_loghi_htr} python3 /src/loghi-htr/src/main.py "
             f"--do_inference "
             f"--existing_model {loghi_htr_model_path}  "
             f"--batch_size 64 "
@@ -278,7 +285,9 @@ def main(args):
 
         clean_borders = "-clean_borders " if recalculate_reading_order_clean_borders else ""
         recalculate_reading_order_command = (
-            f"docker run {user_command} --rm -v {output_dir}:{output_dir} {docker_loghi_tooling} /src/loghi-tooling/minions/target/appassembler/bin/MinionRecalculateReadingOrderNew "
+            f"docker run {user_command} --rm "
+            f"-v {output_dir}:{output_dir} "
+            f"{docker_loghi_tooling} /src/loghi-tooling/minions/target/appassembler/bin/MinionRecalculateReadingOrderNew "
             f"-input_dir {output_dir.joinpath('page')} "
             f"-border_margin {args.recalculate_reading_order_border_margin} "
             f"{clean_borders}"
