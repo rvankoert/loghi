@@ -128,9 +128,6 @@ def main(args):
     use_2013_namespace = " -use_2013_namespace "
     docker_gpu_params = "" if gpu < 0 else f"--gpus device={gpu}"
 
-    laypa_model_path = Path(args.laypa_model)
-    laypa_model_weights_path = Path(args.laypa_model_weights)
-
     tmp_dir_creator = tempfile.TemporaryDirectory()
     tmp_dir = Path(tmp_dir_creator.name)
     print(f"Temporary dir {tmp_dir}")
@@ -140,15 +137,14 @@ def main(args):
 
     user_command = "-u $(id -u ${USER}):$(id -g ${USER})"
 
-    remove_done_command = f"find {input_dir} {output_dir} -name '*.done' -exec rm -f \"{{}}\" \\;"
-    remove_done_output = execute_command(remove_done_command)
-
-    if args.stop_on_error and remove_done_output.returncode != 0:
-        print(f"Laypa has errored, stopping program: {remove_done_output.stderr}")
-        raise subprocess.CalledProcessError(remove_done_output.returncode, remove_done_command)
+    for path in output_dir.glob("*.done"):
+        path.unlink(missing_ok=True)
 
     if args.baseline_laypa:
         print("Starting Laypa baseline detection")
+
+        laypa_model_path = Path(args.laypa_model)
+        laypa_model_weights_path = Path(args.laypa_model_weights)
 
         laypa_dir = laypa_model_path.parent
         if not input_dir.is_dir():
@@ -204,7 +200,8 @@ def main(args):
 
         cut_from_image_command = (
             f"docker run {user_command} --rm "
-            f"-v {output_dir}/:{output_dir} "
+            f"-v {input_dir}:{input_dir} "
+            f"-v {output_dir}:{output_dir} "
             f"-v {tmp_dir}:{tmp_dir} "
             f"{docker_loghi_tooling} /src/loghi-tooling/minions/target/appassembler/bin/MinionCutFromImageBasedOnPageXMLNew "
             f"-input_path {output_dir} "
@@ -224,19 +221,13 @@ def main(args):
             )
             raise subprocess.CalledProcessError(cut_from_image_output.returncode, cut_from_image_command)
 
-        loghi_htr_model_path = Path(loghi_htr_model)
+        loghi_htr_model_path = Path(args.loghi_htr_model)
         loghi_htr_dir = loghi_htr_model_path.parent
 
-        list_images_command = (
-            f"find {tmp_dir.joinpath('imagesnippets')} -type f -name '*.png' > {tmp_dir.joinpath('lines.txt')}"
-        )
-
-        list_images_output = execute_command(list_images_command)
-        # print(list_images_command.stdout)
-
-        if args.stop_on_error and list_images_output.returncode != 0:
-            print(f"listing images has errored (Loghi-HTR), stopping program: {list_images_output.stderr}")
-            raise subprocess.CalledProcessError(cut_from_image_output.returncode, cut_from_image_command)
+        with tmp_dir.joinpath("lines.txt").open(mode="w") as f:
+            for path in tmp_dir.joinpath("imagesnippets").glob("**/*.png"):
+                if path.is_file():
+                    f.write(f"{path}\n")
 
         loghi_htr_command = (
             f"docker run {docker_gpu_params} {user_command} --rm -m 32000m --shm-size 10240m -ti "
@@ -245,7 +236,7 @@ def main(args):
             # f"bash -c LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 "
             f"{docker_loghi_htr} python3 /src/loghi-htr/src/main.py "
             f"--do_inference "
-            f"--existing_model {loghi_htr_model_path}  "
+            f"--existing_model {loghi_htr_model_path} "
             f"--batch_size 64 "
             f"--use_mask "
             f"--inference_list {tmp_dir.joinpath('lines.txt')} "

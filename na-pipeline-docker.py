@@ -130,12 +130,8 @@ def main(args):
     use_2013_namespace = " -use_2013_namespace "
     docker_gpu_params = "" if gpu < 0 else f"--gpus device={gpu}"
 
-    laypa_model_path = Path(args.laypa_model)
-    laypa_model_weights_path = Path(args.laypa_model_weights)
-
     tmp_dir_creator = tempfile.TemporaryDirectory()
     tmp_dir = Path(tmp_dir_creator.name)
-    tmp_dir = Path("/tmp/test_overwrite")
     print(f"Temporary dir {tmp_dir}")
 
     input_dir = Path(args.input[0])
@@ -143,15 +139,14 @@ def main(args):
 
     user_command = "-u $(id -u ${USER}):$(id -g ${USER})"
 
-    remove_done_command = f"find {input_dir} {output_dir} -name '*.done' -exec rm -f \"{{}}\" \\;"
-    remove_done_output = execute_command(remove_done_command)
-
-    if args.stop_on_error and remove_done_output.returncode != 0:
-        print(f"Laypa has errored, stopping program: {remove_done_output.stderr}")
-        raise subprocess.CalledProcessError(remove_done_output.returncode, remove_done_command)
+    for path in output_dir.glob("*.done"):
+        path.unlink(missing_ok=True)
 
     if args.baseline_laypa:
         print("Starting Laypa baseline detection")
+
+        laypa_model_path = Path(args.laypa_model)
+        laypa_model_weights_path = Path(args.laypa_model_weights)
 
         laypa_dir = laypa_model_path.parent
         if not input_dir.is_dir():
@@ -162,8 +157,11 @@ def main(args):
             output_dir.mkdir(exist_ok=True, parents=True)
 
         laypa_command = (
-            f"docker run {docker_gpu_params} --rm -it {user_command} -m 32000m --shm-size 10240m -v {laypa_dir}:{laypa_dir} -v {input_dir}:{input_dir} -v {output_dir}:{output_dir} {docker_laypa} "
-            f"python run.py "
+            f"docker run {docker_gpu_params} --rm -it {user_command} -m 32000m --shm-size 10240m "
+            f"-v {laypa_dir}:{laypa_dir} "
+            f"-v {input_dir}:{input_dir} "
+            f"-v {output_dir}:{output_dir} "
+            f"{docker_laypa} python run.py "
             f"-c {laypa_model_path} "
             f"-i {input_dir} "
             f"-o {output_dir} "
@@ -176,11 +174,15 @@ def main(args):
         # print(laypa_output.stdout)
 
         if args.stop_on_error and laypa_output.returncode != 0:
+            # TODO stderr is currently None
             print(f"Laypa has errored, stopping program: {laypa_output.stderr}")
             raise subprocess.CalledProcessError(laypa_output.returncode, laypa_command)
 
         extract_baseline_command = (
-            f"docker run --rm {user_command} -v {output_dir}:{output_dir} {docker_loghi_tooling} /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines "
+            f"docker run --rm {user_command} "
+            f"-v {input_dir}:{input_dir} "
+            f"-v {output_dir}:{output_dir} "
+            f"{docker_loghi_tooling} /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines "
             f"-input_path_png {output_dir.joinpath('page')} "
             f"-input_path_page {output_dir.joinpath('page')} "
             f"-output_path_page {output_dir.joinpath('page')} "
@@ -200,7 +202,8 @@ def main(args):
 
         cut_from_image_command = (
             f"docker run {user_command} --rm "
-            f"-v {output_dir}/:{output_dir} "
+            f"-v {input_dir}:{input_dir} "
+            f"-v {output_dir}:{output_dir} "
             f"-v {tmp_dir}:{tmp_dir} "
             f"{docker_loghi_tooling} /src/loghi-tooling/minions/target/appassembler/bin/MinionCutFromImageBasedOnPageXMLNew "
             f"-input_path {output_dir} "
@@ -220,26 +223,22 @@ def main(args):
             )
             raise subprocess.CalledProcessError(cut_from_image_output.returncode, cut_from_image_command)
 
-        loghi_htr_model_path = Path(loghi_htr_model)
+        loghi_htr_model_path = Path(args.loghi_htr_model)
         loghi_htr_dir = loghi_htr_model_path.parent
 
-        list_images_command = (
-            f"find {tmp_dir.joinpath('imagesnippets')} -type f -name '*.png' > {tmp_dir.joinpath('lines.txt')}"
-        )
-
-        list_images_output = execute_command(list_images_command)
-        # print(list_images_command.stdout)
-
-        if args.stop_on_error and list_images_output.returncode != 0:
-            print(f"listing images has errored (Loghi-HTR), stopping program: {list_images_output.stderr}")
-            raise subprocess.CalledProcessError(cut_from_image_output.returncode, cut_from_image_command)
+        with tmp_dir.joinpath("lines.txt").open(mode="w") as f:
+            for path in tmp_dir.joinpath("imagesnippets").glob("**/*.png"):
+                if path.is_file():
+                    f.write(f"{path}\n")
 
         loghi_htr_command = (
-            f"docker run {docker_gpu_params} {user_command} --rm -m 32000m --shm-size 10240m -ti -v {tmp_dir}:{tmp_dir} -v {loghi_htr_dir}:{loghi_htr_dir} {docker_loghi_htr} "
+            f"docker run {docker_gpu_params} {user_command} --rm -m 32000m --shm-size 10240m -ti "
+            f"-v {tmp_dir}:{tmp_dir} "
+            f"-v {loghi_htr_dir}:{loghi_htr_dir} "
             # f"bash -c LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 "
-            f"python3 /src/loghi-htr/src/main.py "
+            f"{docker_loghi_htr} python3 /src/loghi-htr/src/main.py "
             f"--do_inference "
-            f"--existing_model {loghi_htr_model_path}  "
+            f"--existing_model {loghi_htr_model_path} "
             f"--batch_size 64 "
             f"--use_mask "
             f"--inference_list {tmp_dir.joinpath('lines.txt')} "
@@ -279,7 +278,9 @@ def main(args):
 
         clean_borders = "-clean_borders " if recalculate_reading_order_clean_borders else ""
         recalculate_reading_order_command = (
-            f"docker run {user_command} --rm -v {output_dir}:{output_dir} {docker_loghi_tooling} /src/loghi-tooling/minions/target/appassembler/bin/MinionRecalculateReadingOrderNew "
+            f"docker run {user_command} --rm "
+            f"-v {output_dir}:{output_dir} "
+            f"{docker_loghi_tooling} /src/loghi-tooling/minions/target/appassembler/bin/MinionRecalculateReadingOrderNew "
             f"-input_dir {output_dir.joinpath('page')} "
             f"-border_margin {args.recalculate_reading_order_border_margin} "
             f"{clean_borders}"
