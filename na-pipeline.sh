@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=1.3.4
+VERSION=1.3.5
 set -e
 
 # Stop on error, if set to 1 will exit program if any of the docker commands fail
@@ -162,10 +162,10 @@ then
                 echo "Loghi-HTR has errored, stopping program"
                 exit 1
         fi
-        docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionLoghiHTRMergePageXML \
+        docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $LOGHIDIR:$LOGHIDIR -v $SRC/:$SRC/ -v $tmpdir:$tmpdir $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionLoghiHTRMergePageXML \
                 -input_path $SRC/page \
                 -results_file $tmpdir/results.txt \
-                -config_file $tmpdir/output/config.json $USE2013NAMESPACE | tee -a $tmpdir/log.txt
+                -config_file $HTRLOGHIMODEL/config.json -htr_code_config_file $tmpdir/output/config.json $USE2013NAMESPACE | tee -a $tmpdir/log.txt
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
