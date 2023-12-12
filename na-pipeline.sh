@@ -55,7 +55,7 @@ if [[ $GPU -gt -1 ]]; then
         echo "using GPU ${GPU}"
 fi
 
-SRC=$1
+SRC=`realpath $1`
 
 mkdir $tmpdir/imagesnippets/
 mkdir $tmpdir/linedetection
