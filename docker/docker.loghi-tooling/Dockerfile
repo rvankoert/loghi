@@ -20,8 +20,14 @@ WORKDIR /src/prima-core-libs/java
 #USER builder
   RUN apt-get update && apt-get --no-install-recommends install -y openjdk-11-jre maven postgresql-client libdc1394-22 libavcodec58 libavformat58 libswscale5 libtbb2 \
   && mvn deploy:deploy-file -Durl=file:///home/$USER/repo -Dfile=/usr/local/share/java/opencv4/opencv-480.jar -DgroupId=org.opencv -DartifactId=opencv -Dpackaging=jar -Dversion=4.8.0 \
+  && mvn clean package
+RUN cd /src \
+  && git clone https://github.com/rvankoert/langident.git \
+  && cd langident \
   && mvn clean package \
-  && cd /src/loghi-tooling \
+  && mvn deploy:deploy-file -Durl=file:///home/$USER/repo -Dfile=target/langident-1.0.5-SNAPSHOT.jar -DgroupId=nl.knaw.huygens.pergamon.nlp -DartifactId=langident -Dpackaging=jar -Dversion=1.0.5
+
+RUN cd /src/loghi-tooling \
   && mvn clean package \
   && find . -name src | xargs rm -rf \
   && find . -name test-classes | xargs rm -rf \

@@ -23,7 +23,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
   && rm -rf /src \
   && rm -rf /usr/local/share/opencv4/samples \
   && rm -rf rm -rf /var/lib/apt \
-  && apt-get remove -y libjna-jni git make libtool m4 automake g++ gawk autoconf-archive libleptonica-dev \
+  && apt-get remove -y libjna-jni make libtool m4 automake g++ gawk autoconf-archive libleptonica-dev \
   leptonica-progs pkg-config git libjpeg8-dev libavcodec-dev libavformat-dev \
   libswscale-dev libv4l-dev qt5-default libgtk2.0-dev libtbb-dev libatlas-base-dev libfaac-dev libmp3lame-dev libtheora-dev \
   libvorbis-dev libxvidcore-dev libopencore-amrnb-dev libopencore-amrwb-dev x264 v4l-utils \
