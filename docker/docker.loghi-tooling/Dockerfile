@@ -18,7 +18,7 @@ COPY prima-core-libs /src/prima-core-libs
 
 WORKDIR /src/prima-core-libs/java
 #USER builder
-  RUN apt-get update && apt-get --no-install-recommends install -y openjdk-11-jre maven postgresql-client libdc1394-22 libavcodec58 libavformat58 libswscale5 libtbb2 \
+  RUN apt-get update && apt-get --no-install-recommends install -y openjdk-11-jre maven postgresql-client libdc1394-22 libavcodec58 libavformat58 libswscale5 libtbb2 git \
   && mvn deploy:deploy-file -Durl=file:///home/$USER/repo -Dfile=/usr/local/share/java/opencv4/opencv-480.jar -DgroupId=org.opencv -DartifactId=opencv -Dpackaging=jar -Dversion=4.8.0 \
   && mvn clean package
 RUN cd /src \
