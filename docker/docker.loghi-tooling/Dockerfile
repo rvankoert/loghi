@@ -28,7 +28,7 @@ RUN cd /src \
   && mvn deploy:deploy-file -Durl=file:///$HOME/repo -Dfile=target/langident-1.0.5-SNAPSHOT.jar -DgroupId=nl.knaw.huygens.pergamon.nlp -DartifactId=langident -Dpackaging=jar -Dversion=1.0.5
 
 RUN cd /src/loghi-tooling \
-  && mvn clean package \
+  && mvn clean org.owasp:dependency-check-maven:check package \
   && find . -name src | xargs rm -rf \
   && find . -name test-classes | xargs rm -rf \
   && rm -rf /src/loghi-tooling/layoutanalyzer/target \
