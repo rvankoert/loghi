@@ -18,14 +18,14 @@ COPY prima-core-libs /src/prima-core-libs
 
 WORKDIR /src/prima-core-libs/java
 #USER builder
-  RUN apt-get update && apt-get --no-install-recommends install -y openjdk-11-jre maven postgresql-client libdc1394-22 libavcodec58 libavformat58 libswscale5 libtbb2 \
-  && mvn deploy:deploy-file -Durl=file:///home/$USER/repo -Dfile=/usr/local/share/java/opencv4/opencv-480.jar -DgroupId=org.opencv -DartifactId=opencv -Dpackaging=jar -Dversion=4.8.0 \
+RUN apt-get update && apt-get --no-install-recommends install -y openjdk-11-jre maven postgresql-client libdc1394-22 libavcodec58 libavformat58 libswscale5 libtbb2 git \
+  && mvn deploy:deploy-file -Durl=file:///$HOME/repo -Dfile=/usr/local/share/java/opencv4/opencv-480.jar -DgroupId=org.opencv -DartifactId=opencv -Dpackaging=jar -Dversion=4.8.0 \
   && mvn clean package
 RUN cd /src \
   && git clone https://github.com/rvankoert/langident.git \
   && cd langident \
   && mvn clean package \
-  && mvn deploy:deploy-file -Durl=file:///home/$USER/repo -Dfile=target/langident-1.0.5-SNAPSHOT.jar -DgroupId=nl.knaw.huygens.pergamon.nlp -DartifactId=langident -Dpackaging=jar -Dversion=1.0.5
+  && mvn deploy:deploy-file -Durl=file:///$HOME/repo -Dfile=target/langident-1.0.5-SNAPSHOT.jar -DgroupId=nl.knaw.huygens.pergamon.nlp -DartifactId=langident -Dpackaging=jar -Dversion=1.0.5
 
 RUN cd /src/loghi-tooling \
   && mvn clean package \
@@ -43,15 +43,15 @@ RUN cd /src/loghi-tooling \
 #RUN mcli alias set myminio/ http://MINIO-SERVER MYUSER MYPASSWORD
 
 
-FROM docker.base
-RUN useradd -u 1000 rutger
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends openjdk-11-jre libtbb2 \ 
-  && apt autoremove -y
-
-COPY --from=0 /src/loghi-tooling /src/loghi-tooling
-
-USER root
+#FROM docker.base
+#RUN useradd -u 1000 rutger
+#RUN apt-get update \
+#  && apt-get install -y --no-install-recommends openjdk-11-jre libtbb2 \
+#  && apt autoremove -y
+#
+#COPY --from=0 /src/loghi-tooling /src/loghi-tooling
+#
+#USER root
 
 #USER rutger
 #  && apt remove -y git autotools-dev dpkg-dev icu-devtools libaec-dev libavutil-dev libblkid-dev libc-dev-bin libc6-dev libcrypt-dev libdatrie-dev \
