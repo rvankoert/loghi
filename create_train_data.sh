@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=1.3.9
+VERSION=1.3.10
 
 if [ -z $1 ]; then echo "please provide path to images and pagexml to be converted. The pageXML must be one level deeper than the images in a directory called \"page\"" && exit 1; fi;
 if [ -z $2 ]; then echo "please provide output path" && exit 1; fi;
