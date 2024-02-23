@@ -108,9 +108,9 @@ then
                 exit 1
         fi
 
-        as_single_region=true
+        as_single_region="-as_single_region"
 
-        if [[ $REGIONLAYPA -eq 1]] 
+        if [[ $REGIONLAYPA -eq 1 ]]
         then
                 echo "starting Laypa region detection"
                 
@@ -138,14 +138,14 @@ then
                         exit 1
                 fi
 
-                as_single_region=false
+                as_single_region=""
         fi
 
         docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) -v $output_dir:$output_dir $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines \
         -input_path_png $output_dir/page/ \
         -input_path_page $output_dir/page/ \
         -output_path_page $output_dir/page/ \
-        -as_single_region $as_single_region $USE2013NAMESPACE | tee -a $tmpdir/log.txt
+        $as_single_region $USE2013NAMESPACE | tee -a $tmpdir/log.txt
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
