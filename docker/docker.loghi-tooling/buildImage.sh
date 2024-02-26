@@ -1,5 +1,9 @@
 #!/bin/bash
 
+cp -r $HOME/.m2/repository/org/owasp/dependency-check-data ./
+
+set -e
+
 if [ -z $1 ]; then echo "first parameter should be the path of prima-core-libs" && exit 1; fi;
 if [ -z $2 ]; then echo "second parameter should be the path of loghi-tooling" && exit 1; fi;
 
@@ -31,5 +35,6 @@ docker build --no-cache . -t loghi/docker.loghi-tooling
 echo "cleaning up!"
 rm -rf prima-core-libs
 rm -rf loghi-tooling
+rm -rf dependency-check-data
 
 docker system prune -f
