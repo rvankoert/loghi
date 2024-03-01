@@ -56,8 +56,8 @@ nano na-pipeline.sh
 ```
 Look for the following lines:
 ```
-LAYPAMODEL=INSERT_FULL_PATH_TO_YAML_HERE
-LAYPAMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
+LAYPABASELINEMODEL=INSERT_FULL_PATH_TO_YAML_HERE
+LAYPABASELINEMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
 HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
 ```
 and update those paths with the location of the files you just downloaded. If you downloaded a zip: you should unzip it first.
