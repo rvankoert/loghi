@@ -44,10 +44,10 @@ export LOGHI_GPUS="-1"
 # Start the API server in docker
 container_id=$(docker run -u $(id -u ${USER}):$(id -g ${USER}) -v $LOGHI_MODEL_PATH:$LOGHI_MODEL_PATH -v $TEMP_OUTPUT_DIR:$TEMP_OUTPUT_DIR -e LOGHI_MODEL_PATH=$LOGHI_MODEL_PATH -e LOGHI_CHARLIST_PATH="$LOGHI_MODEL_PATH/charlist.txt" -e LOGHI_MODEL_CHANNELS=1 -e LOGHI_BATCH_SIZE=300 -e LOGHI_OUTPUT_PATH="$TEMP_OUTPUT_DIR" -e LOGHI_MAX_QUEUE_SIZE=50000 -e LOGGING_LEVEL="DEBUG" -e LOGHI_GPUS="-1" -e GUNICORN_RUN_HOST='0.0.0.0:5000' -e GUNICORN_WORKERS=1 -e GUNICORN_THREADS=1 -e GUNICORN_ACCESSLOG='-' --name htr-api-test -p 5000:5000 -d loghi/docker.htr python3 /src/loghi-htr/src/api/gunicorn_app.py)
 
-
+echo "containerid: "$container_id
 # Assuming the server takes a few seconds to start up, we sleep for a while
 while [ $(curl -w "%{http_code}" -s -o /dev/null localhost:5000/) == "000" ]; do
-  echo echo waiting for webservice to start
+  echo waiting for webservice to start
   sleep 5s
 done
 
