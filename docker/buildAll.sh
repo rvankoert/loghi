@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=1.3.11
+VERSION=1.3.12
 set -e
 
 CURRENT=$(pwd)
