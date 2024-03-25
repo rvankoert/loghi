@@ -1,7 +1,7 @@
 #!/bin/bash
+VERSION=1.3.12
 set -e
 
-VERSION=1.2.6
 CURRENT=$(pwd)
 
 DIR_OF_SCRIPT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"

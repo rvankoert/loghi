@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 if [ -z $1 ]; then echo "first parameter should be the path of src of htr" && exit 1; fi;
 SMT="$(realpath $1)"

@@ -32,4 +32,12 @@ RUN cd /src \
   && rm -rf /src/CTCWordBeamSearch /root
 #RUN rm -rf /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1 /usr/lib/x86_64-linux-gnu/libcuda.so.1
 
+RUN rm -rf \
+    /usr/lib/x86_64-linux-gnu/libcuda.so* \
+    /usr/lib/x86_64-linux-gnu/libnvcuvid.so* \
+    /usr/lib/x86_64-linux-gnu/libnvidia-*.so* \
+    /usr/lib/x86_64-linux-gnu/libcudadebugger.so* \
+    /usr/lib/firmware \
+    /usr/local/cuda/compat/lib
+
 WORKDIR /src/loghi-htr/src

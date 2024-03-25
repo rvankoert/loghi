@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=1.2.7
+VERSION=1.3.12
 set -e
 
 # Stop on error, if set to 1 will exit program if any of the docker commands fail
@@ -7,13 +7,18 @@ STOPONERROR=1
 
 # set to 1 if you want to enable, 0 otherwise, select just one
 BASELINELAYPA=1
+REGIONLAYPA=0
 
 #
 #LAYPAMODEL=/home/rutger/src/laypa-models/general/baseline/config.yaml
 #LAYPAMODELWEIGHTS=/home/rutger/src/laypa-models/general/baseline/model_best_mIoU.pth
 
-LAYPAMODEL=INSERT_FULL_PATH_TO_YAML_HERE
-LAYPAMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
+LAYPABASELINEMODEL=INSERT_FULL_PATH_TO_YAML_HERE
+LAYPABASELINEMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
+
+# Not required if REGIONLAYPA is 0
+LAYPAREGIONMODEL=INSERT_FULL_PATH_TO_YAML_HERE
+LAYPAREGIONMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
 
 # set to 1 if you want to enable, 0 otherwise, select just one
 HTRLOGHI=1
@@ -22,6 +27,7 @@ HTRLOGHI=1
 HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
 
 # set this to 1 for recalculating reading order, line clustering and cleaning.
+# WARNING this will remove regions found by Laypa
 RECALCULATEREADINGORDER=1
 # if the edge of baseline is closer than x pixels...
 RECALCULATEREADINGORDERBORDERMARGIN=50
@@ -55,7 +61,7 @@ if [[ $GPU -gt -1 ]]; then
         echo "using GPU ${GPU}"
 fi
 
-SRC=$1
+SRC=`realpath $1`
 
 mkdir $tmpdir/imagesnippets/
 mkdir $tmpdir/linedetection
@@ -71,7 +77,7 @@ then
 
         input_dir=$SRC
         output_dir=$SRC
-        LAYPADIR="$(dirname "${LAYPAMODEL}")"
+        LAYPADIR="$(dirname "${LAYPABASELINEMODEL}")"
 
         if [[ ! -d $input_dir ]]; then
                 echo "Specified input dir (${input_dir}) does not exist, stopping program"
@@ -83,25 +89,65 @@ then
                 mkdir -p $output_dir
         fi
 
-        docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m -v $LAYPADIR:$LAYPADIR -v $input_dir:$input_dir -v $output_dir:$output_dir $DOCKERLAYPA \
+	echo docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m -v $LAYPADIR:$LAYPADIR -v $input_dir:$input_dir -v $output_dir:$output_dir $DOCKERLAYPA \
         python run.py \
-        -c $LAYPAMODEL \
+        -c $LAYPABASELINEMODEL \
         -i $input_dir \
         -o $output_dir \
-        --opts MODEL.WEIGHTS "" TEST.WEIGHTS $LAYPAMODELWEIGHTS | tee -a $tmpdir/log.txt
+        --opts MODEL.WEIGHTS "" TEST.WEIGHTS $LAYPABASELINEMODELWEIGHTS | tee -a $tmpdir/log.txt
+
+        docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m -v $LAYPADIR:$LAYPADIR -v $input_dir:$input_dir -v $output_dir:$output_dir $DOCKERLAYPA \
+        python run.py \
+        -c $LAYPABASELINEMODEL \
+        -i $input_dir \
+        -o $output_dir \
+        --opts MODEL.WEIGHTS "" TEST.WEIGHTS $LAYPABASELINEMODELWEIGHTS | tee -a $tmpdir/log.txt
 
         # > /dev/null
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
-                echo "Laypa errored has errored, stopping program"
+                echo "Laypa baseline has errored, stopping program"
                 exit 1
+        fi
+
+        as_single_region="-as_single_region"
+
+        if [[ $REGIONLAYPA -eq 1 ]]
+        then
+                echo "starting Laypa region detection"
+                
+
+                LAYPADIR="$(dirname "${LAYPAREGIONMODEL}")"
+
+                echo docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m -v $LAYPADIR:$LAYPADIR -v $input_dir:$input_dir -v $output_dir:$output_dir $DOCKERLAYPA \
+                python run.py \
+                -c $LAYPAREGIONMODEL \
+                -i $input_dir \
+                -o $output_dir \
+                --opts MODEL.WEIGHTS "" TEST.WEIGHTS $LAYPAREGIONMODELWEIGHTS | tee -a $tmpdir/log.txt
+
+                docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m -v $LAYPADIR:$LAYPADIR -v $input_dir:$input_dir -v $output_dir:$output_dir $DOCKERLAYPA \
+                python run.py \
+                -c $LAYPAREGIONMODEL \
+                -i $input_dir \
+                -o $output_dir \
+                --opts MODEL.WEIGHTS "" TEST.WEIGHTS $LAYPAREGIONMODELWEIGHTS | tee -a $tmpdir/log.txt
+
+                # > /dev/null
+
+                if [[ $STOPONERROR && $? -ne 0 ]]; then
+                        echo "Laypa region has errored, stopping program"
+                        exit 1
+                fi
+
+                as_single_region=""
         fi
 
         docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) -v $output_dir:$output_dir $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines \
         -input_path_png $output_dir/page/ \
         -input_path_page $output_dir/page/ \
         -output_path_page $output_dir/page/ \
-        -as_single_region true $USE2013NAMESPACE | tee -a $tmpdir/log.txt
+        $as_single_region $USE2013NAMESPACE | tee -a $tmpdir/log.txt
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then
@@ -155,10 +201,10 @@ then
                 echo "Loghi-HTR has errored, stopping program"
                 exit 1
         fi
-        docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $SRC/:$SRC/ -v $tmpdir:$tmpdir $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionLoghiHTRMergePageXML \
+        docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v $LOGHIDIR:$LOGHIDIR -v $SRC/:$SRC/ -v $tmpdir:$tmpdir $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionLoghiHTRMergePageXML \
                 -input_path $SRC/page \
                 -results_file $tmpdir/results.txt \
-                -config_file $tmpdir/output/config.json $USE2013NAMESPACE | tee -a $tmpdir/log.txt
+                -config_file $HTRLOGHIMODEL/config.json -htr_code_config_file $tmpdir/output/config.json $USE2013NAMESPACE | tee -a $tmpdir/log.txt
 
 
         if [[ $STOPONERROR && $? -ne 0 ]]; then

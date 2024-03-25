@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=1.2.7
+VERSION=1.3.12
 set -e
 
 # Configuration for HTR mode selection

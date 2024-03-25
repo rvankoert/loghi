@@ -1,7 +1,9 @@
 #!/bin/bash
 #mkdir -p /tmp/upload
+set -e
 tmp_dir=$(mktemp -d)
 container_id=$(docker run -u $(id -u ${USER}):$(id -g ${USER}) -v $tmp_dir:/tmp/upload --name tooling_integrationtest -d -p 8080:8080 -p 8081:8081 loghi/docker.loghi-tooling /src/loghi-tooling/loghiwebservice/target/appassembler/bin/LoghiWebserviceApplication server /src/loghi-tooling/loghiwebservice/target/classes/configuration.yml)
+echo $container_id
 
 while [ "$( docker container inspect -f '{{.State.Status}}' tooling_integrationtest )" != "running" ]; do
 	echo waiting for the docker to start
