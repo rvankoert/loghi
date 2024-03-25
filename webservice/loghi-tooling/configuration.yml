@@ -32,6 +32,10 @@ detectLanguageOfPageXmlResourceExecutorService:
   name: DetectLanguageOfPageXml
   queueLength: ${DETECT_LANGUAGE_OF_PAGE_XML_QUEUE_LENGTH:- 50}
 
+securityConfig:
+  enabled: ${ENABLE_SECURITY:- false}
+  securityJsonString: ${SECURITY_JSON_STRING}
+
 server:
   applicationConnectors:
     - type: http
