@@ -1,9 +1,7 @@
-FONTSDIR=/home/rutger/Downloads/toLaptop/fonts/usable/
-TEXTDIR=/media/rutger/HDI0002/toLaptop/text/
+FONTSDIR="/path/to/fonts/"
+TEXTDIR="/path/to/text/"
 OUTPUTDIR=/tmp/synthetic
 MAXFILES=10
-
-#mkdir -p $OUTPUTDIR/page
 
 docker run -ti \
  -v $FONTSDIR:$FONTSDIR \

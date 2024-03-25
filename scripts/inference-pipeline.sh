@@ -1,0 +1,273 @@
+#!/bin/bash
+VERSION=2.0.0
+set -e
+
+# User-configurable parameters
+# Stop on error, if set to 1 will exit program if any of the docker commands fail
+STOPONERROR=1
+
+# set to 1 if you want to enable, 0 otherwise, select just one
+BASELINELAYPA=1
+REGIONLAYPA=0
+
+# Set the path to the yaml file and the pth file for the Laypa model
+LAYPABASELINEMODEL=/home/tim/Documents/laypa-models/NA-LA-CABR-M0003-Turbo/config.yaml
+LAYPABASELINEMODELWEIGHTS=/home/tim/Documents/laypa-models/NA-LA-CABR-M0003-Turbo/model_best_mIoU.pth
+
+# Not required if REGIONLAYPA is 0
+LAYPAREGIONMODEL=INSERT_FULL_PATH_TO_YAML_HERE
+LAYPAREGIONMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
+
+# Set to 1 if you want to enable, 0 otherwise, select just one
+HTRLOGHI=1
+HTRLOGHIMODEL=/home/tim/Documents/loghi-models/NA-HTR-CABR-M0003-v1/
+
+# Set this to 1 for recalculating reading order, line clustering and cleaning.
+# WARNING this will remove regions found by Laypa
+RECALCULATEREADINGORDER=1
+# If the edge of baseline is closer than x pixels...
+RECALCULATEREADINGORDERBORDERMARGIN=50
+# Clean if 1
+RECALCULATEREADINGORDERCLEANBORDERS=0
+# How many threads to use
+RECALCULATEREADINGORDERTHREADS=4
+
+# Detect language of pagexml, set to 1 to enable, disable otherwise
+DETECTLANGUAGE=1
+# Interpolate word locations
+SPLITWORDS=1
+# BEAMWIDTH: higher makes results slightly better at the expense of lot of computation time. In general don't set higher than 10
+BEAMWIDTH=1
+# Used gpu ids, set to "-1" to use CPU, "0" for first, "1" for second, etc
+GPU=0
+
+# Use 2013 PageXML namespace, set to 1 to enable, 0 otherwise
+USE2013NAMESPACE=" -use_2013_namespace "
+
+# DO NOT MODIFY BELOW THIS LINE
+# ------------------------------
+
+# Check for proper command-line arguments
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <path_to_images>"
+    exit 1
+fi
+
+tmpdir=$(mktemp -d)
+echo "Temporary directory created at: $tmpdir"
+
+mkdir -p $tmpdir/imagesnippets/
+mkdir -p $tmpdir/linedetection
+mkdir -p $tmpdir/output
+
+DOCKERLOGHITOOLING=loghi/docker.loghi-tooling:$VERSION
+DOCKERLAYPA=loghi/docker.laypa:$VERSION
+DOCKERLOGHIHTR=loghi/docker.htr:$VERSION
+
+DOCKERGPUPARAMS=""
+if [[ $GPU -gt -1 ]]; then
+    DOCKERGPUPARAMS="--gpus device=${GPU}"
+    echo "Using GPU ${GPU}"
+fi
+
+IMAGES_PATH=`realpath $1`
+
+# Housekeeping: remove any existing *.done files
+find $IMAGES_PATH -name '*.done' -exec rm -f "{}" \;
+
+# First step: Laypa
+if [[ $BASELINELAYPA -eq 1 ]]; then
+    echo "Running Laypa baseline detection"
+
+    LAYPA_IN=$IMAGES_PATH
+    LAYPA_OUT=$IMAGES_PATH
+    LAYPADIR="$(dirname "${LAYPABASELINEMODEL}")"
+
+    docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m \
+    -v $LAYPADIR:$LAYPADIR \
+    -v $input_dir:$input_dir \
+    -v $output_dir:$output_dir \
+    $DOCKERLAYPA \
+        python run.py \
+        -c $LAYPABASELINEMODEL \
+        -i $LAYPA_IN \
+        -o $LAYPA_OUT \
+        --opts MODEL.WEIGHTS "" TEST.WEIGHTS $LAYPABASELINEMODELWEIGHTS | tee -a $tmpdir/log.txt
+
+    if [[ $STOPONERROR -eq 1 ]] && [[ ! -f $tmpdir/linedetection/done ]]; then
+        echo "Laypa baseline detection failed"
+        exit 1
+    fi
+
+    # Set as_single_region flag by default
+    as_single_region="-as_single_region"
+    echo "Laypa baseline detection done"
+
+    if [[ $REGIONLAYPA -eq 1 ]]; then
+        echo "Running Laypa region detection"
+
+        docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m \
+        -v $LAYPADIR:$LAYPADIR \
+        -v $input_dir:$input_dir \
+        -v $output_dir:$output_dir \
+        $DOCKERLAYPA \
+            python run.py \
+            -c $LAYPAREGIONMODEL \
+            -i $LAYPA_IN \
+            -o $LAYPA_OUT \
+            --opts MODEL.WEIGHTS "" TEST.WEIGHTS $LAYPAREGIONMODELWEIGHTS | tee -a $tmpdir/log.txt
+
+        if [[ $STOPONERROR -eq 1 && $? -ne 0 ]]; then
+            echo "Laypa region detection failed"
+            exit 1
+        fi
+
+        as_single_region=""
+        echo "Laypa region detection done"
+    fi
+
+    # Second step: extract baselines and regions
+    echo "Extracting baselines and regions"
+
+    docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) \
+        -v $output_dir:$output_dir $DOCKERLOGHITOOLING \
+        /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines \
+        -input_path_png $output_dir/page/ \
+        -input_path_page $output_dir/page/ \
+        -output_path_page $output_dir/page/ \
+        $as_single_region \
+        $USE2013NAMESPACE | tee -a $tmpdir/log.txt
+
+    if [[ $STOPONERROR && $? -ne 0 ]]; then
+        echo "MinionExtractBaselines (Laypa) errored has errored, stopping program"
+        exit 1
+    fi
+
+    echo "Extracting baselines and regions done"
+fi
+
+# Third step: cut out snippets
+if [[ $HTRLOGHI -eq 1 ]]; then
+    echo "Cutting out snippets"
+
+    docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm \
+       -v $IMAGES_PATH/:$IMAGES_PATH/ \
+       -v $tmpdir:$tmpdir \
+       $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionCutFromImageBasedOnPageXMLNew \
+           -input_path $IMAGES_PATH \
+           -outputbase $tmpdir/imagesnippets/ \
+           -output_type png \
+           -channels 4 \
+           -threads 4 $USE2013NAMESPACE| tee -a $tmpdir/log.txt
+
+    if [[ $STOPONERROR && $? -ne 0 ]]; then
+        echo "MinionCutFromImageBasedOnPageXMLNew has errored, stopping program"
+        exit 1
+    fi
+
+    # Collect all the snippets in a file
+    find $tmpdir/imagesnippets/ -type f -name '*.png' > $tmpdir/lines.txt
+
+    echo "Running HTR"
+    LOGHIDIR="$(dirname "${HTRLOGHIMODEL}")"
+
+    docker run $DOCKERGPUPARAMS -u $(id -u ${USER}):$(id -g ${USER}) --rm -m 32000m --shm-size 10240m -ti \
+        -v /tmp:/tmp \
+        -v $tmpdir:$tmpdir \
+        -v $LOGHIDIR:$LOGHIDIR \
+        $DOCKERLOGHIHTR \
+            bash -c "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 python3 /src/loghi-htr/src/main.py \
+            --model $HTRLOGHIMODEL  \
+            --batch_size 64 \
+            --use_mask \
+            --inference_list $tmpdir/lines.txt \
+            --results_file $tmpdir/results.txt \
+            --gpu $GPU \
+            --output $tmpdir/output/ \
+            --beam_width $BEAMWIDTH " | tee -a $tmpdir/log.txt
+
+    if [[ $STOPONERROR && $? -ne 0 ]]; then
+        echo "Loghi-HTR has errored, stopping program"
+        exit 1
+    fi
+
+    # Fourth step: merge results back into PageXML
+    docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm \
+        -v $LOGHIDIR:$LOGHIDIR \
+        -v $IMAGES_PATH/:$IMAGES_PATH/ \
+        -v $tmpdir:$tmpdir \
+        $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionLoghiHTRMergePageXML \
+            -input_path $IMAGES_PATH/page \
+            -results_file $tmpdir/results.txt \
+            -config_file $HTRLOGHIMODEL/config.json \
+            -htr_code_config_file $tmpdir/output/config.json \
+            $USE2013NAMESPACE | tee -a $tmpdir/log.txt
+
+    if [[ $STOPONERROR && $? -ne 0 ]]; then
+        echo "MinionLoghiHTRMergePageXML has errored, stopping program"
+        exit 1
+    fi
+fi
+
+# Fifth step: Recalculate reading order
+if [[ $RECALCULATEREADINGORDER -eq 1 ]]
+then
+    echo "Recalculating reading order"
+    clean_borders=""
+
+    if [[ $RECALCULATEREADINGORDERCLEANBORDERS -eq 1 ]] then
+        echo "and cleaning borders"
+        clean_borders=" -clean_borders "
+    fi
+    docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm \
+        -v $IMAGES_PATH/:$IMAGES_PATH/ \
+        -v $tmpdir:$tmpdir \
+        $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionRecalculateReadingOrderNew \
+            -input_dir $IMAGES_PATH/page/ \
+            -border_margin $RECALCULATEREADINGORDERBORDERMARGIN \
+            -threads $RECALCULATEREADINGORDERTHREADS \
+            $clean_borders \
+            $USE2013NAMESPACE| tee -a $tmpdir/log.txt
+
+    if [[ $STOPONERROR && $? -ne 0 ]]; then
+        echo "MinionRecalculateReadingOrderNew has errored, stopping program"
+        exit 1
+    fi
+fi
+
+
+if [[ $DETECTLANGUAGE -eq 1 ]]
+then
+    echo "Detecting language..."
+    docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm \
+        -v $IMAGES_PATH/:$IMAGES_PATH/ \
+        -v $tmpdir:$tmpdir \
+        $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionDetectLanguageOfPageXml \
+            -page $IMAGES_PATH/page/ \
+            $USE2013NAMESPACE | tee -a $tmpdir/log.txt
+
+    if [[ $STOPONERROR && $? -ne 0 ]]; then
+            echo "MinionDetectLanguageOfPageXml has errored, stopping program"
+            exit 1
+    fi
+fi
+
+
+if [[ $SPLITWORDS -eq 1 ]]
+then
+    echo "MinionSplitPageXMLTextLineIntoWords..."
+    docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm \
+        -v $IMAGES_PATH/:$IMAGES_PATH/ \
+        -v $tmpdir:$tmpdir \
+        $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionSplitPageXMLTextLineIntoWords \
+            -input_path $IMAGES_PATH/page/ \
+            $USE2013NAMESPACE | tee -a $tmpdir/log.txt
+
+    if [[ $STOPONERROR && $? -ne 0 ]]; then
+            echo "MinionSplitPageXMLTextLineIntoWords has errored, stopping program"
+            exit 1
+    fi
+fi
+
+# cleanup results
+rm -rf $tmpdir

@@ -1,13 +1,9 @@
-#FROM nvidia/cuda:12.1.0-runtime-ubuntu22.04
 FROM nvidia/cuda:12.2.0-runtime-ubuntu22.04
 
-#RUN useradd -u 1000 rutger
 ENV DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
-
-#COPY loghi-htr /src/loghi-htr
 
 WORKDIR /src/
 
@@ -27,10 +23,9 @@ RUN cd /src \
   && cd /src/loghi-htr/src \
   && git --git-dir=/src/loghi-htr/.git log --format="%H" -n 1 > /src/loghi-htr/src/version_info \
   && cd /src/loghi-htr \
-  && python3 -m pip --no-cache-dir install -r requirements.txt \
+  && python3 -m pip install --no-cache-dir --ignore-installed -r requirements.txt \
   && apt autoremove -y \
   && rm -rf /src/CTCWordBeamSearch /root
-#RUN rm -rf /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1 /usr/lib/x86_64-linux-gnu/libcuda.so.1
 
 RUN rm -rf \
     /usr/lib/x86_64-linux-gnu/libcuda.so* \
