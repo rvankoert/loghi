@@ -11,8 +11,8 @@ BASELINELAYPA=1
 REGIONLAYPA=0
 
 # Set the path to the yaml file and the pth file for the Laypa model
-LAYPABASELINEMODEL=/home/tim/Documents/laypa-models/NA-LA-CABR-M0003-Turbo/config.yaml
-LAYPABASELINEMODELWEIGHTS=/home/tim/Documents/laypa-models/NA-LA-CABR-M0003-Turbo/model_best_mIoU.pth
+LAYPABASELINEMODEL=INSERT_FULL_PATH_TO_YAML_HERE
+LAYPABASELINEMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
 
 # Not required if REGIONLAYPA is 0
 LAYPAREGIONMODEL=INSERT_FULL_PATH_TO_YAML_HERE
@@ -20,7 +20,7 @@ LAYPAREGIONMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
 
 # Set to 1 if you want to enable, 0 otherwise, select just one
 HTRLOGHI=1
-HTRLOGHIMODEL=/home/tim/Documents/loghi-models/NA-HTR-CABR-M0003-v1/
+HTRLOGHIMODEL=INSERT_FULL_PATH_TO_HTR_MODEL_HERE
 
 # Set this to 1 for recalculating reading order, line clustering and cleaning.
 # WARNING this will remove regions found by Laypa
@@ -47,6 +47,16 @@ USE2013NAMESPACE=" -use_2013_namespace "
 # DO NOT MODIFY BELOW THIS LINE
 # ------------------------------
 
+function check_error_and_exit {
+    # $1 - The error message to display
+    # $2 - The status of the last command executed before the function was called
+
+    if [[ $STOPONERROR -eq 1 && $2 -ne 0 ]]; then
+        echo "$1 has failed"
+        exit 1
+    fi
+}
+
 # Check for proper command-line arguments
 if [ "$#" -ne 1 ]; then
     echo "Usage: $0 <path_to_images>"
@@ -57,7 +67,6 @@ tmpdir=$(mktemp -d)
 echo "Temporary directory created at: $tmpdir"
 
 mkdir -p $tmpdir/imagesnippets/
-mkdir -p $tmpdir/linedetection
 mkdir -p $tmpdir/output
 
 DOCKERLOGHITOOLING=loghi/docker.loghi-tooling:$VERSION
@@ -84,23 +93,22 @@ if [[ $BASELINELAYPA -eq 1 ]]; then
     LAYPADIR="$(dirname "${LAYPABASELINEMODEL}")"
 
     docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m \
-    -v $LAYPADIR:$LAYPADIR \
-    -v $input_dir:$input_dir \
-    -v $output_dir:$output_dir \
-    $DOCKERLAYPA \
-        python run.py \
-        -c $LAYPABASELINEMODEL \
-        -i $LAYPA_IN \
-        -o $LAYPA_OUT \
-        --opts MODEL.WEIGHTS "" TEST.WEIGHTS $LAYPABASELINEMODELWEIGHTS | tee -a $tmpdir/log.txt
+        -v $LAYPADIR:$LAYPADIR \
+        -v $LAYPA_IN:$LAYPA_IN \
+        -v $LAYPA_OUT:$LAYPA_OUT \
+        $DOCKERLAYPA \
+            python run.py \
+            -c $LAYPABASELINEMODEL \
+            -i $LAYPA_IN \
+            -o $LAYPA_OUT \
+            --opts MODEL.WEIGHTS "" TEST.WEIGHTS $LAYPABASELINEMODELWEIGHTS | tee -a $tmpdir/log.txt
 
-    if [[ $STOPONERROR -eq 1 ]] && [[ ! -f $tmpdir/linedetection/done ]]; then
-        echo "Laypa baseline detection failed"
-        exit 1
-    fi
+    # Check if failed
+    status=$?
+    check_error_and_exit "Laypa baseline detection" $status
 
     # Set as_single_region flag by default
-    as_single_region="-as_single_region"
+    as_single_region=" -as_single_region "
     echo "Laypa baseline detection done"
 
     if [[ $REGIONLAYPA -eq 1 ]]; then
@@ -108,8 +116,8 @@ if [[ $BASELINELAYPA -eq 1 ]]; then
 
         docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m \
         -v $LAYPADIR:$LAYPADIR \
-        -v $input_dir:$input_dir \
-        -v $output_dir:$output_dir \
+        -v $LAYPA_IN:$LAYPA_IN \
+        -v $LAYPA_OUT:$LAYPA_OUT \
         $DOCKERLAYPA \
             python run.py \
             -c $LAYPAREGIONMODEL \
@@ -117,10 +125,9 @@ if [[ $BASELINELAYPA -eq 1 ]]; then
             -o $LAYPA_OUT \
             --opts MODEL.WEIGHTS "" TEST.WEIGHTS $LAYPAREGIONMODELWEIGHTS | tee -a $tmpdir/log.txt
 
-        if [[ $STOPONERROR -eq 1 && $? -ne 0 ]]; then
-            echo "Laypa region detection failed"
-            exit 1
-        fi
+        # Check if failed
+        status=$?
+        check_error_and_exit "Laypa region detection" $status
 
         as_single_region=""
         echo "Laypa region detection done"
@@ -130,18 +137,18 @@ if [[ $BASELINELAYPA -eq 1 ]]; then
     echo "Extracting baselines and regions"
 
     docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) \
-        -v $output_dir:$output_dir $DOCKERLOGHITOOLING \
-        /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines \
-        -input_path_png $output_dir/page/ \
-        -input_path_page $output_dir/page/ \
-        -output_path_page $output_dir/page/ \
-        $as_single_region \
-        $USE2013NAMESPACE | tee -a $tmpdir/log.txt
+        -v $LAYPA_OUT:$LAYPA_OUT \
+        $DOCKERLOGHITOOLING \
+            /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines \
+            -input_path_png $LAYPA_OUT/page/ \
+            -input_path_page $LAYPA_OUT/page/ \
+            -output_path_page $LAYPA_OUT/page/ \
+            $as_single_region \
+            $USE2013NAMESPACE | tee -a $tmpdir/log.txt
 
-    if [[ $STOPONERROR && $? -ne 0 ]]; then
-        echo "MinionExtractBaselines (Laypa) errored has errored, stopping program"
-        exit 1
-    fi
+    # Check if failed
+    status=$?
+    check_error_and_exit "MinionExtractBaselines" $status
 
     echo "Extracting baselines and regions done"
 fi
@@ -160,10 +167,9 @@ if [[ $HTRLOGHI -eq 1 ]]; then
            -channels 4 \
            -threads 4 $USE2013NAMESPACE| tee -a $tmpdir/log.txt
 
-    if [[ $STOPONERROR && $? -ne 0 ]]; then
-        echo "MinionCutFromImageBasedOnPageXMLNew has errored, stopping program"
-        exit 1
-    fi
+    # Check if failed
+    status=$?
+    check_error_and_exit "MinionCutFromImageBasedOnPageXMLNew" $status
 
     # Collect all the snippets in a file
     find $tmpdir/imagesnippets/ -type f -name '*.png' > $tmpdir/lines.txt
@@ -186,10 +192,11 @@ if [[ $HTRLOGHI -eq 1 ]]; then
             --output $tmpdir/output/ \
             --beam_width $BEAMWIDTH " | tee -a $tmpdir/log.txt
 
-    if [[ $STOPONERROR && $? -ne 0 ]]; then
-        echo "Loghi-HTR has errored, stopping program"
-        exit 1
-    fi
+    # Check if failed
+    status=$?
+    check_error_and_exit "Loghi HTR" $status
+    
+    echo "Loghi HTR done"
 
     # Fourth step: merge results back into PageXML
     docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm \
@@ -203,10 +210,11 @@ if [[ $HTRLOGHI -eq 1 ]]; then
             -htr_code_config_file $tmpdir/output/config.json \
             $USE2013NAMESPACE | tee -a $tmpdir/log.txt
 
-    if [[ $STOPONERROR && $? -ne 0 ]]; then
-        echo "MinionLoghiHTRMergePageXML has errored, stopping program"
-        exit 1
-    fi
+    # Check if failed
+    status=$?
+    check_error_and_exit "MinionLoghiHTRMergePageXML" $status
+    
+    echo "Merging HTR results into PageXML done"
 fi
 
 # Fifth step: Recalculate reading order
@@ -215,7 +223,7 @@ then
     echo "Recalculating reading order"
     clean_borders=""
 
-    if [[ $RECALCULATEREADINGORDERCLEANBORDERS -eq 1 ]] then
+    if [[ $RECALCULATEREADINGORDERCLEANBORDERS -eq 1 ]]; then
         echo "and cleaning borders"
         clean_borders=" -clean_borders "
     fi
@@ -229,10 +237,9 @@ then
             $clean_borders \
             $USE2013NAMESPACE| tee -a $tmpdir/log.txt
 
-    if [[ $STOPONERROR && $? -ne 0 ]]; then
-        echo "MinionRecalculateReadingOrderNew has errored, stopping program"
-        exit 1
-    fi
+    # Check if failed
+    status=$?
+    check_error_and_exit "MinionRecalculateReadingOrder" $status
 fi
 
 
@@ -246,10 +253,9 @@ then
             -page $IMAGES_PATH/page/ \
             $USE2013NAMESPACE | tee -a $tmpdir/log.txt
 
-    if [[ $STOPONERROR && $? -ne 0 ]]; then
-            echo "MinionDetectLanguageOfPageXml has errored, stopping program"
-            exit 1
-    fi
+    # Check if failed
+    status=$?
+    check_error_and_exit "MinionDetectLanguageOfPageXml" $status
 fi
 
 
@@ -263,10 +269,9 @@ then
             -input_path $IMAGES_PATH/page/ \
             $USE2013NAMESPACE | tee -a $tmpdir/log.txt
 
-    if [[ $STOPONERROR && $? -ne 0 ]]; then
-            echo "MinionSplitPageXMLTextLineIntoWords has errored, stopping program"
-            exit 1
-    fi
+    # Check if failed
+    status=$?
+    check_error_and_exit "MinionSplitPageXMLTextLineIntoWords" $status
 fi
 
 # cleanup results
