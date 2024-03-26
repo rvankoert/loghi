@@ -16,13 +16,41 @@ This directory contains scripts to facilitate the use of the Loghi toolkit for H
 
 ### 1. Create Training Data
 
-Before training your model, you need to create a dataset. Use the `create-train-data.sh` script as follows:
+Before training your model, you need to create a dataset. The dataset must be organized in a specific manner for the `create-train-data.sh` script to process it correctly. Your input directory should look like this:
+
+```
+input
+│  image1.png
+│  image2.png
+└─── page
+    │  image1.xml
+    │  image2.xml
+```
+
+This structure ensures that each image file has a corresponding PageXML file in a special `page` subdirectory. To generate a training dataset from this structured input, use the `create-train-data.sh` script as follows:
 
 ```bash
 ./create-train-data.sh /path/to/input/images /path/to/output/directory
 ```
 
-This script processes images and their corresponding PageXML files to generate a training dataset.
+This script processes images and their corresponding PageXML files to generate text files for the training dataset. The output text files will contain paths to snippet images and their corresponding textual representations, separated by a tab. For example, the output might look like this:
+
+```
+/path/to/training_data_folder/image1_snippets/snippet1.png    textual representation of snippet 1
+/path/to/training_data_folder/image1_snippets/snippet2.png    text on snippet 2
+```
+
+This format is specifically designed for use in the Handwritten Text Recognition (HTR) process and can be utilized directly by the htr-train-pipeline.sh script.
+
+The script will produce three output files:
+
+- `training_all.txt`: Contains all text lines from the dataset.
+
+- `training_all_train.txt`: Contains the subset of text lines designated for training.
+
+- `training_all_val.txt`: Contains the subset of text lines designated for validation.
+
+These files correspond to all the text lines, the lines used for training, and the lines used for validation, respectively.
 
 ### 2. Generate Synthetic Images (Optional)
 
@@ -62,12 +90,18 @@ Be sure to adjust the script parameters to suit your specific training setup.
 
 ### 4. Run Inference
 
-After training your model, you can use it to transcribe new texts:
+After training your model, you can use it to transcribe new texts. If you haven't developed your own model yet or wish to test the pipeline with pre-trained models, our project provides access to pre-trained HTR and Laypa models.
+
+You can download both the HTR model and the Laypa model from SurfDrive using the following link: [https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP](https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP). After downloading, ensure to edit the following inference pipeline script to point to the downloaded models.
+
+To initiate the inference process with your model or the downloaded pre-trained models, execute the following command:
 
 ```bash
 ./inference-pipeline.sh /path/to/images
 ```
 
-This script runs the entire Loghi pipeline, from detecting baselines to predicting text and updating the PageXML files. The resulting PageXML files will contain the transcribed text, reading order, and other relevant information.
+This command runs the entire Loghi pipeline, covering everything from detecting baselines, parsing the layout, predicting text, to updating the PageXML files. The output PageXML files will encompass the transcribed text, reading order, layout annotations, and other pertinent details.
 
-This script is also highly configurable and each subpart of the process can be enabled or disabled based on your requirements.
+The script is designed with flexibility in mind, offering high configurability. Each subpart of the process, such as baseline detection, layout parsing, or text prediction, can be individually enabled or disabled based on your specific requirements. This allows for a tailored inference process that can adapt to various datasets or research needs.
+
+For detailed instructions on how to configure and run the inference pipeline, including how to integrate the pre-trained models and adjust the pipeline settings, please refer to the configuration section of this documentation or the dedicated configuration files provided within the project repository.
