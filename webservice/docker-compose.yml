@@ -15,12 +15,8 @@ services:
       - '5000:5000'
     environment:
       LAYPA_MAX_QUEUE_SIZE: 128
-      LAYPA_MODEL_BASE_PATH: /home/tim/Documents/laypa-models/NA-HTR-CABR-M0003-Turbo/
+      LAYPA_MODEL_BASE_PATH: /home/tim/Documents/laypa-models/NA-LA-CABR-M0003-Turbo/
       LAYPA_OUTPUT_BASE_PATH: /tmp/output/laypa/
-      # FLASK_DEBUG: 'true'
-      # FLASK_APP: 'api.app.py'
-      # FLASK_RUN_HOST: '0.0.0.0'
-      #
       GUNICORN_RUN_HOST: '0.0.0.0:5000'
       GUNICORN_WORKERS: 1
       GUNICORN_THREADS: 1
