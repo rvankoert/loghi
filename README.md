@@ -10,6 +10,7 @@ Loghi is a comprehensive toolkit designed for Handwritten Text Recognition (HTR)
 - [Quick Start](#quick-start)
     - [Installation](#installation)
     - [Docker Images](#docker-images)
+    - [GPU Acceleration](#gpu-acceleration)
 - [Using Loghi](#using-loghi)
 - [Running the Web Service](#running-the-web-service)
 - [Contributing](#contributing)
@@ -21,7 +22,7 @@ The Loghi framework is designed to streamline the process of Handwritten Text Re
 
 ### Laypa: Layout Analysis and Segmentation
 
-Laypa specializes in the segmentation of documents, identifying different regions like paragraphs, page numbers, and most importantly, baselines within the text. Utilizing a sophisticated architecture based on a ResNet backbone and a feature pyramid network, Laypa performs pixel-wise classifications to detect these elements. Built on the detectron2 framework, its output facilitates further processing by converting the classifications into instances—either as masks or directly into PageXML format. This segmentation is crucial for preparing documents for OCR/HTR processing, ensuring that text regions are accurately recognized and extracted.
+Laypa specializes in the segmentation of documents, identifying different regions like paragraphs, page numbers, and most importantly, baselines within the text. Utilizing a sophisticated architecture based on a ResNet backbone and a feature pyramid network, Laypa performs pixel-wise classifications to detect these elements. Built on the [detectron2](https://github.com/facebookresearch/detectron2) framework, its output facilitates further processing by converting the classifications into instances—either as masks or directly into PageXML format. This segmentation is crucial for preparing documents for OCR/HTR processing, ensuring that text regions are accurately recognized and extracted.
 
 ### Loghi Tooling: Pre and Post-Processing Toolkit
 
@@ -63,6 +64,14 @@ git submodule update --init --recursive
 cd docker
 ./buildAll.sh
 ```
+
+### GPU Acceleration
+
+To harness the full power of Loghi for faster processing, running it on a GPU is recommended. For users with NVIDIA GPUs, ensure you have NVIDIA Docker installed or your Docker setup supports GPU acceleration. This allows Loghi to utilize GPU resources for processing tasks, significantly speeding up operations like image segmentation with Laypa and text recognition with Loghi HTR.
+
+Setting up Docker to run with GPU support involves installing NVIDIA's Docker extension and specifying the use of a GPU when running a Docker container. For detailed instructions on enabling Docker to work with your NVIDIA GPU, please refer to the official NVIDIA Docker documentation.
+
+Note: Running Loghi with GPU acceleration is particularly beneficial for processing large datasets or when high throughput is required. Ensure your system meets the necessary hardware and software requirements for optimal performance.
 
 ## Using Loghi
 
