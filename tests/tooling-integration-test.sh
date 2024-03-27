@@ -2,7 +2,6 @@
 
 set -e
 tmp_dir=$(mktemp -d)
-echo $tmp_dir
 container_id=$(docker run -u $(id -u ${USER}):$(id -g ${USER}) \
     -v $tmp_dir:/tmp/upload \
     --name tooling_integrationtest \
@@ -25,17 +24,23 @@ done
 
 cd ../loghi-tooling/loghiwebservice/src/test/resources/integration_tests/
 
-printf "cut base on page xml\n"
+echo "Cutting image based on PageXML"
+echo "--------------------------------"
 bash test_cut_based_on_page_xml.sh $tmp_dir
-printf "detect language\n"
+echo "Detecting language"
+echo "--------------------------------"
 bash test_detect_language.sh $tmp_dir
-printf "extract baselines\n"
+echo "Extracting baselines"
+echo "--------------------------------"
 bash test_extract_baselines.sh $tmp_dir
-printf "merge page xml\n"
+echo "Merging PageXML"
+echo "--------------------------------"
 bash test_loghi_htr_merge_page_xml.sh $tmp_dir
-printf "recalculate reading order\n"
+echo "Recalculate reading order"
+echo "--------------------------------"
 bash test_recalculate_reading_order.sh $tmp_dir
-printf "split text lines into words\n"
+echo "Split text lines into words"
+echo "--------------------------------"
 bash test_split_text_lines_into_words.sh $tmp_dir
 
 docker stop $container_id
