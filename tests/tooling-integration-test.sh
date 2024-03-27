@@ -1,8 +1,16 @@
 #!/bin/bash
-#mkdir -p /tmp/upload
+
 set -e
 tmp_dir=$(mktemp -d)
-container_id=$(docker run -u $(id -u ${USER}):$(id -g ${USER}) -v $tmp_dir:/tmp/upload --name tooling_integrationtest -d -p 8080:8080 -p 8081:8081 loghi/docker.loghi-tooling /src/loghi-tooling/loghiwebservice/target/appassembler/bin/LoghiWebserviceApplication server /src/loghi-tooling/loghiwebservice/target/classes/configuration.yml)
+echo $tmp_dir
+container_id=$(docker run -u $(id -u ${USER}):$(id -g ${USER}) \
+    -v $tmp_dir:/tmp/upload \
+    --name tooling_integrationtest \
+    -d -p 8080:8080 -p 8081:8081 \
+    loghi/docker.loghi-tooling \
+        /src/loghi-tooling/loghiwebservice/target/appassembler/bin/LoghiWebserviceApplication \
+        server \
+        /src/loghi-tooling/loghiwebservice/target/classes/configuration.yml)
 echo $container_id
 
 while [ "$( docker container inspect -f '{{.State.Status}}' tooling_integrationtest )" != "running" ]; do
@@ -15,9 +23,7 @@ while [ "$(curl -s -o /dev/null -w "%{http_code}" localhost:8081/prometheus)" !=
 	sleep 5s
 done
 
-#docker logs tooling_integrationtest
-
-cd loghi-tooling/loghiwebservice/src/test/resources/integration_tests/
+cd ../loghi-tooling/loghiwebservice/src/test/resources/integration_tests/
 
 printf "cut base on page xml\n"
 bash test_cut_based_on_page_xml.sh $tmp_dir
