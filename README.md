@@ -1,22 +1,30 @@
-# Loghi
+# Loghi: Handwritten Text Recognition Toolkit
 
-Loghi is a set of tools for Handwritten Text Recognition. 
+Loghi is a comprehensive toolkit designed for Handwritten Text Recognition (HTR) and Optical Character Recognition (OCR), offering an accessible approach to transcribing historical documents and training models for specialized needs. This README provides a quick start guide for using Loghi, including how to install, run inference, train new models, and utilize our scripts for these tasks.
 
-Two sample scripts are provided to make starting everything a little bit easier. 
-na-pipeline.sh: for transcribing scans
-na-pipeline-train.sh: for training new models. 
+## Table of Contents
+- [Quick Start](#quick-start)
+    - [Installation](#installation)
+    - [Docker Images](#docker-images)
+- [Using Loghi](#using-loghi)
+- [Running the Web Service](#running-the-web-service)
+- [Contributing](#contributing)
+- [FAQ](#faq)
 
-## Quick start
+## Quick Start
 
-Install Loghi so that you can use its pipeline script.
+### Installation
+
+Begin by cloning the Loghi repository to access the toolkit and navigate into the directory:
+
 ```bash
 git clone git@github.com:knaw-huc/loghi.git
 cd loghi
 ```
 
-## Use the docker images
-The easiest method to run Loghi is to use the default dockers images on [Docker Hub](https://hub.docker.com/u/loghi).
-The docker images are usually pulled automatically when running [`na-pipeline.sh`](na-pipeline.sh) mentioned later in this document, but you can pull them separately with the following commands:
+### Docker Images
+
+The easiest way to use Loghi is through Docker. You can pull the default Docker images from [Docker Hub](https://hub.docker.com/u/loghi):
 
 ```bash
 docker pull loghi/docker.laypa
@@ -24,146 +32,62 @@ docker pull loghi/docker.htr
 docker pull loghi/docker.loghi-tooling
 ```
 
-If you do not have Docker installed follow [these instructions](https://docs.docker.com/engine/install/) to install it on your local machine.
+If Docker is not installed on your machine, follow [these instructions](https://docs.docker.com/engine/install/) to install it.
 
-If you instead want to build the dockers yourself with the latest code:
+Alternatively, to build the Docker images with the latest code yourself:
+
 ```bash
 git submodule update --init --recursive
 cd docker
 ./buildAll.sh
 ```
-This also allows you to have a look at the source code inside the dockers. The source code is available in the submodules.
 
+## Using Loghi
 
-## Inference
+For detailed instructions on running inference, training new models, and other advanced features, refer to the `scripts` directory in this repository. There, you'll find sample scripts and a README designed to guide you through these processes efficiently:
 
-But first go to:
-https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP
-and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR).
+- `create-train-data.sh` for preparing training data for HTR models.
+- `generate-synthetic-images.sh` for generating synthetic text lines.
+- `htr-train-pipeline.sh` for training new HTR models.
+- `inference-pipeline.sh` for transcribing complete scans.
 
-suggestion for laypa:
-- general
+These scripts simplify the process of using Loghi for your HTR projects.
 
-suggestion for loghi-htr that should give some results:
-- generic-2023-02-15
+## Running the Web Service
 
-It is not perfect, but a good starting point. It should work ok on 17th and 18th century handwritten dutch. For best results always finetune on your own specific data.
+(TODO: This section will be updated with instructions on how to set up and run the Loghi web service for online transcription tasks.)
 
-edit the [`na-pipeline.sh`](na-pipeline.sh) using vi, nano, other whatever editor you prefer. We'll use nano in this example
+For further customization and in-depth information, please refer to the original repositories linked within our toolkit. These resources provide comprehensive documentation on adjusting parameters, understanding the technology behind Loghi, and exploring advanced use cases.
 
-```bash
-nano na-pipeline.sh
-```
-Look for the following lines:
-```
-LAYPABASELINEMODEL=INSERT_FULL_PATH_TO_YAML_HERE
-LAYPABASELINEMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
-HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
-```
-and update those paths with the location of the files you just downloaded. If you downloaded a zip: you should unzip it first.
+## Updates
 
-if you do not have a NVIDIA-GPU and nvidia-docker setup additionally change
+To stay updated with the latest versions of the submodules, run:
 
-```text
-GPU=0
-```
-to
-```text
-GPU=-1
-```
-It will then run on CPU, which will be very slow. If you are using the pretrained model and run on CPU: please make sure to download the Loghi-htr model starting with "float32-". This will run faster on CPU than the default mixed_float16 models.
-
-
-Save the file and run it:
-```bash
-./na-pipeline.sh /PATH_TO_FOLDER_CONTAINING_IMAGES
-```
-replace /PATH_TO_FOLDER_CONTAINING_IMAGES with a valid directory containing images (.jpg is preferred/tested) directly below it.
-
-The file should run for a short while if you have a good nvidia GPU and nvidia-docker setup. It might be a long while if you just have CPU available. It should work either way, just a lot slower on CPU.
-
-When it finishes without errors a new folder called "page" should be created in the directory with the images. This contains the PageXML output.
-
-## Training an HTR model
-
-### Input data
-
-Expected structure
-```text
-training_data_folder
-|- training_all_train.txt
-|- training_all_val.txt
-|- image1_snippets
-    |-snippet1.png
-    |-snippet2.png
-```
-
-`training_all_train.txt` should look something something like:
-```text
-/path/to/training_data_folder/image1_snippets/snippet1.png	textual representation of snippet 1
-/path/to/training_data_folder/image1_snippets//snippet2.png text on snippet 2
-```
-n.b. path to image and textual representation should be separated by a tab.
-
-##### Create training data
-You can create training data with the following command:
-```bash
-./create_train_data.sh /full/path/to/input /full/path/to/output
-```
-`/full/path/to/output` is `/full/path/to/training_data_folder` in this example
-`/full/path/to/input` is expected to look like:
-```text
-input
-|- image1.png
-|- image2.png
-|- page
-    |- image1.xml
-    |- image2.xml
-```
-`page/image1.xml` should contain information about the baselines and should have the textual representation of the text lines.  
-
-### Change script
-Edit the [`na-pipeline-train.sh`](na-pipeline-train.sh) script using your favorite editor:
-
-```bash
-nano na-pipeline-train.sh
-```
-
-Find the following lines:
-```text
-listdir=INSERT_FULL_PATH_TO_TRAINING_DATA_FOLDER
-trainlist=INSERT_FULL_PATH_TO_TRAINING_DATA_LIST
-validationlist=INSERT_FULL_PATH_TO_VALIDATION_DATA_LIST
-```
-In this example: 
-```text
-listdir=/full/path/to/training_data_folder
-trainlist=/full/path/to/training_data_folder/train_list.txt
-validationlist=/full/path/to/training_data_folder/val_list.txt
-```
-
-if you do not have a NVIDIA-GPU and nvidia-docker setup additionally change:
-
-```text
-GPU=0
-```
-to
-```text
-GPU=-1
-```
-It will then run on CPU, which will be very slow.
-
-
-### Run script
-Finally, to run the HTR training run the script:
-
-```bash
-./na-pipeline-train.sh
-```
-
-## For later updates use:
-To update the submodules to the head of their branch (the latest/possibly unstable version) run the following command:
 ```bash
 git submodule update --recursive --remote
 ```
+
+This ensures you have access to the most recent (though possibly unstable) versions of the code.
+
+## Contributing
+
+We welcome contributions to Loghi and its components! Whether you encounter issues, have suggestions for improvements, or wish to contribute code, we encourage you to engage with us. Contributions can be made to this repository or any of its subdirectories, which include other component repositories.
+
+Here's how you can contribute:
+
+1. **Report Issues:** Found a bug or have a feature idea? Open an issue in the relevant GitHub repository. Whether it's for the main project or a specific component, your feedback is invaluable. Please provide as much detail as possible to help us understand and address the issue effectively.
+
+2. **Submit Pull Requests:** If you've developed a fix or enhancement, we'd love to see it! Submit a pull request with your changes. Ensure your contributions are well-documented and adhere to the project's coding standards. Your code should be submitted to the appropriate repository, whether it's the main one or a component-specific repo.
+
+3. **Fork and Enhance:** Feel free to fork any of the repositories within the project's ecosystem. Whether you're making broad improvements or tinkering with a specific component, your innovation is welcome. Share your forks and pull requests with us; we're eager to incorporate community-driven enhancements!
+
+Contributions to any part of Loghi, be it the core toolkit or its various components, are highly appreciated. By working together, we can continue to develop and refine this powerful tool for handwritten text recognition.
+
+## FAQ
+
+Here are some frequently asked questions about Loghi and their answers to help you get started and troubleshoot common issues.
+
+### Does Loghi work on Apple Silicon?
+
+Currently, Loghi does not support utilizing Apple Silicon's accelerated hardware capabilities. We understand the importance and potential of supporting this architecture and are actively exploring possibilities to make Loghi compatible with Apple Silicon in the future. For now, users with Apple Silicon devices can run Loghi using emulation or virtualization tools, though this might not leverage the full performance capabilities of the hardware. We appreciate your patience and interest, and we're committed to broadening our hardware support to include these devices.
 
