@@ -147,6 +147,7 @@ then
         -input_path_png $output_dir/page/ \
         -input_path_page $output_dir/page/ \
         -output_path_page $output_dir/page/ \
+        -recalculate_textline_contours_from_baselines \
         $as_single_region $USE2013NAMESPACE | tee -a $tmpdir/log.txt
 
 
