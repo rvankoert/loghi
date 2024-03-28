@@ -143,3 +143,6 @@
 
 # Tutorial
 **/tutorial/
+
+# Pretrained models
+**/pretrained_models/
