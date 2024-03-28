@@ -8,7 +8,7 @@ RUN apt-get update -y && \
     apt-get install -y \
     apt-utils git \
     ninja-build gcc g++ \
-    ffmpeg libsm6 libxext6 && \
+    ffmpeg libsm6 libxext6 libegl1 libopengl0 && \
     apt-get clean -y && \
     apt-get autoremove -y
 
@@ -20,13 +20,11 @@ COPY laypa.multistage/ laypa/
 # RUN git clone https://github.com/stefanklut/laypa.git
 
 WORKDIR /src/laypa
-# RUN conda update -y --all
-# RUN conda init bash
+# Removing the nsight-compute folder as it is not needed for runtime
 RUN mamba env create -p /env -f environment.yml && \
-    mamba clean -y --all --force-pkgs-dirs
+    mamba clean -y --all --force-pkgs-dirs && \
+    rm -r /env/nsight*
 
-# Removing the nsight-compute folder, hope it does nothing for runtime
-RUN rm -r /env/pkgs/cuda-toolkit/nsight*
 
 ENV PATH /env/bin:$PATH
 ENV CONDA_DEFAULT_ENV /env
@@ -41,7 +39,7 @@ FROM condaforge/mambaforge as runner
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update -y && \
-    apt-get install -y ffmpeg libsm6 libxext6 && \
+    apt-get install -y ffmpeg libsm6 libxext6 libegl1 libopengl0 && \
     apt-get clean -y && \
     apt-get autoremove -y
 
