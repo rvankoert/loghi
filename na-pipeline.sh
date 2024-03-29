@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=1.3.13
+VERSION=1.3.14
 set -e
 
 # Stop on error, if set to 1 will exit program if any of the docker commands fail
@@ -143,7 +143,8 @@ then
                 as_single_region=""
         fi
 
-        docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) -v $output_dir:$output_dir $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines \
+        docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) -v $input_dir:$input_dir -v $output_dir:$output_dir $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines \
+        -input_path_image $input_dir
         -input_path_png $output_dir/page/ \
         -input_path_page $output_dir/page/ \
         -output_path_page $output_dir/page/ \
