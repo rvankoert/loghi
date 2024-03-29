@@ -144,7 +144,7 @@ then
         fi
 
         docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) -v $input_dir:$input_dir -v $output_dir:$output_dir $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines \
-        -input_path_image $input_dir
+        -input_path_image $input_dir \
         -input_path_png $output_dir/page/ \
         -input_path_page $output_dir/page/ \
         -output_path_page $output_dir/page/ \
