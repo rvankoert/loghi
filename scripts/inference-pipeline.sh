@@ -42,7 +42,7 @@ BEAMWIDTH=1
 GPU=0
 
 # Use 2013 PageXML namespace, set to 1 to enable, 0 otherwise
-USE2013NAMESPACE=" -use_2013_namespace "
+USE2013NAMESPACE=1
 
 # DO NOT MODIFY BELOW THIS LINE
 # ------------------------------
@@ -83,6 +83,10 @@ IMAGES_PATH=`realpath $1`
 
 # Housekeeping: remove any existing *.done files
 find $IMAGES_PATH -name '*.done' -exec rm -f "{}" \;
+
+if [[ $USE2013NAMESPACE -eq 1 ]]; then
+    namespace=" -use_2013_namespace "
+fi
 
 # First step: Laypa
 if [[ $BASELINELAYPA -eq 1 ]]; then
@@ -144,7 +148,7 @@ if [[ $BASELINELAYPA -eq 1 ]]; then
             -input_path_page $LAYPA_OUT/page/ \
             -output_path_page $LAYPA_OUT/page/ \
             $as_single_region \
-            $USE2013NAMESPACE | tee -a $tmpdir/log.txt
+            $namespace | tee -a $tmpdir/log.txt
 
     # Check if failed
     status=$?
@@ -165,7 +169,7 @@ if [[ $HTRLOGHI -eq 1 ]]; then
            -outputbase $tmpdir/imagesnippets/ \
            -output_type png \
            -channels 4 \
-           -threads 4 $USE2013NAMESPACE| tee -a $tmpdir/log.txt
+           -threads 4 $namespace| tee -a $tmpdir/log.txt
 
     # Check if failed
     status=$?
@@ -208,7 +212,7 @@ if [[ $HTRLOGHI -eq 1 ]]; then
             -results_file $tmpdir/results.txt \
             -config_file $HTRLOGHIMODEL/config.json \
             -htr_code_config_file $tmpdir/output/config.json \
-            $USE2013NAMESPACE | tee -a $tmpdir/log.txt
+            $namespace | tee -a $tmpdir/log.txt
 
     # Check if failed
     status=$?
@@ -235,7 +239,7 @@ then
             -border_margin $RECALCULATEREADINGORDERBORDERMARGIN \
             -threads $RECALCULATEREADINGORDERTHREADS \
             $clean_borders \
-            $USE2013NAMESPACE| tee -a $tmpdir/log.txt
+            $namespace| tee -a $tmpdir/log.txt
 
     # Check if failed
     status=$?
@@ -251,7 +255,7 @@ then
         -v $tmpdir:$tmpdir \
         $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionDetectLanguageOfPageXml \
             -page $IMAGES_PATH/page/ \
-            $USE2013NAMESPACE | tee -a $tmpdir/log.txt
+            $namespace | tee -a $tmpdir/log.txt
 
     # Check if failed
     status=$?
@@ -267,7 +271,7 @@ then
         -v $tmpdir:$tmpdir \
         $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionSplitPageXMLTextLineIntoWords \
             -input_path $IMAGES_PATH/page/ \
-            $USE2013NAMESPACE | tee -a $tmpdir/log.txt
+            $namespace | tee -a $tmpdir/log.txt
 
     # Check if failed
     status=$?
