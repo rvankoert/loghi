@@ -141,12 +141,15 @@ if [[ $BASELINELAYPA -eq 1 ]]; then
     echo "Extracting baselines and regions"
 
     docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) \
+        -v $LAYPA_IN:$LAYPA_IN \
         -v $LAYPA_OUT:$LAYPA_OUT \
         $DOCKERLOGHITOOLING \
             /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines \
+            -input_path_image $LAYPA_IN \
             -input_path_png $LAYPA_OUT/page/ \
             -input_path_page $LAYPA_OUT/page/ \
             -output_path_page $LAYPA_OUT/page/ \
+            -recalculate_textline_contours_from_baselines \
             $as_single_region \
             $namespace | tee -a $tmpdir/log.txt
 
