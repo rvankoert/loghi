@@ -27,6 +27,7 @@ RUN cd /src \
   && cd /src/loghi-htr/src \
   && git --git-dir=/src/loghi-htr/.git log --format="%H" -n 1 > /src/loghi-htr/src/version_info \
   && cd /src/loghi-htr \
+  && apt remove -y python3-blinker \
   && python3 -m pip --no-cache-dir install -r requirements.txt \
   && apt autoremove -y \
   && rm -rf /src/CTCWordBeamSearch /root
