@@ -15,8 +15,8 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/libnvinfer.so.8 /usr/lib/x86_64-linux-gnu/li
   && ln -s /usr/lib/x86_64-linux-gnu/libnvinfer_plugin.so.8 /usr/lib/x86_64-linux-gnu/libnvinfer_plugin.so.7
 RUN python3 -m pip --no-cache-dir install --upgrade pip
 RUN cd /src \
-  && git clone https://github.com/rvankoert/CTCWordBeamSearch.git \
-  && git clone https://github.com/rvankoert/loghi-htr.git \
+  && git clone https://github.com/knaw-huc/CTCWordBeamSearch.git \
+  && git clone https://github.com/knaw-huc/loghi-htr.git \
   && cd /src/CTCWordBeamSearch \
   && pip install . \
   && apt autoremove -y \
