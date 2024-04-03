@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=1.3.14
+VERSION=2.0.0
 set -e
 
 CURRENT=$(pwd)
@@ -9,7 +9,6 @@ cd $DIR_OF_SCRIPT
 
 BASE="$(realpath $DIR_OF_SCRIPT/..)"
 
-# TODO Maybe this needs to also update the submodules (Rutger?)
 cd $BASE
 git pull
 git submodule update --recursive --remote
@@ -41,7 +40,6 @@ echo "building docker.htr"
 cd docker.htr
 ./buildImage.sh $BASE/loghi-htr
 cd ..
-# TODO Building for wsl not working, missing folder
 echo "building docker.htr-wsl"
 cd docker.htr-wsl
 ./buildImage.sh

@@ -2,7 +2,6 @@
 
 cleanup() {
     # Gracefully shut down the gunicorn processes
-    #pkill -f gunicorn_app.py
     docker stop "$container_id"
     docker rm  "$container_id"
     sleep 5  # give processes some time to exit gracefully
@@ -20,8 +19,6 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-LOGHI_MODEL_PATH="$1"
-
 # Starting the API
 export GUNICORN_RUN_HOST='0.0.0.0:5000'
 export GUNICORN_WORKERS=1
@@ -31,9 +28,7 @@ export GUNICORN_ACCESSLOG='-'
 # Create a temporary output directory
 TEMP_OUTPUT_DIR=$(mktemp -d)
 
-export LOGHI_MODEL_PATH
-export LOGHI_CHARLIST_PATH="$LOGHI_MODEL_PATH/charlist.txt"
-export LOGHI_MODEL_CHANNELS=1
+export LOGHI_MODEL_PATH="$1"
 export LOGHI_BATCH_SIZE=300
 export LOGHI_OUTPUT_PATH="$TEMP_OUTPUT_DIR"
 export LOGHI_MAX_QUEUE_SIZE=50000
@@ -42,7 +37,19 @@ export LOGGING_LEVEL="DEBUG"
 export LOGHI_GPUS="-1"
 
 # Start the API server in docker
-container_id=$(docker run -u $(id -u ${USER}):$(id -g ${USER}) -v $LOGHI_MODEL_PATH:$LOGHI_MODEL_PATH -v $TEMP_OUTPUT_DIR:$TEMP_OUTPUT_DIR -e LOGHI_MODEL_PATH=$LOGHI_MODEL_PATH -e LOGHI_CHARLIST_PATH="$LOGHI_MODEL_PATH/charlist.txt" -e LOGHI_MODEL_CHANNELS=1 -e LOGHI_BATCH_SIZE=300 -e LOGHI_OUTPUT_PATH="$TEMP_OUTPUT_DIR" -e LOGHI_MAX_QUEUE_SIZE=50000 -e LOGGING_LEVEL="DEBUG" -e LOGHI_GPUS="-1" -e GUNICORN_RUN_HOST='0.0.0.0:5000' -e GUNICORN_WORKERS=1 -e GUNICORN_THREADS=1 -e GUNICORN_ACCESSLOG='-' --name htr-api-test -p 5000:5000 -d loghi/docker.htr python3 /src/loghi-htr/src/api/gunicorn_app.py)
+container_id=$(docker run -u $(id -u ${USER}):$(id -g ${USER}) \
+    -v $LOGHI_MODEL_PATH:$LOGHI_MODEL_PATH \
+    -v $TEMP_OUTPUT_DIR:$TEMP_OUTPUT_DIR \
+    -e LOGHI_MODEL_PATH=$LOGHI_MODEL_PATH \
+    -e LOGHI_BATCH_SIZE=300 \
+    -e LOGHI_OUTPUT_PATH="$TEMP_OUTPUT_DIR" \
+    -e LOGHI_MAX_QUEUE_SIZE=50000 \
+    -e LOGGING_LEVEL="DEBUG" \
+    -e LOGHI_GPUS="-1" \
+    --name htr-api-test \
+    -p 5000:5000 -d \
+    loghi/docker.htr \
+        sh -c 'cd api && /usr/local/bin/gunicorn --workers=1 --threads=1 -b :5000 "app:create_app()"')
 
 echo "containerid: "$container_id
 # Assuming the server takes a few seconds to start up, we sleep for a while
@@ -52,7 +59,7 @@ while [ $(curl -w "%{http_code}" -s -o /dev/null localhost:5000/) == "000" ]; do
 done
 
 # Calling the API on test images
-DIR="loghi-htr/tests/data"
+DIR="../loghi-htr/tests/data"
 
 for input_path in $(find $DIR -name '*.png');
 do

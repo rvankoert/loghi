@@ -17,7 +17,7 @@ git --git-dir=$SMT/.git log --format="%H" -n 1 > $htr_folder/src/version_info
 rm -rf ./$htr_folder/venv
 rm -rf ./$htr_folder/checkpoints
 rm -rf ./$htr_folder/__pycache__
-#	rm -rf ./$htr_folder/.git
+rm -rf ./$htr_folder/.git
 rm -rf ./$htr_folder/.idea
 rm -rf ./$htr_folder/src/output
 rm -rf ./$htr_folder/src/.idea
@@ -29,17 +29,7 @@ rm -rf ./$htr_folder/tiny
 rm -rf ./$htr_folder/src/training*.txt
 rm -rf ./$htr_folder/src/test15
 
-#if [ -n "$2" ]; then
-#	cp -rp $2 .
-#	models_folder=$(basename $2)
-#else
-#	cp -rp ~/src/loghi-htr-models .
-#	models_folder="loghi-htr-models"
-#fi
-
 echo "Building docker image..."
 docker build --no-cache . -t loghi/docker.htr
 
 rm -rf ./$htr_folder
-#rm -rf ./$models_folder
-#docker system prune -f
