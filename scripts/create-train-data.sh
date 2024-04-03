@@ -1,6 +1,4 @@
 #!/bin/bash
-
-# Version of the docker image to use
 VERSION=2.0.0
 
 # User-configurable parameters
