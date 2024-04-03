@@ -20,7 +20,7 @@ LAYPAREGIONMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
 
 # Set to 1 if you want to enable, 0 otherwise, select just one
 HTRLOGHI=1
-HTRLOGHIMODEL=INSERT_FULL_PATH_TO_HTR_MODEL_HERE
+HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
 
 # Set this to 1 for recalculating reading order, line clustering and cleaning.
 # WARNING this will remove regions found by Laypa
@@ -183,6 +183,22 @@ if [[ $HTRLOGHI -eq 1 ]]; then
 
     echo "Running HTR"
     LOGHIDIR="$(dirname "${HTRLOGHIMODEL}")"
+
+    echo docker run $DOCKERGPUPARAMS -u $(id -u ${USER}):$(id -g ${USER}) --rm -m 32000m --shm-size 10240m -ti \
+        -v /tmp:/tmp \
+        -v $tmpdir:$tmpdir \
+        -v $LOGHIDIR:$LOGHIDIR \
+        $DOCKERLOGHIHTR \
+            bash -c "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 python3 /src/loghi-htr/src/main.py \
+            --model $HTRLOGHIMODEL  \
+            --batch_size 64 \
+            --use_mask \
+            --inference_list $tmpdir/lines.txt \
+            --results_file $tmpdir/results.txt \
+            --gpu $GPU \
+            --output $tmpdir/output/ \
+            --beam_width $BEAMWIDTH " | tee -a $tmpdir/log.txt
+
 
     docker run $DOCKERGPUPARAMS -u $(id -u ${USER}):$(id -g ${USER}) --rm -m 32000m --shm-size 10240m -ti \
         -v /tmp:/tmp \

@@ -21,7 +21,7 @@ channels=1
 GPU=0
 
 # Dataset and training configuration
-listdir=/data/ovdr/gt-split/
+listdir=PATH_TO_LISTDIR
 trainlist=$listdir/val.txt
 validationlist=$listdir/val_150hs.txt
 
@@ -40,6 +40,9 @@ learning_rate=0.0003
 
 # DO NOT MODIFY BELOW THIS LINE
 # ------------------------------
+
+#DO NOT REMOVE THIS LINE, IT IS USED FOR AUTOMATIC TESTING"
+#PLACEHOLDER#
 
 DOCKERLOGHIHTR=loghi/docker.htr:$VERSION
 

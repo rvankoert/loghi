@@ -41,6 +41,8 @@ fi
 inputdir=$(realpath $1/)
 outputdir=$(realpath $2/)
 
+mkdir -p $outputdir
+
 # Prepare file lists
 filelist=$outputdir/training_all.txt
 filelisttrain=$outputdir/training_all_train.txt
@@ -107,6 +109,6 @@ done
 
 # Create training and validation file lists
 echo "Splitting data into training and validation sets..."
-shuf $filelist | split -l $(( $(wc -l < $filelist) * $trainsplit / 100 ))
+shuf $filelist | split -l $(( $(wc -l <$filelist) * $trainsplit / 100 ))
 mv xab $filelistval
 mv xaa $filelisttrain
