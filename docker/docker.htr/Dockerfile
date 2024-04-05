@@ -1,4 +1,5 @@
-FROM nvidia/cuda:12.2.0-runtime-ubuntu22.04
+# Stage 1: Build stage
+FROM nvidia/cuda:11.8.0-base-ubuntu22.04 as builder
 
 ENV DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC
 ENV LANG en_US.UTF-8
@@ -7,32 +8,43 @@ ENV LC_ALL en_US.UTF-8
 
 WORKDIR /src/
 
-RUN apt-get update && apt-get install -y software-properties-common wget git python3-pip python3 python3-dev
+# Install dependencies
+RUN apt-get update && apt-get install -y software-properties-common wget git python3-pip python3 python3-dev libtcmalloc-minimal4 ffmpeg libsm6 libxext6 g++
 
-RUN apt-get install -y libtcmalloc-minimal4 ffmpeg libsm6 libxext6 libcudnn8 
-RUN apt-get install -y cuda-nvcc-11-8 g++ nvidia-cudnn
+# Upgrade pip and clone necessary repositories
+RUN python3 -m pip --no-cache-dir install --upgrade pip \
+  && git clone https://github.com/rvankoert/CTCWordBeamSearch.git \
+  && git clone https://github.com/rvankoert/loghi-htr.git
+
+# Install CTCWordBeamSearch
+WORKDIR /src/CTCWordBeamSearch
+RUN pip install .
+
+# Prepare loghi-htr
+WORKDIR /src/loghi-htr
+RUN git --git-dir=./.git log --format="%H" -n 1 > ./src/version_info \
+  && python3 -m pip install --no-cache-dir --ignore-installed -r requirements.txt
+
+# Stage 2: Final image
+FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04 as final
+
+ENV DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+# Symlink libraries (is this necessary?)
 RUN ln -s /usr/lib/x86_64-linux-gnu/libnvinfer.so.8 /usr/lib/x86_64-linux-gnu/libnvinfer.so.7 \
   && ln -s /usr/lib/x86_64-linux-gnu/libnvinfer_plugin.so.8 /usr/lib/x86_64-linux-gnu/libnvinfer_plugin.so.7
-RUN python3 -m pip --no-cache-dir install --upgrade pip
-RUN cd /src \
-  && git clone https://github.com/rvankoert/CTCWordBeamSearch.git \
-  && git clone https://github.com/rvankoert/loghi-htr.git \
-  && cd /src/CTCWordBeamSearch \
-  && pip install . \
-  && apt autoremove -y \
-  && cd /src/loghi-htr/src \
-  && git --git-dir=/src/loghi-htr/.git log --format="%H" -n 1 > /src/loghi-htr/src/version_info \
-  && cd /src/loghi-htr \
-  && python3 -m pip install --no-cache-dir --ignore-installed -r requirements.txt \
-  && apt autoremove -y \
-  && rm -rf /src/CTCWordBeamSearch /root
 
-RUN rm -rf \
-    /usr/lib/x86_64-linux-gnu/libcuda.so* \
-    /usr/lib/x86_64-linux-gnu/libnvcuvid.so* \
-    /usr/lib/x86_64-linux-gnu/libnvidia-*.so* \
-    /usr/lib/x86_64-linux-gnu/libcudadebugger.so* \
-    /usr/lib/firmware \
-    /usr/local/cuda/compat/lib
+# Install Python and runtime dependencies
+RUN apt-get update && apt-get install -y python3-pip python3 libtcmalloc-minimal4 ffmpeg libsm6 libxext6 cuda-nvcc-11-8 \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+# Copy only the necessary files from the builder stage
+COPY --from=builder /src/loghi-htr /src/loghi-htr
+COPY --from=builder /usr/local /usr/local
 
 WORKDIR /src/loghi-htr/src
+
