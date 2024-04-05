@@ -22,11 +22,12 @@ GPU=0
 
 # Dataset and training configuration
 listdir=PATH_TO_LISTDIR
-trainlist=$listdir/val.txt
-validationlist=$listdir/val_150hs.txt
+trainlist=$listdir/training_all_train.txt
+validationlist=$listdir/training_all_val.txt
 
-# The path to your actual images
-datadir=/data/ovdr/gt-split/val/
+# If the images are not in subpath of listdir add the path to your actual images,
+# Defaults to /tmp/path_to_training_images
+datadir=/tmp/path_to_training_images
 
 # Training configuration
 epochs=1
