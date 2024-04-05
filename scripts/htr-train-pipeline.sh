@@ -42,22 +42,24 @@ learning_rate=0.0003
 # DO NOT MODIFY BELOW THIS LINE
 # ------------------------------
 
-#DO NOT REMOVE THIS LINE, IT IS USED FOR AUTOMATIC TESTING"
-#PLACEHOLDER#
-
 DOCKERLOGHIHTR=loghi/docker.htr:$VERSION
 
 tmpdir=$(mktemp -d)
-mkdir -p $tmpdir/output
 
 # Set new model as default
 MODEL=$HTRNEWMODEL
 MODELDIR=""
 
+#DO NOT REMOVE THIS PLACEHOLDER LINE, IT IS USED FOR AUTOMATIC TESTING"
+#PLACEHOLDER#
+
+mkdir -p $tmpdir/output
+
 # Base model option
 if [[ $USEBASEMODEL -eq 1 ]]; then
-    MODEL=" --model "$MODEL
+    MODEL=$HTRBASEMODEL
     MODELDIR="-v $(dirname "${MODEL}"):$(dirname "${MODEL}")"
+    echo $MODELDIR
 fi
 
 # GPU options
