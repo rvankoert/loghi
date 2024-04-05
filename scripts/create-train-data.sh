@@ -3,7 +3,7 @@ VERSION=2.0.0
 
 # User-configurable parameters
 # Percentage split for training and validation sets
-TRAINSPLIT=90
+trainsplit=90
 
 # Include text styles in the output
 include_text_styles=1
