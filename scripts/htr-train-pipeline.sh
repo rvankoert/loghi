@@ -34,6 +34,10 @@ epochs=1
 height=$HTRLOGHIMODELHEIGHT
 multiply=1
 
+replacefinallayer=""
+# to replace final layer during basemodel finetuning uncomment next line
+#replacefinallayer=" --replace_final_layer "
+
 # Best not to go lower than 2 with batchsize
 batch_size=40
 model_name=myfirstmodel
@@ -69,6 +73,7 @@ if [[ $GPU -gt -1 ]]; then
     echo "Using GPU ${GPU}"
 fi
 
+
 # Starting the training
 echo "Starting Loghi HTR training with model $MODEL"
 docker run $DOCKERGPUPARAMS --rm  -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m -ti \
@@ -93,7 +98,7 @@ docker run $DOCKERGPUPARAMS --rm  -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m
         --model $MODEL \
         --aug_multiply $multiply \
         --model_name $model_name \
-        --output $tmpdir/output
+        --output $tmpdir/output $replacefinallayer
 
 echo "Results can be found at:"
 echo $tmpdir
