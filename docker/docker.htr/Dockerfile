@@ -12,7 +12,10 @@ WORKDIR /src/
 
 # Install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    software-properties-common wget git python3-pip python3 python3-dev g++
+    software-properties-common wget git python3-pip python3-venv python3 python3-dev g++
+
+RUN python3 -m venv /venv
+ENV PATH="/venv/bin:$PATH"
 
 # Upgrade pip and clone necessary repositories
 RUN python3 -m pip --no-cache-dir install --upgrade pip \
@@ -36,6 +39,7 @@ ENV DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
+ENV PATH="/venv/bin:$PATH"
 
 # Install Python and runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -45,7 +49,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copy only the necessary files from the builder stage
 COPY --from=builder /src/loghi-htr /src/loghi-htr
-COPY --from=builder /usr/local /usr/local
+COPY --from=builder /venv /venv
 
 WORKDIR /src/loghi-htr/src
 
