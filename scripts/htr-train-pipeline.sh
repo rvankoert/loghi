@@ -34,9 +34,9 @@ epochs=1
 height=$HTRLOGHIMODELHEIGHT
 multiply=1
 
-replacefinallayer=""
-# to replace final layer during basemodel finetuning uncomment next line
-#replacefinallayer=" --replace_final_layer "
+# Replace the final layer during basemodel finetuning
+# This is recommended if your data contains many characters that the model has not been trained on
+REPLACEFINALLAYER=0
 
 # Best not to go lower than 2 with batchsize
 batch_size=40
@@ -53,6 +53,7 @@ tmpdir=$(mktemp -d)
 # Set new model as default
 MODEL=$HTRNEWMODEL
 MODELDIR=""
+REPLACEFINAL=""
 
 #DO NOT REMOVE THIS PLACEHOLDER LINE, IT IS USED FOR AUTOMATIC TESTING"
 #PLACEHOLDER#
@@ -63,6 +64,12 @@ mkdir -p $tmpdir/output
 if [[ $USEBASEMODEL -eq 1 ]]; then
     MODEL=$HTRBASEMODEL
     MODELDIR="-v $(dirname "${MODEL}"):$(dirname "${MODEL}")"
+    echo $MODELDIR
+fi
+
+# Replace final layer option
+if [[ $REPLACEFINALLAYER -eq 1 ]]; then
+    REPLACEFINAL="--replace_final_layer"
     echo $MODELDIR
 fi
 
@@ -98,8 +105,8 @@ docker run $DOCKERGPUPARAMS --rm  -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m
         --model $MODEL \
         --aug_multiply $multiply \
         --model_name $model_name \
-        --output $tmpdir/output $replacefinallayer
+        --output $tmpdir/output \
+        $REPLACEFINAL
 
 echo "Results can be found at:"
 echo $tmpdir
-
