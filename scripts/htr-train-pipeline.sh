@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=2.0.0
+VERSION=2.0.1
 set -e
 
 # User-configurable parameters
@@ -21,17 +21,22 @@ channels=1
 GPU=0
 
 # Dataset and training configuration
-listdir=/data/ovdr/gt-split/
-trainlist=$listdir/val.txt
-validationlist=$listdir/val_150hs.txt
+listdir=PATH_TO_LISTDIR
+trainlist=$listdir/training_all_train.txt
+validationlist=$listdir/training_all_val.txt
 
-# The path to your actual images
-datadir=/data/ovdr/gt-split/val/
+# If the images are not in subpath of listdir add the path to your actual images,
+# Defaults to /tmp/path_to_training_images
+datadir=/tmp/path_to_training_images
 
 # Training configuration
 epochs=1
 height=$HTRLOGHIMODELHEIGHT
 multiply=1
+
+replacefinallayer=""
+# to replace final layer during basemodel finetuning uncomment next line
+#replacefinallayer=" --replace_final_layer "
 
 # Best not to go lower than 2 with batchsize
 batch_size=40
@@ -44,16 +49,21 @@ learning_rate=0.0003
 DOCKERLOGHIHTR=loghi/docker.htr:$VERSION
 
 tmpdir=$(mktemp -d)
-mkdir -p $tmpdir/output
 
 # Set new model as default
 MODEL=$HTRNEWMODEL
 MODELDIR=""
 
+#DO NOT REMOVE THIS PLACEHOLDER LINE, IT IS USED FOR AUTOMATIC TESTING"
+#PLACEHOLDER#
+
+mkdir -p $tmpdir/output
+
 # Base model option
 if [[ $USEBASEMODEL -eq 1 ]]; then
-    MODEL=" --model "$MODEL
+    MODEL=$HTRBASEMODEL
     MODELDIR="-v $(dirname "${MODEL}"):$(dirname "${MODEL}")"
+    echo $MODELDIR
 fi
 
 # GPU options
@@ -62,6 +72,7 @@ if [[ $GPU -gt -1 ]]; then
     DOCKERGPUPARAMS="--gpus device=${GPU}"
     echo "Using GPU ${GPU}"
 fi
+
 
 # Starting the training
 echo "Starting Loghi HTR training with model $MODEL"
@@ -87,7 +98,7 @@ docker run $DOCKERGPUPARAMS --rm  -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m
         --model $MODEL \
         --aug_multiply $multiply \
         --model_name $model_name \
-        --output $tmpdir/output
+        --output $tmpdir/output $replacefinallayer
 
 echo "Results can be found at:"
 echo $tmpdir
