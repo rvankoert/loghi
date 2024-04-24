@@ -71,17 +71,17 @@ The following screenshots provide a visual overview of the Gradio interface and 
 
 1. **Start Screen with Uploaded Image**: This is the initial screen where users can upload a document image to process. It’s the starting point of the demo where you begin your interaction with the Loghi tools.
 
-   ![Start Screen with Uploaded Image](path/to/screenshot1.png)
+   ![Start Screen with Uploaded Image](https://github.com/rvankoert/loghi/assets/89044870/d343dae8-ca74-4e25-b438-05f3d1fbcb6d)
 
 2. **Laypa Result**: After processing, the demo shows the Laypa results, displaying the layout analysis of the uploaded document. It segments the document into lines, facilitating further processing.
 
-   ![Laypa Result](path/to/screenshot2.png)
+   ![Laypa Result](https://github.com/rvankoert/loghi/assets/89044870/1a8662d4-2c78-4df4-b48e-adb0e9df1905)
 
 3. **HTR Result**: The Handwritten Text Recognition (HTR) result screen showcases the extracted text from the document. This screen validates the accuracy and quality of the text recognition process.
 
-   ![HTR Result](path/to/screenshot3.png)
+   ![HTR Result](https://github.com/rvankoert/loghi/assets/89044870/7d0dd0eb-d2ac-4504-b9e1-77cf437483f7)
 
 4. **PageXML Output**: The demo allows users to download the PageXML file, which contains detailed annotations of the text and its structure as recognized by the tool. This file can be used for a variety of downstream tasks and applications.
 
-   ![PageXML Output](path/to/screenshot4.png)
+   ![PageXML Output](https://github.com/rvankoert/loghi/assets/89044870/b2bb96a2-d19d-41d7-995d-a738e7640c56)
 
