@@ -53,7 +53,7 @@ def start_app(laypa_model_path: str, laypa_output: str, queue_size: int,
         gr.Markdown("# Loghi Demo")
         gr.Markdown(
             "This demo uses the Laypa model for layout analysis and the Loghi "
-            "model for handwriting text recognition. Upload an image and click"
+            "model for handwritten text recognition. Upload an image and click"
             " submit to process the image.")
 
         with gr.Tab("Inputs"):
