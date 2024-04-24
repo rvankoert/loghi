@@ -13,6 +13,7 @@ Loghi is a comprehensive toolkit designed for Handwritten Text Recognition (HTR)
     - [GPU Acceleration](#gpu-acceleration)
 - [Using Loghi](#using-loghi)
 - [Running the Web Service](#running-the-web-service)
+- [Gradio Demo](#gradio-demo)
 - [Contributing](#contributing)
 - [FAQ](#faq)
 
@@ -104,6 +105,12 @@ git submodule update --recursive --remote
 ```
 
 This ensures you have access to the most recent (though possibly unstable) versions of the code.
+
+## Gradio Demo
+
+Explore the capabilities of Loghi Software with our interactive Gradio demo. The demo provides a user-friendly graphical interface, allowing you to upload document images, perform layout analysis, and view Handwritten Text Recognition (HTR) results in real-time.
+
+For detailed instructions on how to set up and use the demo, visit the [Gradio directory](gradio/README.md) and follow the README provided there.
 
 ## Contributing
 
