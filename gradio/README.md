@@ -23,9 +23,17 @@ Before you begin, ensure you have the necessary tools installed:
 
 1. Build the Docker image using the following command:
 
-   `docker build -t loghi-demo .`
+   ```bash
+   docker build -t loghi-demo .`
+   ```
 
-2. Configure the variables in the `.env` file to suit your setup.
+2. Navigate to the `docker` directory:
+
+   ```bash
+   cd docker
+   ```
+
+3. Configure the variables in the `.env` file to suit your setup.
 3. To run the demo, execute:
 
    ```bash

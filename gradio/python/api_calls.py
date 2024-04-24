@@ -55,7 +55,8 @@ def segment_call(image: Image, laypa_output_path: str, model_path: str,
     expected_dir = Path(laypa_output_path) / identifier
 
     # Ensure the directory is prepared
-    shutil.rmtree(expected_dir, ignore_errors=True)
+    if expected_dir.exists():
+        shutil.rmtree(expected_dir, ignore_errors=True)
     expected_dir.mkdir(parents=True, exist_ok=True)
 
     files = {'image': (filename, image_byte_array, 'image/png')}
@@ -159,7 +160,9 @@ def cut_from_image_call(image: io.BytesIO, xml_bytes: io.BytesIO,
     """
     logging.info("Preparing to cut images from original based on XML...")
     output_dir = Path(f"{tooling_output}/{identifier}/{identifier}")
-    shutil.rmtree(output_dir, ignore_errors=True)
+
+    if output_dir.exists():
+        shutil.rmtree(output_dir, ignore_errors=True)
     output_dir.mkdir(parents=True, exist_ok=True)
     image.seek(0)  # Reset the image pointer to ensure it reads from start
 
@@ -210,7 +213,8 @@ def htr_call(cut_images_dir: str, group_id: str,
 
     # Ensure the directory is ready
     expected_dir = Path(f"{htr_output}/{group_id}")
-    shutil.rmtree(expected_dir, ignore_errors=True)
+    if expected_dir.exists():
+        shutil.rmtree(expected_dir, ignore_errors=True)
     expected_dir.mkdir(parents=True, exist_ok=True)
 
     # Process each image file in the directory
