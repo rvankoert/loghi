@@ -1,4 +1,5 @@
-FROM nvidia/cuda:12.2.0-runtime-ubuntu22.04
+#FROM nvidia/cuda:12.2.0-runtime-ubuntu22.04
+FROM nvidia/cuda:12.5.0-runtime-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC
 ENV LANG en_US.UTF-8
