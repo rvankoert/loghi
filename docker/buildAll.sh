@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=2.0.4
+VERSION=2.0.5
 set -e
 
 CURRENT=$(pwd)
@@ -9,19 +9,27 @@ cd $DIR_OF_SCRIPT
 
 BASE="$(realpath $DIR_OF_SCRIPT/..)"
 
+echo pulling base
 cd $BASE
 git pull
 git submodule update --recursive --remote
 
+echo pulling prima-core-libs
 cd $BASE/prima-core-libs
 git switch master
 git pull
+
+echo pulling loghi-tooling
 cd $BASE/loghi-tooling
 git switch main
 git pull
+
+echo pulling loghi-htr
 cd $BASE/loghi-htr
 git switch master
 git pull
+
+echo pulling laypa
 cd $BASE/laypa
 git switch main
 git pull
