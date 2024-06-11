@@ -270,6 +270,8 @@ def merge_htr_with_pagexml_call(page_xml_path: str, htr_results_path: str,
     # Prepare the concatenated results
     with merged_results_path.open('w') as merged_file:
         for htr_file in Path(htr_results_path).glob("*.txt"):
+            if htr_file.stem == identifier:
+                continue
             with htr_file.open('r') as file:
                 merged_file.writelines(file)
 
