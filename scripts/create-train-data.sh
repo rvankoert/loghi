@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=2.0.6
+VERSION=2.0.7
 
 # User-configurable parameters
 # Percentage split for training and validation sets

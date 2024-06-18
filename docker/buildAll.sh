@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=2.0.6
+VERSION=2.0.7
 set -e
 
 CURRENT=$(pwd)
@@ -46,7 +46,7 @@ cd docker.loghi-tooling/
 cd ..
 echo "building docker.htr"
 cd docker.htr
-./buildImage.sh $BASE/loghi-htr
+./buildImage.sh
 cd ..
 echo "building docker.htr-wsl"
 cd docker.htr-wsl
