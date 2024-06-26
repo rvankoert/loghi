@@ -1,25 +1,26 @@
 #!/bin/bash
-VERSION=2.0.2
+VERSION=2.0.7
 set -e
 
 # User-configurable parameters
 # Stop on error, if set to 1 will exit program if any of the docker commands fail
 STOPONERROR=1
 
-# set to 1 if you want to enable, 0 otherwise, select just one
+# set to 1 if you want to enable the baseline or region prediction, 0 otherwise
 BASELINELAYPA=1
 REGIONLAYPA=0
 
-# Set the path to the yaml file and the pth file for the Laypa model
+# Set the path to the yaml file and the pth file for the Laypa baseline model. Not required if BASELINELAYPA is 0
 LAYPABASELINEMODEL=INSERT_FULL_PATH_TO_YAML_HERE
 LAYPABASELINEMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
 
-# Not required if REGIONLAYPA is 0
+# Set the path to the yaml file and the pth file for the Laypa region model. Not required if REGIONLAYPA is 0
 LAYPAREGIONMODEL=INSERT_FULL_PATH_TO_YAML_HERE
 LAYPAREGIONMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
 
-# Set to 1 if you want to enable, 0 otherwise, select just one
+# Set to 1 if you want to enable the HTR step, 0 otherwise
 HTRLOGHI=1
+# Set the path to the htr model. Not required if HTRLOGHI is 0
 HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
 
 # Set this to 1 for recalculating reading order, line clustering and cleaning.
@@ -27,12 +28,12 @@ HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
 RECALCULATEREADINGORDER=1
 # If the edge of baseline is closer than x pixels...
 RECALCULATEREADINGORDERBORDERMARGIN=50
-# Clean if 1
+# Clean borders if 1
 RECALCULATEREADINGORDERCLEANBORDERS=0
-# How many threads to use
+# How many threads to use for recalculating reading order
 RECALCULATEREADINGORDERTHREADS=4
 
-# Detect language of pagexml, set to 1 to enable, disable otherwise
+# Detect language of pagexml, set to 1 to enable, 0 otherwise
 DETECTLANGUAGE=1
 # Interpolate word locations
 SPLITWORDS=1
