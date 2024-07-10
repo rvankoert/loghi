@@ -6,9 +6,11 @@ set -e
 
 if [ -z $1 ]; then echo "first parameter should be the path of prima-core-libs" && exit 1; fi;
 if [ -z $2 ]; then echo "second parameter should be the path of loghi-tooling" && exit 1; fi;
+if [ -z $3 ]; then echo "third parameter should be version which loghi-tooling will get" && exit 1; fi;
 
 PRIMACORELIBS="$(realpath $1)"
 LOGHITOOLING="$(realpath $2)"
+LOGHI_VERSION=$3
 
 echo "Change to directory of script..."
 DIR_OF_SCRIPT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -30,8 +32,7 @@ rm -rf ./loghi-tooling/layoutanalyzer/src/test/resources/in/*.png
 
 echo "Building docker image..."
 
-docker build --no-cache . -t loghi/docker.loghi-tooling
-
+docker build --no-cache -t loghi/docker.loghi-tooling --build-arg LOGHI_VERSION=$LOGHI_VERSION .
 echo "cleaning up!"
 rm -rf prima-core-libs
 rm -rf loghi-tooling
