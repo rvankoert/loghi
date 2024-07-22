@@ -1,6 +1,7 @@
 #!/bin/bash
-VERSION=2.0.7
+VERSION=2.1.1
 set -e
+set -o pipefail
 
 CURRENT=$(pwd)
 
@@ -42,7 +43,7 @@ cd docker.base
 cd ..
 echo "building docker.loghi-tooling"
 cd docker.loghi-tooling/
-./buildImage.sh $BASE/prima-core-libs/ $BASE/loghi-tooling/
+./buildImage.sh $BASE/prima-core-libs/ $BASE/loghi-tooling $VERSION
 cd ..
 echo "building docker.htr"
 cd docker.htr

@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=2.0.7
+VERSION=2.1.1
 set -e
 
 # User-configurable parameters
