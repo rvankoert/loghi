@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -e
+set -o pipefail
+
 # Checking if the correct number of arguments are passed
 if [ "$#" -ne 2 ]; then
     echo "Usage: $0 /path/to/fonts/ /path/to/texts/"

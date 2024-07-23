@@ -1,6 +1,7 @@
 #!/bin/bash
 VERSION=2.1.2
 set -e
+set -o pipefail
 
 # User-configurable parameters
 # Stop on error, if set to 1 will exit program if any of the docker commands fail
@@ -118,9 +119,10 @@ if [[ $BASELINELAYPA -eq 1 ]]; then
 
     if [[ $REGIONLAYPA -eq 1 ]]; then
         echo "Running Laypa region detection"
+        LAYPAREGIONDIR="$(dirname "${LAYPAREGIONMODEL}")"
 
         docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m \
-        -v $LAYPADIR:$LAYPADIR \
+        -v $LAYPAREGIONDIR:$LAYPAREGIONDIR \
         -v $LAYPA_IN:$LAYPA_IN \
         -v $LAYPA_OUT:$LAYPA_OUT \
         $DOCKERLAYPA \
