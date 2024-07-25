@@ -63,7 +63,7 @@ services:
   htr:
     user: ${MY_UID}:${MY_GID}
     image: 'loghi/docker.htr'
-    command: sh -c 'cd api && gunicorn --workers=1 --threads=1 -b :5000 "app:create_app()"'
+    command: sh -c 'cd api && uvicorn app:app --host 0.0.0.0 --port 5000'
     deploy:
       resources:
         reservations:
