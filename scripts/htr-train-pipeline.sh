@@ -44,6 +44,8 @@ batch_size=40
 model_name=myfirstmodel
 learning_rate=0.0003
 
+tmpdir=$(mktemp -d)
+
 #set the outputdir
 outputdir=$tmpdir/output
 # example outputdir to /home/loghiuser/loghi-model-output
@@ -55,7 +57,6 @@ outputdir=$tmpdir/output
 
 DOCKERLOGHIHTR=loghi/docker.htr:$VERSION
 
-tmpdir=$(mktemp -d)
 
 # Set new model as default
 MODEL=$HTRNEWMODEL
