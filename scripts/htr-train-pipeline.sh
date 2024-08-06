@@ -44,6 +44,12 @@ batch_size=40
 model_name=myfirstmodel
 learning_rate=0.0003
 
+#set the outputdir
+outputdir=$tmpdir/output
+# example outputdir to /home/loghiuser/loghi-model-output
+#outputdir=/home/loghiuser/loghi-model-output
+
+
 # DO NOT MODIFY BELOW THIS LINE
 # ------------------------------
 
@@ -55,11 +61,6 @@ tmpdir=$(mktemp -d)
 MODEL=$HTRNEWMODEL
 MODELDIR=""
 REPLACEFINAL=""
-
-#set the outputdir
-outputdir=$tmpdir/output
-# example outputdir to /home/loghiuser/loghi-model-output
-#outputdir=/home/loghiuser/loghi-model-output
 
 #DO NOT REMOVE THIS PLACEHOLDER LINE, IT IS USED FOR AUTOMATIC TESTING"
 #PLACEHOLDER#
