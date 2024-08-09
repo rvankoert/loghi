@@ -1,6 +1,7 @@
 #!/bin/bash
 VERSION=2.1.2
 set -e
+set -o pipefail
 
 # User-configurable parameters
 # Model configuration
@@ -43,12 +44,19 @@ batch_size=40
 model_name=myfirstmodel
 learning_rate=0.0003
 
+tmpdir=$(mktemp -d)
+
+#set the outputdir
+outputdir=$tmpdir/output
+# example outputdir to /home/loghiuser/loghi-model-output
+#outputdir=/home/loghiuser/loghi-model-output
+
+
 # DO NOT MODIFY BELOW THIS LINE
 # ------------------------------
 
 DOCKERLOGHIHTR=loghi/docker.htr:$VERSION
 
-tmpdir=$(mktemp -d)
 
 # Set new model as default
 MODEL=$HTRNEWMODEL
@@ -58,7 +66,7 @@ REPLACEFINAL=""
 #DO NOT REMOVE THIS PLACEHOLDER LINE, IT IS USED FOR AUTOMATIC TESTING"
 #PLACEHOLDER#
 
-mkdir -p $tmpdir/output
+mkdir -p $outputdir
 
 # Base model option
 if [[ $USEBASEMODEL -eq 1 ]]; then
@@ -83,11 +91,12 @@ fi
 
 # Starting the training
 echo "Starting Loghi HTR training with model $MODEL"
-docker run $DOCKERGPUPARAMS --rm  -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m -ti \
+docker run $DOCKERGPUPARAMS --rm -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m -ti \
     $MODELDIR \
     -v $tmpdir:$tmpdir \
     -v $listdir:$listdir \
     -v $datadir:$datadir \
+    -v $outputdir:$outputdir \
     $DOCKERLOGHIHTR \
         python3 /src/loghi-htr/src/main.py \
         --train_list $trainlist \
@@ -105,7 +114,7 @@ docker run $DOCKERGPUPARAMS --rm  -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m
         --model $MODEL \
         --aug_multiply $multiply \
         --model_name $model_name \
-        --output $tmpdir/output \
+        --output $outputdir \
         $REPLACEFINAL
 
 echo "Results can be found at:"
