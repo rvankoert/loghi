@@ -34,7 +34,7 @@ RUN cd /src \
 #	  && mvn clean package \
 #  && mvn org.owasp:dependency-check-maven:check versions:set -DnewVersion=$LOGHI_VERSION clean package \
 RUN cd /src/loghi-tooling \
-  && mvn versions:set -DnewVersion=$LOGHI_VERSION clean package \
+  && mvn versions:set -DgenerateBackupPoms=false -DnewVersion=$LOGHI_VERSION clean package \
   && find . -name src | xargs rm -rf \
   && find . -name test-classes | xargs rm -rf \
   && rm -rf /src/loghi-tooling/layoutanalyzer/target \
