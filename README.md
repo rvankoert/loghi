@@ -43,6 +43,8 @@ Together, these components form a comprehensive ecosystem for handling HTR tasks
 
 ### Installation
 
+Loghi works best on Linux. Although it can run on Windows using WSL, it is not the recommended approach. Mac's are currently not supported.
+
 Begin by cloning the Loghi repository to access the toolkit and navigate into the directory:
 
 ```bash
