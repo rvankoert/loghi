@@ -67,11 +67,13 @@ https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP
 and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR).
 
 suggestion for laypa:
-- general
-
+```text
+general
+```
 suggestion for loghi-htr that should give some results:
-- generic-2023-02-15
-
+```text
+generic-2023-02-15
+```
 It is not perfect, but a good starting point. It should work ok on 17th and 18th century handwritten dutch. For best results always finetune on your own specific data.
 
 edit the [`scripts/inference-pipeline.sh`](scripts/inference-pipeline.sh) using vi, nano, other whatever editor you prefer. We'll use nano in this example
