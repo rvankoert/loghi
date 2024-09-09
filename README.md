@@ -110,6 +110,8 @@ The file should run for a short while if you have a good nvidia GPU and nvidia-d
 
 When it finishes without errors a new folder called "page" should be created in the directory with the images. This contains the PageXML output.
 
+
+## 
 ### Build dockers from source
 
 As an alternative to using the tested and prebuild docker images, you can build the Docker images with the latest code yourself:
