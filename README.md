@@ -62,7 +62,55 @@ docker pull loghi/docker.loghi-tooling
 
 If Docker is not installed on your machine, follow [these instructions](https://docs.docker.com/engine/install/) to install it.
 
-Alternatively, to build the Docker images with the latest code yourself:
+But first go to:
+https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP
+and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR).
+
+suggestion for laypa:
+- general
+
+suggestion for loghi-htr that should give some results:
+- generic-2023-02-15
+
+It is not perfect, but a good starting point. It should work ok on 17th and 18th century handwritten dutch. For best results always finetune on your own specific data.
+
+edit the [`scripts/inference-pipeline.sh`](scripts/inference-pipeline.sh) using vi, nano, other whatever editor you prefer. We'll use nano in this example
+
+```bash
+nano scripts/inference-pipeline.sh
+```
+Look for the following lines:
+```
+LAYPABASELINEMODEL=INSERT_FULL_PATH_TO_YAML_HERE
+LAYPABASELINEMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
+HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
+```
+and update those paths with the location of the files you just downloaded. If you downloaded a zip: you should unzip it first.
+
+if you do not have a NVIDIA-GPU and nvidia-docker setup additionally change
+
+```text
+GPU=0
+```
+to
+```text
+GPU=-1
+```
+It will then run on CPU, which will be very slow. If you are using the pretrained model and run on CPU: please make sure to download the Loghi-htr model starting with "float32-". This will run faster on CPU than the default mixed_float16 models.
+
+Save the file and run it:
+```bash
+./scripts/inference-pipeline.sh /PATH_TO_FOLDER_CONTAINING_IMAGES
+```
+replace /PATH_TO_FOLDER_CONTAINING_IMAGES with a valid directory containing images (.jpg is preferred/tested) directly below it.
+
+The file should run for a short while if you have a good nvidia GPU and nvidia-docker setup. It might be a long while if you just have CPU available. It should work either way, just a lot slower on CPU.
+
+When it finishes without errors a new folder called "page" should be created in the directory with the images. This contains the PageXML output.
+
+### Build dockers from source
+
+As an alternative to using the tested and prebuild docker images, you can build the Docker images with the latest code yourself:
 
 ```bash
 git submodule update --init --recursive
