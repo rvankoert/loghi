@@ -192,3 +192,24 @@ Here are some frequently asked questions about Loghi and their answers to help y
 
 Currently, Loghi does not support utilizing Apple Silicon's accelerated hardware capabilities. We understand the importance and potential of supporting this architecture and are actively exploring possibilities to make Loghi compatible with Apple Silicon in the future. For now, users with Apple Silicon devices can run Loghi using emulation or virtualization tools, though this might not leverage the full performance capabilities of the hardware. We appreciate your patience and interest, and we're committed to broadening our hardware support to include these devices.
 
+### How can I cite this software?
+
+If you find this toolkit useful in your research, please cite:
+```
+@InProceedings{10.1007/978-3-031-70645-5_6,
+author="van Koert, Rutger
+and Klut, Stefan
+and Koornstra, Tim
+and Maas, Martijn
+and Peters, Luke",
+editor="Mouch{\`e}re, Harold
+and Zhu, Anna",
+title="Loghi: An End-to-End Framework for Making Historical Documents Machine-Readable",
+booktitle="Document Analysis and Recognition -- ICDAR 2024 Workshops",
+year="2024",
+publisher="Springer Nature Switzerland",
+address="Cham",
+pages="73--88",
+abstract="Loghi is a novel framework and suite of tools for the layout analysis and text recognition of historical documents. Scans are processed in a modular pipeline, with the option to use alternative tools in most stages. Layout analysis and text recognition can be trained on example images with PageXML ground truth. The framework is intended to convert scanned documents to machine-readable PageXML. Additional tooling is provided for the creation of synthetic ground truth. A visualiser for troubleshooting the text recognition training is also made available. The result is a framework for end-to-end text recognition, which works from initial layout analysis on the scanned documents, and includes text line detection, text recognition, reading order detection and language detection.",
+isbn="978-3-031-70645-5"
+}
