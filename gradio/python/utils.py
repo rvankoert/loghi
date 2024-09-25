@@ -4,10 +4,10 @@
 import io
 import logging
 import os
-from pathlib import Path
 import time
-from typing import Tuple, Optional, List
 import xml.etree.ElementTree as ET
+from pathlib import Path
+from typing import List, Optional, Tuple
 
 # > Third Party Libraries
 import pandas as pd
@@ -43,12 +43,8 @@ def get_env_variable(var_name: str, default_value: str = None) -> str:
     value = os.environ.get(var_name)
     if value is None:
         if default_value is None:
-            raise ValueError(
-                f"Environment variable {var_name} not set and no default "
-                "value provided.")
-        logger.warning(
-            "Environment variable %s not set. Using default value: "
-            "%s", var_name, default_value)
+            raise ValueError(f"Environment variable {var_name} not set and no default " "value provided.")
+        logger.warning("Environment variable %s not set. Using default value: " "%s", var_name, default_value)
         return default_value
 
     logger.debug("Environment variable %s set to %s", var_name, value)
@@ -56,12 +52,11 @@ def get_env_variable(var_name: str, default_value: str = None) -> str:
 
 
 def file_to_bytes(path):
-    with open(path, 'rb') as f:
+    with open(path, "rb") as f:
         return io.BytesIO(f.read())
 
 
-def setup_image_bytes(segmented_image: Image, original_image: Image) \
-        -> Tuple[io.BytesIO, io.BytesIO]:
+def setup_image_bytes(segmented_image: Image, original_image: Image) -> Tuple[io.BytesIO, io.BytesIO]:
     """
     Converts both segmented and original images into BytesIO streams for
     further processing.
@@ -84,19 +79,18 @@ def setup_image_bytes(segmented_image: Image, original_image: Image) \
 
     # Save the segmented image into the BytesIO object
     if segmented_image:
-        segmented_image.save(segmented_image_bytes, format='PNG')
+        segmented_image.save(segmented_image_bytes, format="PNG")
         segmented_image_bytes.seek(0)  # Reset the stream position
 
     # Save the original image into the BytesIO object
     if original_image:
-        original_image.save(original_image_bytes, format='PNG')
+        original_image.save(original_image_bytes, format="PNG")
         original_image_bytes.seek(0)  # Reset the stream position
 
     return segmented_image_bytes, original_image_bytes
 
 
-def check_for_segmentation_results(directory: Path, identifier: str) \
-        -> Tuple[Optional[Image.Image], Optional[str], str]:
+def check_for_segmentation_results(directory: Path, identifier: str) -> Tuple[Optional[Image.Image], Optional[str], str]:
     """
     Checks for the existence of segmentation results within a timeout period.
 
@@ -119,8 +113,7 @@ def check_for_segmentation_results(directory: Path, identifier: str) \
         image_path = directory / "page" / f"{identifier}.png"
         if image_path.exists():
             logging.info("Segmentation results found.")
-            return Image.open(image_path), str(directory / "page"), \
-                "Segmentation successful."
+            return Image.open(image_path), str(directory / "page"), "Segmentation successful."
         time.sleep(1)
     logging.error("Failed to get the segmented image.")
     return None, None, "Failed to get the segmented image."
@@ -165,9 +158,11 @@ def wait_for_xml_update(xml_path: str, lastupdate_path: str) -> bool:
     return False
 
 
-def save_cut_images(identifier: str, image_dir: str = "/tmp/upload",
-                    captions: Optional[pd.DataFrame] = None) \
-        -> List[Tuple[Image.Image, Optional[str]]]:
+def save_cut_images(
+    identifier: str,
+    image_dir: str = "/tmp/upload",
+    captions: Optional[pd.DataFrame] = None,
+) -> List[Tuple[Image.Image, Optional[str]]]:
     """
     Processes and collects cut images from a specified directory, potentially
     using captions provided in a DataFrame.
@@ -196,8 +191,7 @@ def save_cut_images(identifier: str, image_dir: str = "/tmp/upload",
             img_path = os.path.join(cut_images_dir, img_file)
             if isinstance(captions, pd.DataFrame):
                 base_name = os.path.splitext(img_file)[0]
-                images.append(
-                    (Image.open(img_path), captions.loc[base_name]["text"]))
+                images.append((Image.open(img_path), captions.loc[base_name]["text"]))
             else:
                 images.append(Image.open(img_path))
 
@@ -225,9 +219,9 @@ def xml_to_string(xml_path: str) -> str:
     for elem in root.iter():
         # Splits on '}' and takes the last part, i.e., the actual tag name
         # without namespace
-        elem.tag = elem.tag.split('}')[-1]
+        elem.tag = elem.tag.split("}")[-1]
 
-    return ET.tostring(root, encoding='unicode', method='xml')
+    return ET.tostring(root, encoding="unicode", method="xml")
 
 
 def await_directory(directory: Path, timeout: int) -> bool:
@@ -365,17 +359,12 @@ def collect_htr_results(directory: Path) -> pd.DataFrame:
     """
     htr_results = []
     for htr_file in directory.glob("*.txt"):
-        with htr_file.open('r') as file:
+        with htr_file.open("r") as file:
             for line in file:
-                parts = line.strip().split('\t')
-                identifier, confidence, text = parts[0], float(
-                    parts[2]), parts[3] if len(parts) > 3 else ""
-                htr_results.append(
-                    {"identifier": identifier,
-                     "confidence": confidence,
-                     "text": text})
+                parts = line.strip().split("\t")
+                identifier, confidence, text = parts[0], float(parts[2]), parts[3] if len(parts) > 3 else ""
+                htr_results.append({"identifier": identifier, "confidence": confidence, "text": text})
 
-    df = pd.DataFrame(htr_results, columns=[
-                      "identifier", "confidence", "text"])
+    df = pd.DataFrame(htr_results, columns=["identifier", "confidence", "text"])
     df.index = df["identifier"]
     return df
