@@ -203,7 +203,7 @@ if [[ $HTRLOGHI -eq 1 ]]; then
             --beam_width $BEAMWIDTH " | tee -a "$tmpdir"/log.txt
 
 
-    docker run "$DOCKERGPUPARAMS" -u $(id -u "${USER}"):$(id -g "${USER}") --rm -m 32000m --shm-size 10240m -ti \
+    docker run $DOCKERGPUPARAMS -u $(id -u "${USER}"):$(id -g "${USER}") --rm -m 32000m --shm-size 10240m -ti \
         -v /tmp:/tmp \
         -v "$tmpdir":"$tmpdir" \
         -v "$LOGHIDIR":"$LOGHIDIR" \
