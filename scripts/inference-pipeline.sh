@@ -121,7 +121,7 @@ if [[ $BASELINELAYPA -eq 1 ]]; then
         echo "Running Laypa region detection"
         LAYPAREGIONDIR="$(dirname "${LAYPAREGIONMODEL}")"
 
-        docker run "$DOCKERGPUPARAMS" --rm -it -u $(id -u "${USER}"):$(id -g "${USER}") -m 32000m --shm-size 10240m \
+        docker run $DOCKERGPUPARAMS --rm -it -u $(id -u "${USER}"):$(id -g "${USER}") -m 32000m --shm-size 10240m \
         -v "$LAYPAREGIONDIR":"$LAYPAREGIONDIR" \
         -v "$LAYPA_IN":"$LAYPA_IN" \
         -v "$LAYPA_OUT":"$LAYPA_OUT" \
@@ -187,7 +187,7 @@ if [[ $HTRLOGHI -eq 1 ]]; then
     echo "Running HTR"
     LOGHIDIR="$(dirname "${HTRLOGHIMODEL}")"
 
-    echo docker run "$DOCKERGPUPARAMS" -u $(id -u "${USER}"):$(id -g "${USER}") --rm -m 32000m --shm-size 10240m -ti \
+    echo docker run $DOCKERGPUPARAMS -u $(id -u "${USER}"):$(id -g "${USER}") --rm -m 32000m --shm-size 10240m -ti \
         -v /tmp:/tmp \
         -v "$tmpdir":"$tmpdir" \
         -v "$LOGHIDIR":"$LOGHIDIR" \
