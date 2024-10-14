@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=2.1.2
+VERSION=2.1.4
 set -e
 set -o pipefail
 
@@ -103,7 +103,7 @@ echo "Output files: $(find $outputdir | wc -l)"
 echo "Generating file lists..."
 > $filelist 
 for input_path in $(find $outputdir -name '*.png'); do
-  filename=$(basename -- "$input_path")
+  filename=${input_path##*/}
   filename="${filename%.*}"
   base="${input_path%.*}"
   text=$(cat $base.txt)

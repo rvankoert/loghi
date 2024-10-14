@@ -24,7 +24,7 @@ Before you begin, ensure you have the necessary tools installed:
 1. Build the Docker image using the following command:
 
    ```bash
-   docker build -t loghi-demo .`
+   docker build -t loghi-demo .
    ```
 
 2. Navigate to the `docker` directory:
