@@ -153,8 +153,8 @@ if [[ $BASELINELAYPA -eq 1 ]]; then
             -input_path_page "$LAYPA_OUT"/page/ \
             -output_path_page "$LAYPA_OUT"/page/ \
             -recalculate_textline_contours_from_baselines \
-            "$as_single_region" \
-            "$namespace" | tee -a "$tmpdir"/log.txt
+            $as_single_region \
+            $namespace | tee -a "$tmpdir"/log.txt
 
     # Check if failed
     status=$?
@@ -175,7 +175,7 @@ if [[ $HTRLOGHI -eq 1 ]]; then
            -outputbase "$tmpdir"/imagesnippets/ \
            -output_type png \
            -channels 4 \
-           -threads 4 "$namespace"| tee -a "$tmpdir"/log.txt
+           -threads 4 $namespace| tee -a "$tmpdir"/log.txt
 
     # Check if failed
     status=$?
@@ -234,7 +234,7 @@ if [[ $HTRLOGHI -eq 1 ]]; then
             -results_file "$tmpdir"/results.txt \
             -config_file $HTRLOGHIMODEL/config.json \
             -htr_code_config_file "$tmpdir"/output/config.json \
-            "$namespace" | tee -a "$tmpdir"/log.txt
+            $namespace | tee -a "$tmpdir"/log.txt
 
     # Check if failed
     status=$?
@@ -260,8 +260,8 @@ then
             -input_dir "$IMAGES_PATH"/page/ \
             -border_margin $RECALCULATEREADINGORDERBORDERMARGIN \
             -threads $RECALCULATEREADINGORDERTHREADS \
-            "$clean_borders" \
-            "$namespace"| tee -a "$tmpdir"/log.txt
+            $clean_borders \
+            $namespace| tee -a "$tmpdir"/log.txt
 
     # Check if failed
     status=$?
@@ -277,7 +277,7 @@ then
         -v "$tmpdir":"$tmpdir" \
         $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionDetectLanguageOfPageXml \
             -page "$IMAGES_PATH"/page/ \
-            "$namespace" | tee -a "$tmpdir"/log.txt
+            $namespace | tee -a "$tmpdir"/log.txt
 
     # Check if failed
     status=$?
@@ -293,7 +293,7 @@ then
         -v "$tmpdir":"$tmpdir" \
         $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionSplitPageXMLTextLineIntoWords \
             -input_path "$IMAGES_PATH"/page/ \
-            "$namespace" | tee -a "$tmpdir"/log.txt
+            $namespace | tee -a "$tmpdir"/log.txt
 
     # Check if failed
     status=$?
