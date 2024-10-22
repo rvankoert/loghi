@@ -4,23 +4,33 @@
 import io
 import logging
 import os
-from pathlib import Path
-import requests
 import shutil
+from pathlib import Path
 from typing import Optional, Tuple
-
-# > Local Libraries
-from utils import await_file, await_directory, await_htr_results, \
-    await_xml_update, check_for_segmentation_results
 
 # > Third Party Libraries
 import pandas as pd
+import requests
 from PIL import Image
 
+# > Local Libraries
+from utils import (
+    await_directory,
+    await_file,
+    await_htr_results,
+    await_xml_update,
+    check_for_segmentation_results,
+)
 
-def segment_call(image: Image, laypa_output_path: str, model_path: str,
-                 filename: str, identifier: str, address: str) \
-        -> Tuple[Optional[Image.Image], Optional[str], str]:
+
+def segment_call(
+    image: Image,
+    laypa_output_path: str,
+    model_path: str,
+    filename: str,
+    identifier: str,
+    address: str,
+) -> Tuple[Optional[Image.Image], Optional[str], str]:
     """
     Sends an image to a segmentation service and checks for the results within
     a specified directory.
@@ -48,7 +58,7 @@ def segment_call(image: Image, laypa_output_path: str, model_path: str,
     """
     logging.info("Starting image segmentation...")
     image_byte_array = io.BytesIO()
-    image.save(image_byte_array, format='PNG')
+    image.save(image_byte_array, format="PNG")
     image_byte_array.seek(0)
 
     url = f"{address}/predict"
@@ -59,23 +69,26 @@ def segment_call(image: Image, laypa_output_path: str, model_path: str,
         shutil.rmtree(expected_dir, ignore_errors=True)
     expected_dir.mkdir(parents=True, exist_ok=True)
 
-    files = {'image': (filename, image_byte_array, 'image/png')}
-    data = {'identifier': identifier, 'model': model_path}
+    files = {"image": (filename, image_byte_array, "image/png")}
+    data = {"identifier": identifier, "model": model_path}
 
     response = requests.post(url, files=files, data=data)
     if response.ok:
-        logging.info(
-            "Segmentation request successful, checking for results...")
+        logging.info("Segmentation request successful, checking for results...")
         return check_for_segmentation_results(expected_dir, identifier)
     else:
         logging.error(f"Segmentation failed: HTTP {response.status_code}")
         return None, None, f"Segmentation failed: HTTP {response.status_code}"
 
 
-def extract_baselines_call(mask: io.BytesIO, xml: io.BytesIO,
-                           image: io.BytesIO, identifier: str,
-                           tooling_output: str, address: str) \
-        -> Tuple[Optional[str], str]:
+def extract_baselines_call(
+    mask: io.BytesIO,
+    xml: io.BytesIO,
+    image: io.BytesIO,
+    identifier: str,
+    tooling_output: str,
+    address: str,
+) -> Tuple[Optional[str], str]:
     """
     Sends image data to a baseline extraction service and waits for the
     resulting XML file to be saved.
@@ -112,29 +125,30 @@ def extract_baselines_call(mask: io.BytesIO, xml: io.BytesIO,
     xml_output_path.parent.mkdir(parents=True, exist_ok=True)
 
     files = {
-        'mask': (f'{identifier}.png', mask, 'image/png'),
-        'xml': (f'{identifier}.xml', xml, 'application/xml'),
-        'image': (f'{identifier}.png', image, 'image/png')
+        "mask": (f"{identifier}.png", mask, "image/png"),
+        "xml": (f"{identifier}.xml", xml, "application/xml"),
+        "image": (f"{identifier}.png", image, "image/png"),
     }
-    data = {'identifier': identifier}
+    data = {"identifier": identifier}
 
     response = requests.post(url, files=files, data=data)
     if response.ok:
-        logging.info(
-            "Baseline extraction request sent successfully, "
-            "awaiting response...")
+        logging.info("Baseline extraction request sent successfully, " "awaiting response...")
         if await_file(xml_output_path, 60):
             return str(xml_output_path), "Baseline extraction successful."
         return None, "Failed to extract baselines."
     else:
-        logging.error(
-            f"Failed to extract baselines: HTTP{response.status_code}")
+        logging.error(f"Failed to extract baselines: HTTP{response.status_code}")
         return None, f"Failed to extract baselines: HTTP{response.status_code}"
 
 
-def cut_from_image_call(image: io.BytesIO, xml_bytes: io.BytesIO,
-                        identifier: str, tooling_output: str, address: str) \
-        -> Tuple[bool, str]:
+def cut_from_image_call(
+    image: io.BytesIO,
+    xml_bytes: io.BytesIO,
+    identifier: str,
+    tooling_output: str,
+    address: str,
+) -> Tuple[bool, str]:
     """
     Sends an image along with its corresponding Page XML to a service to
     perform image cutting based on the XML data.
@@ -167,16 +181,12 @@ def cut_from_image_call(image: io.BytesIO, xml_bytes: io.BytesIO,
     image.seek(0)  # Reset the image pointer to ensure it reads from start
 
     url = f"{address}/cut-from-image-based-on-page-xml-new"
-    files = {
-        'image': (f'{identifier}.png', image, 'image/png'),
-        'page': (f'{identifier}.xml', xml_bytes, 'application/xml')
-    }
-    data = {'identifier': identifier, 'output_type': 'png', 'channels': '4'}
+    files = {"image": (f"{identifier}.png", image, "image/png"), "page": (f"{identifier}.xml", xml_bytes, "application/xml")}
+    data = {"identifier": identifier, "output_type": "png", "channels": "4"}
 
     response = requests.post(url, files=files, data=data)
     if response.ok:
-        logging.info(
-            "Cut request successful, checking for output directory...")
+        logging.info("Cut request successful, checking for output directory...")
         # Check for the directory for 60 seconds
         if await_directory(output_dir, 60):
             return True, "Image cutting successful."
@@ -186,8 +196,12 @@ def cut_from_image_call(image: io.BytesIO, xml_bytes: io.BytesIO,
         return False, f"Failed to cut image: HTTP {response.status_code}"
 
 
-def htr_call(cut_images_dir: str, group_id: str,
-             htr_output: str, address: str) -> pd.DataFrame:
+def htr_call(
+    cut_images_dir: str,
+    group_id: str,
+    htr_output: str,
+    address: str,
+) -> pd.DataFrame:
     """
     Sends cut images for Handwritten Text Recognition (HTR) processing.
 
@@ -219,28 +233,30 @@ def htr_call(cut_images_dir: str, group_id: str,
 
     # Process each image file in the directory
     for img_file in Path(cut_images_dir).glob("*.png"):
-        with img_file.open('rb') as img:
+        with img_file.open("rb") as img:
             files = {
-                'image': (img_file.name, img, 'image/png'),
-                'group_id': (None, group_id),
-                'identifier': (None, img_file.stem),
-                'whitelist': (None, 'url_code'),  # example parameter
+                "image": (img_file.name, img, "image/png"),
+                "group_id": (None, group_id),
+                "identifier": (None, img_file.stem),
+                "whitelist": (None, "url_code"),  # example parameter
             }
             response = requests.post(url, files=files)
 
             if response.ok:
                 ok_count += 1
             else:
-                logging.error(
-                    f"HTR request failed for {img_file.name}: "
-                    f"HTTP {response.status_code}")
+                logging.error(f"HTR request failed for {img_file.name}: " f"HTTP {response.status_code}")
 
     logging.info("Awaiting all HTR results to be processed...")
     return await_htr_results(expected_dir, ok_count)
 
 
-def merge_htr_with_pagexml_call(page_xml_path: str, htr_results_path: str,
-                                identifier: str, address: str) -> bool:
+def merge_htr_with_pagexml_call(
+    page_xml_path: str,
+    htr_results_path: str,
+    identifier: str,
+    address: str,
+) -> bool:
     """
     Merges Handwritten Text Recognition (HTR) results with a Page XML file and
     sends the merged data to a service.
@@ -268,20 +284,19 @@ def merge_htr_with_pagexml_call(page_xml_path: str, htr_results_path: str,
     page_xml_name = os.path.basename(page_xml_path)
 
     # Prepare the concatenated results
-    with merged_results_path.open('w') as merged_file:
+    with merged_results_path.open("w") as merged_file:
         for htr_file in Path(htr_results_path).glob("*.txt"):
-            if htr_file.stem == identifier:
+            if htr_file.name == merged_results_path.name:
                 continue
-            with htr_file.open('r') as file:
+            with htr_file.open("r") as file:
                 merged_file.writelines(file)
 
     # Prepare the files for the request
-    with open(page_xml_path, 'rb') as page_file, \
-            open(merged_results_path, 'rb') as results_file:
+    with open(page_xml_path, "rb") as page_file, open(merged_results_path, "rb") as results_file:
         files = {
-            'page': (page_xml_name, page_file, 'application/xml'),
-            'results': (f"{identifier}.txt", results_file, 'text/plain'),
-            'identifier': (None, identifier)
+            "page": (page_xml_name, page_file, "application/xml"),
+            "results": (f"{identifier}.txt", results_file, "text/plain"),
+            "identifier": (None, identifier),
         }
         response = requests.post(url, files=files)
         if response.ok:
@@ -292,9 +307,11 @@ def merge_htr_with_pagexml_call(page_xml_path: str, htr_results_path: str,
             return False
 
 
-def recalculate_reading_order_call(xml_path: str,
-                                   identifier: str,
-                                   address: str) -> bool:
+def recalculate_reading_order_call(
+    xml_path: str,
+    identifier: str,
+    address: str,
+) -> bool:
     """
     Sends a request to recalculate the reading order in a Page XML file based
     on its updated content.
@@ -317,27 +334,25 @@ def recalculate_reading_order_call(xml_path: str,
     logging.info("Recalculating reading order...")
     url = f"{address}/recalculate-reading-order-new"
     files = {
-        'page': (os.path.basename(xml_path),
-                 open(xml_path, 'rb'),
-                 'application/xml'),
-        'identifier': (None, identifier),
-        'border_margin': (None, '200')  # Example parameter, adjust as needed
+        "page": (os.path.basename(xml_path), open(xml_path, "rb"), "application/xml"),
+        "identifier": (None, identifier),
+        "border_margin": (None, "200"),  # Example parameter, adjust as needed
     }
 
     response = requests.post(url, files=files)
     if response.ok:
-        logging.info(
-            "Reading order recalculation request sent, awaiting response...")
+        logging.info("Reading order recalculation request sent, awaiting response...")
         return await_xml_update(xml_path)
     else:
-        logging.error("Failed to recalculate reading order: HTTP "
-                      f"{response.status_code}")
+        logging.error("Failed to recalculate reading order: HTTP " f"{response.status_code}")
         return False
 
 
-def split_text_line_into_words_call(xml_path: str,
-                                    identifier: str,
-                                    address: str) -> bool:
+def split_text_line_into_words_call(
+    xml_path: str,
+    identifier: str,
+    address: str,
+) -> bool:
     """
     Sends a Page XML file to a service to split text lines into words,
     enhancing text analysis granularity.
@@ -361,18 +376,12 @@ def split_text_line_into_words_call(xml_path: str,
     """
     logging.info("Splitting text lines into words...")
     url = f"{address}/split-page-xml-text-line-into-words"
-    files = {
-        'xml': (os.path.basename(xml_path), open(xml_path, 'rb'),
-                'application/xml'),
-        'identifier': (None, identifier)
-    }
+    files = {"xml": (os.path.basename(xml_path), open(xml_path, "rb"), "application/xml"), "identifier": (None, identifier)}
 
     response = requests.post(url, files=files)
     if response.ok:
-        logging.info(
-            "Text line splitting request accepted, awaiting XML update...")
+        logging.info("Text line splitting request accepted, awaiting XML update...")
         return await_xml_update(xml_path)
     else:
-        logging.error("Failed to split text lines into words: "
-                      f"HTTP {response.status_code}")
+        logging.error("Failed to split text lines into words: " f"HTTP {response.status_code}")
         return False

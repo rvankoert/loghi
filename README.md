@@ -43,6 +43,8 @@ Together, these components form a comprehensive ecosystem for handling HTR tasks
 
 ### Installation
 
+Loghi works best on Linux. Although it can run on Windows using WSL, it is not the recommended approach. Mac's are currently not supported.
+
 Begin by cloning the Loghi repository to access the toolkit and navigate into the directory:
 
 ```bash
@@ -62,7 +64,59 @@ docker pull loghi/docker.loghi-tooling
 
 If Docker is not installed on your machine, follow [these instructions](https://docs.docker.com/engine/install/) to install it.
 
-Alternatively, to build the Docker images with the latest code yourself:
+But first go to:
+https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP
+and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR).
+
+suggestion for laypa:
+```text
+general
+```
+suggestion for loghi-htr that should give some results:
+```text
+generic-2023-02-15
+```
+It is not perfect, but a good starting point. It should work ok on 17th and 18th century handwritten dutch. For best results always finetune on your own specific data.
+
+edit the [`scripts/inference-pipeline.sh`](scripts/inference-pipeline.sh) using vi, nano, other whatever editor you prefer. We'll use nano in this example
+
+```bash
+nano scripts/inference-pipeline.sh
+```
+Look for the following lines:
+```
+LAYPABASELINEMODEL=INSERT_FULL_PATH_TO_YAML_HERE
+LAYPABASELINEMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
+HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
+```
+and update those paths with the location of the files you just downloaded. If you downloaded a zip: you should unzip it first.
+
+if you do not have a NVIDIA-GPU and nvidia-docker setup additionally change
+
+```text
+GPU=0
+```
+to
+```text
+GPU=-1
+```
+It will then run on CPU, which will be very slow. If you are using the pretrained model and run on CPU: please make sure to download the Loghi-htr model starting with "float32-". This will run faster on CPU than the default mixed_float16 models.
+
+Save the file and run it:
+```bash
+./scripts/inference-pipeline.sh /PATH_TO_FOLDER_CONTAINING_IMAGES
+```
+replace /PATH_TO_FOLDER_CONTAINING_IMAGES with a valid directory containing images (.jpg is preferred/tested) directly below it.
+
+The file should run for a short while if you have a good nvidia GPU and nvidia-docker setup. It might be a long while if you just have CPU available. It should work either way, just a lot slower on CPU.
+
+When it finishes without errors a new folder called "page" should be created in the directory with the images. This contains the PageXML output.
+
+
+## 
+### Build dockers from source
+
+As an alternative to using the tested and prebuild docker images, you can build the Docker images with the latest code yourself:
 
 ```bash
 git submodule update --init --recursive
@@ -138,3 +192,24 @@ Here are some frequently asked questions about Loghi and their answers to help y
 
 Currently, Loghi does not support utilizing Apple Silicon's accelerated hardware capabilities. We understand the importance and potential of supporting this architecture and are actively exploring possibilities to make Loghi compatible with Apple Silicon in the future. For now, users with Apple Silicon devices can run Loghi using emulation or virtualization tools, though this might not leverage the full performance capabilities of the hardware. We appreciate your patience and interest, and we're committed to broadening our hardware support to include these devices.
 
+### How can I cite this software?
+
+If you find this toolkit useful in your research, please cite:
+```
+@InProceedings{10.1007/978-3-031-70645-5_6,
+author="van Koert, Rutger
+and Klut, Stefan
+and Koornstra, Tim
+and Maas, Martijn
+and Peters, Luke",
+editor="Mouch{\`e}re, Harold
+and Zhu, Anna",
+title="Loghi: An End-to-End Framework for Making Historical Documents Machine-Readable",
+booktitle="Document Analysis and Recognition -- ICDAR 2024 Workshops",
+year="2024",
+publisher="Springer Nature Switzerland",
+address="Cham",
+pages="73--88",
+abstract="Loghi is a novel framework and suite of tools for the layout analysis and text recognition of historical documents. Scans are processed in a modular pipeline, with the option to use alternative tools in most stages. Layout analysis and text recognition can be trained on example images with PageXML ground truth. The framework is intended to convert scanned documents to machine-readable PageXML. Additional tooling is provided for the creation of synthetic ground truth. A visualiser for troubleshooting the text recognition training is also made available. The result is a framework for end-to-end text recognition, which works from initial layout analysis on the scanned documents, and includes text line detection, text recognition, reading order detection and language detection.",
+isbn="978-3-031-70645-5"
+}

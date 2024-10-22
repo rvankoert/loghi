@@ -23,7 +23,7 @@ COPY dependency-check-data /root/.m2/repository/org/owasp/dependency-check-data
 WORKDIR /src/prima-core-libs/java
 
 RUN apt-get update && apt-get --no-install-recommends install -y openjdk-11-jre maven postgresql-client libdc1394-22 libavcodec58 libavformat58 libswscale5 libtbb2 git \
-  && mvn deploy:deploy-file -Durl=file:///$HOME/repo -Dfile=/usr/local/share/java/opencv4/opencv-490.jar -DgroupId=org.opencv -DartifactId=opencv -Dpackaging=jar -Dversion=4.9.0 \
+  && mvn deploy:deploy-file -Durl=file:///$HOME/repo -Dfile=/usr/local/share/java/opencv4/opencv-4100.jar -DgroupId=org.opencv -DartifactId=opencv -Dpackaging=jar -Dversion=4.10.0 \
   && mvn clean package
 RUN cd /src \
   && git clone https://github.com/rvankoert/langident.git \
@@ -34,7 +34,7 @@ RUN cd /src \
 #	  && mvn clean package \
 #  && mvn org.owasp:dependency-check-maven:check versions:set -DnewVersion=$LOGHI_VERSION clean package \
 RUN cd /src/loghi-tooling \
-  && mvn versions:set -DnewVersion=$LOGHI_VERSION clean package \
+  && mvn versions:set -DgenerateBackupPoms=false -DnewVersion=$LOGHI_VERSION clean package \
   && find . -name src | xargs rm -rf \
   && find . -name test-classes | xargs rm -rf \
   && rm -rf /src/loghi-tooling/layoutanalyzer/target \

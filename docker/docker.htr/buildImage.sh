@@ -32,6 +32,7 @@ cd $DIR_OF_SCRIPT
 echo "Building docker image..."
 #docker build -t loghi/docker.htr .
 #docker buildx build --platform linux/amd64 -t loghi/docker.htr .
+#docker buildx build --platform linux/amd64 --no-cache -t loghi/docker.htr .
 #docker buildx build --platform linux/arm64 -t loghi/docker.htr .
 docker build --no-cache . -t loghi/docker.htr
 
