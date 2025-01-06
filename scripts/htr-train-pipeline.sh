@@ -5,7 +5,6 @@ set -o pipefail
 
 # User-configurable parameters
 # Model configuration
-HTRLOGHIMODELHEIGHT=64
 
 # Set to 1 to finetune an existing model, 0 to train a new model
 USEBASEMODEL=0
@@ -15,8 +14,6 @@ HTRBASEMODEL=PATH_TO_HTR_BASE_MODEL
 # This is only used if USEBASEMODEL is set to 0
 # We recommend using the recommended model from the model library
 HTRNEWMODEL="recommended"
-# Set channels to 1 to process input as grayscale, 3 for color, 4 for color and mask
-channels=1
 
 # Used gpu ids, set to "-1" to use CPU, "0" for first, "1" for second, etc
 GPU=0
@@ -32,7 +29,6 @@ datadir=/tmp/path_to_training_images
 
 # Training configuration
 epochs=1
-height=$HTRLOGHIMODELHEIGHT
 multiply=1
 
 # Replace the final layer during basemodel finetuning
@@ -103,12 +99,9 @@ docker run $DOCKERGPUPARAMS --rm -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m 
         --do_validate \
         --validation_list $validationlist \
         --learning_rate $learning_rate \
-        --channels $channels \
         --batch_size $batch_size \
         --epochs $epochs \
         --gpu $GPU \
-        --height $height \
-        --use_mask \
         --seed 1 \
         --beam_width 1 \
         --model $MODEL \
