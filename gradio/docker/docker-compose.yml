@@ -1,0 +1,118 @@
+services:
+  laypa:
+    user: ${MY_UID}:${MY_GID}
+    image: 'loghi/docker.laypa'
+    command: 'python api/gunicorn_app.py'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: ${LAYPA_GPU_COUNT}
+              capabilities: [gpu]
+    container_name: 'laypa'
+    ports:
+      - '127.0.0.1:5000:5000'  # Expose only on localhost
+    environment:
+      LAYPA_MAX_QUEUE_SIZE: 128
+      LAYPA_MODEL_BASE_PATH: ${LAYPA_MODEL_PATH}
+      LAYPA_OUTPUT_BASE_PATH: ${LAYPA_OUTPUT_PATH}
+      GUNICORN_RUN_HOST: '0.0.0.0:5000'
+      GUNICORN_WORKERS: 1
+      GUNICORN_THREADS: 1
+      GUNICORN_ACCESSLOG: '-'
+    volumes:
+      - '${LAYPA_MODEL_PATH}:${LAYPA_MODEL_PATH}'
+      - '${LAYPA_OUTPUT_PATH}:${LAYPA_OUTPUT_PATH}'
+    networks:
+      - pipeline
+    shm_size: 512mb
+    restart: always
+
+  loghi-tooling:
+    user: ${MY_UID}:${MY_GID}
+    image: 'loghi/docker.loghi-tooling'
+    command: '/src/loghi-tooling/loghiwebservice/target/appassembler/bin/LoghiWebserviceApplication server ${TOOLING_CONFIG_FILE}'
+    container_name: 'loghi-tooling'
+    ports:
+      - '8080:8080'
+      - '8081:8081'
+    environment:
+      STORAGE_LOCATION: ${TOOLING_OUTPUT_PATH}
+      P2PALA_CONFIG_FILE: /doesnotexist
+      EXTRACT_BASELINES_MAX_THREADS: 4
+      EXTRACT_BASELINES_QUEUE_LENGTH: 64
+      CUT_FROM_IMAGE_MAX_THREADS: 4
+      CUT_FROM_IMAGE_QUEUE_LENGTH: 64
+      LOGHI_HTR_MERGE_PAGE_MAX_THREADS: 4
+      LOGHI_HTR_MERGE_PAGE_QUEUE_LENGTH: 64
+      RECALCULATE_READING_ORDER_NEW_MAX_THREADS: 4
+      RECALCULATE_READING_ORDER_NEW_QUEUE_LENGTH: 64
+      SPLIT_PAGE_TEXT_LINE_INTO_WORDS_MAX_THREADS: 4
+      SPLIT_PAGE_TEXT_LINE_INTO_WORDS_QUEUE_LENGTH: 64
+      DETECT_LANGUAGE_OF_PAGE_XML_MAX_THREADS: 4
+      DETECT_LANGUAGE_OF_PAGE_XML_QUEUE_LENGTH: 64
+    volumes: 
+      - '${TOOLING_CONFIG_FILE}:${TOOLING_CONFIG_FILE}'
+      - '${TOOLING_OUTPUT_PATH}:${TOOLING_OUTPUT_PATH}'
+    networks:
+      - pipeline
+    shm_size: 512mb
+    restart: always
+
+  htr:
+    user: ${MY_UID}:${MY_GID}
+    image: 'loghi/docker.htr'
+    command: sh -c 'cd api && uvicorn app:app --host 0.0.0.0 --port 5000'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: ${HTR_GPU_COUNT}
+              capabilities: [gpu]
+    container_name: 'htr'
+    ports:
+      - '127.0.0.1:5001:5000'  # Bind only to localhost
+    environment:
+      LOGHI_MODEL_PATH: ${LOGHI_MODEL_PATH}
+      LOGHI_BATCH_SIZE: 64
+      LOGHI_OUTPUT_PATH: ${LOGHI_OUTPUT_PATH}
+      LOGHI_MAX_QUEUE_SIZE: 50000
+      LOGHI_PATIENCE: 0.5
+    volumes:
+      - '${LOGHI_MODEL_PATH}:${LOGHI_MODEL_PATH}'
+      - '${LOGHI_OUTPUT_PATH}:${LOGHI_OUTPUT_PATH}'
+    networks:
+      - pipeline
+    shm_size: 512mb
+    restart: always
+
+  loghi-demo:
+    user: ${MY_UID}:${MY_GID}
+    image: 'loghi-demo'
+    container_name: 'loghi-demo'
+    ports:
+      - '7860:7860'  # Default Gradio port
+    environment:
+      LAYPA_MODEL_PATH: ${LAYPA_MODEL_PATH}
+      LAYPA_OUTPUT_PATH: ${LAYPA_OUTPUT_PATH}
+      LOGHI_OUTPUT_PATH: ${LOGHI_OUTPUT_PATH}
+      TOOLING_OUTPUT_PATH: ${TOOLING_OUTPUT_PATH}
+      QUEUE_SIZE: ${GRADIO_QUEUE_SIZE}
+      CONCURRENCY_LIMIT: ${GRADIO_WORKERS}
+      LAYPA_ADDRESS: 'http://laypa:5000'
+      LOGHI_ADDRESS: 'http://htr:5000'
+      TOOLING_ADDRESS: 'http://loghi-tooling:8080'
+    volumes:
+      - '${LAYPA_MODEL_PATH}:${LAYPA_MODEL_PATH}'
+      - '${LAYPA_OUTPUT_PATH}:${LAYPA_OUTPUT_PATH}'
+      - '${LOGHI_OUTPUT_PATH}:${LOGHI_OUTPUT_PATH}'
+      - '${TOOLING_OUTPUT_PATH}:${TOOLING_OUTPUT_PATH}'
+    networks:
+      - pipeline
+    restart: always
+
+networks:
+  pipeline:
+

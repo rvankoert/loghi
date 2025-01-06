@@ -3,18 +3,23 @@
 Loghi is a comprehensive toolkit designed for Handwritten Text Recognition (HTR) and Optical Character Recognition (OCR), offering an accessible approach to transcribing historical documents and training models for specialized needs. This README provides a quick start guide for using Loghi, including how to install, run inference, train new models, and utilize our scripts for these tasks.
 
 ## Table of Contents
-- [Introduction to Loghi](#introduction-to-loghi)
+- [Loghi: Handwritten Text Recognition Toolkit](#loghi-handwritten-text-recognition-toolkit)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction to Loghi](#introduction-to-loghi)
     - [Laypa: Layout Analysis and Segmentation](#laypa-layout-analysis-and-segmentation)
     - [Loghi Tooling: Pre and Post-Processing Toolkit](#loghi-tooling-pre-and-post-processing-toolkit)
     - [Loghi HTR: Text Transcription](#loghi-htr-text-transcription)
-- [Quick Start](#quick-start)
+  - [Quick Start](#quick-start)
     - [Installation](#installation)
     - [Docker Images](#docker-images)
     - [GPU Acceleration](#gpu-acceleration)
-- [Using Loghi](#using-loghi)
-- [Running the Web Service](#running-the-web-service)
-- [Contributing](#contributing)
-- [FAQ](#faq)
+  - [Using Loghi](#using-loghi)
+  - [Running the Web Service](#running-the-web-service)
+  - [Updates](#updates)
+  - [Gradio Demo](#gradio-demo)
+  - [Contributing](#contributing)
+  - [FAQ](#faq)
+    - [Does Loghi work on Apple Silicon (M1/M2/M3)?](#does-loghi-work-on-apple-silicon-m1m2m3)
 
 ## Introduction to Loghi
 
@@ -22,21 +27,23 @@ The Loghi framework is designed to streamline the process of Handwritten Text Re
 
 ### Laypa: Layout Analysis and Segmentation
 
-Laypa specializes in the segmentation of documents, identifying different regions like paragraphs, page numbers, and most importantly, baselines within the text. Utilizing a sophisticated architecture based on a ResNet backbone and a feature pyramid network, Laypa performs pixel-wise classifications to detect these elements. Built on the [detectron2](https://github.com/facebookresearch/detectron2) framework, its output facilitates further processing by converting the classifications into instances—either as masks or directly into PageXML format. This segmentation is crucial for preparing documents for OCR/HTR processing, ensuring that text regions are accurately recognized and extracted.
+[Laypa](https://github.com/knaw-huc/laypa/) specializes in the segmentation of documents, identifying different regions like paragraphs, page numbers, and most importantly, baselines within the text. Utilizing a sophisticated architecture based on a ResNet backbone and a feature pyramid network, Laypa performs pixel-wise classifications to detect these elements. Built on the [detectron2](https://github.com/facebookresearch/detectron2) framework, its output facilitates further processing by converting the classifications into instances—either as masks or directly into PageXML format. This segmentation is crucial for preparing documents for OCR/HTR processing, ensuring that text regions are accurately recognized and extracted.
 
 ### Loghi Tooling: Pre and Post-Processing Toolkit
 
-The Loghi Tooling module offers a suite of utilities designed to support the Loghi framework, handling tasks that occur both between and following the machine learning stages. This includes cutting images into individual text lines, integrating the transcription results into the PageXML, and recalculating reading orders among others. Its role is vital in managing the workflow of document preparation and finalization, streamlining the transition from raw image to processed text.
+The [Loghi Tooling](https://github.com/knaw-huc/loghi-tooling) module offers a suite of utilities designed to support the Loghi framework, handling tasks that occur both between and following the machine learning stages. This includes cutting images into individual text lines, integrating the transcription results into the PageXML, and recalculating reading orders among others. Its role is vital in managing the workflow of document preparation and finalization, streamlining the transition from raw image to processed text.
 
 ### Loghi HTR: Text Transcription
 
-At the heart of the Loghi framework, the Loghi HTR module is responsible for the actual transcription of text from images. This system is not limited to handwritten text, as it is also capable of processing machine-printed text. By converting line images into textual data, Loghi HTR forms the final step in the HTR process, bridging the gap between visual data and usable digital text.
+At the heart of the Loghi framework, the [Loghi HTR](https://github.com/knaw-huc/loghi-htr) module is responsible for the actual transcription of text from images. This system is not limited to handwritten text, as it is also capable of processing machine-printed text. By converting line images into textual data, Loghi HTR forms the final step in the HTR process, bridging the gap between visual data and usable digital text.
 
 Together, these components form a comprehensive ecosystem for handling HTR tasks, from initial layout analysis to the final transcription of text. The Loghi framework offers a modular approach, allowing users to engage with individual components based on their specific needs, while also providing a cohesive solution for end-to-end handwritten text recognition.
 
 ## Quick Start
 
 ### Installation
+
+Loghi works best on Linux. Although it can run on Windows using WSL, it is not the recommended approach. Mac's are currently not supported.
 
 Begin by cloning the Loghi repository to access the toolkit and navigate into the directory:
 
@@ -57,7 +64,59 @@ docker pull loghi/docker.loghi-tooling
 
 If Docker is not installed on your machine, follow [these instructions](https://docs.docker.com/engine/install/) to install it.
 
-Alternatively, to build the Docker images with the latest code yourself:
+But first go to:
+https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP
+and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR).
+
+suggestion for laypa:
+```text
+general
+```
+suggestion for loghi-htr that should give some results:
+```text
+generic-2023-02-15
+```
+It is not perfect, but a good starting point. It should work ok on 17th and 18th century handwritten dutch. For best results always finetune on your own specific data.
+
+edit the [`scripts/inference-pipeline.sh`](scripts/inference-pipeline.sh) using vi, nano, other whatever editor you prefer. We'll use nano in this example
+
+```bash
+nano scripts/inference-pipeline.sh
+```
+Look for the following lines:
+```
+LAYPABASELINEMODEL=INSERT_FULL_PATH_TO_YAML_HERE
+LAYPABASELINEMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
+HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
+```
+and update those paths with the location of the files you just downloaded. If you downloaded a zip: you should unzip it first.
+
+if you do not have a NVIDIA-GPU and nvidia-docker setup additionally change
+
+```text
+GPU=0
+```
+to
+```text
+GPU=-1
+```
+It will then run on CPU, which will be very slow. If you are using the pretrained model and run on CPU: please make sure to download the Loghi-htr model starting with "float32-". This will run faster on CPU than the default mixed_float16 models.
+
+Save the file and run it:
+```bash
+./scripts/inference-pipeline.sh /PATH_TO_FOLDER_CONTAINING_IMAGES
+```
+replace /PATH_TO_FOLDER_CONTAINING_IMAGES with a valid directory containing images (.jpg is preferred/tested) directly below it.
+
+The file should run for a short while if you have a good nvidia GPU and nvidia-docker setup. It might be a long while if you just have CPU available. It should work either way, just a lot slower on CPU.
+
+When it finishes without errors a new folder called "page" should be created in the directory with the images. This contains the PageXML output.
+
+
+## 
+### Build dockers from source
+
+As an alternative to using the tested and prebuild docker images, you can build the Docker images with the latest code yourself:
 
 ```bash
 git submodule update --init --recursive
@@ -75,12 +134,12 @@ Note: Running Loghi with GPU acceleration is particularly beneficial for process
 
 ## Using Loghi
 
-For detailed instructions on running inference, training new models, and other advanced features, refer to the `scripts` directory in this repository. There, you'll find sample scripts and a README designed to guide you through these processes efficiently:
+For detailed instructions on running inference, training new models, and other advanced features, refer to the [`scripts`](scripts) directory in this repository. There, you'll find sample scripts and a README designed to guide you through these processes efficiently:
 
-- `create-train-data.sh` for preparing training data for HTR models.
-- `generate-synthetic-images.sh` for generating synthetic text lines.
-- `htr-train-pipeline.sh` for training new HTR models.
-- `inference-pipeline.sh` for transcribing complete scans.
+- [`create-train-data.sh`](scripts/create-train-data.sh) for preparing training data for HTR models.
+- [`generate-synthetic-images.sh`](scripts/generate-synthetic-images.sh) for generating synthetic text lines.
+- [`htr-train-pipeline.sh`](scripts/htr-train-pipeline.sh) for training new HTR models.
+- [`inference-pipeline.sh`](scripts/inference-pipeline.sh) for transcribing complete scans.
 
 These scripts simplify the process of using Loghi for your HTR projects.
 
@@ -89,9 +148,9 @@ These scripts simplify the process of using Loghi for your HTR projects.
 
 ## Running the Web Service
 
-The `webservice` directory contains a README with instructions on how to get started with running the Loghi web service for online transcription tasks. This setup is designed to provide an accessible way to engage with the service, catering both to those new to the platform and to seasoned users looking for advanced functionalities.
+The [`webservice`](webservice) directory contains a README with instructions on how to get started with running the Loghi web service for online transcription tasks. This setup is designed to provide an accessible way to engage with the service, catering both to those new to the platform and to seasoned users looking for advanced functionalities.
 
-Within the `webservice` directory, you'll find a subdirectory named `scripts` that includes detailed instructions and scripts for utilizing the entire transcription pipeline. These scripts are designed to demonstrate the workflow from start to finish, providing a hands-on approach to understanding and implementing the transcription process.
+Within the [`webservice`](webservice) directory, you'll find a subdirectory named [`webservice-scripts`](webservice/webservice-scripts/) that includes detailed instructions and scripts for utilizing the entire transcription pipeline. These scripts are designed to demonstrate the workflow from start to finish, providing a hands-on approach to understanding and implementing the transcription process.
 
 For further customization and in-depth information, please refer to the original repositories linked within our toolkit. These resources offer comprehensive documentation on adjusting parameters, understanding the technology behind Loghi, and exploring advanced use cases. Whether you're looking to fine-tune the service to your specific needs or dive into the technicalities of transcription technologies, these repositories are invaluable resources.
 
@@ -104,6 +163,12 @@ git submodule update --recursive --remote
 ```
 
 This ensures you have access to the most recent (though possibly unstable) versions of the code.
+
+## Gradio Demo
+
+Explore the capabilities of Loghi Software with our interactive Gradio demo. The demo provides a user-friendly graphical interface, allowing you to upload document images, perform layout analysis, and view Handwritten Text Recognition (HTR) results in real-time.
+
+For detailed instructions on how to set up and use the demo, visit the [Gradio directory](gradio) and follow the README provided there.
 
 ## Contributing
 
@@ -127,3 +192,24 @@ Here are some frequently asked questions about Loghi and their answers to help y
 
 Currently, Loghi does not support utilizing Apple Silicon's accelerated hardware capabilities. We understand the importance and potential of supporting this architecture and are actively exploring possibilities to make Loghi compatible with Apple Silicon in the future. For now, users with Apple Silicon devices can run Loghi using emulation or virtualization tools, though this might not leverage the full performance capabilities of the hardware. We appreciate your patience and interest, and we're committed to broadening our hardware support to include these devices.
 
+### How can I cite this software?
+
+If you find this toolkit useful in your research, please cite:
+```
+@InProceedings{10.1007/978-3-031-70645-5_6,
+author="van Koert, Rutger
+and Klut, Stefan
+and Koornstra, Tim
+and Maas, Martijn
+and Peters, Luke",
+editor="Mouch{\`e}re, Harold
+and Zhu, Anna",
+title="Loghi: An End-to-End Framework for Making Historical Documents Machine-Readable",
+booktitle="Document Analysis and Recognition -- ICDAR 2024 Workshops",
+year="2024",
+publisher="Springer Nature Switzerland",
+address="Cham",
+pages="73--88",
+abstract="Loghi is a novel framework and suite of tools for the layout analysis and text recognition of historical documents. Scans are processed in a modular pipeline, with the option to use alternative tools in most stages. Layout analysis and text recognition can be trained on example images with PageXML ground truth. The framework is intended to convert scanned documents to machine-readable PageXML. Additional tooling is provided for the creation of synthetic ground truth. A visualiser for troubleshooting the text recognition training is also made available. The result is a framework for end-to-end text recognition, which works from initial layout analysis on the scanned documents, and includes text line detection, text recognition, reading order detection and language detection.",
+isbn="978-3-031-70645-5"
+}

@@ -1,11 +1,12 @@
 #!/bin/bash
+VERSION=2.1.6
+set -e
+set -o pipefail
 
-# Version of the docker image to use
-VERSION=2.0.0
 
 # User-configurable parameters
 # Percentage split for training and validation sets
-TRAINSPLIT=90
+trainsplit=90
 
 # Include text styles in the output
 include_text_styles=1
@@ -42,6 +43,8 @@ fi
 # Obtain absolute paths for input and output directories
 inputdir=$(realpath $1/)
 outputdir=$(realpath $2/)
+
+mkdir -p $outputdir
 
 # Prepare file lists
 filelist=$outputdir/training_all.txt
@@ -100,7 +103,7 @@ echo "Output files: $(find $outputdir | wc -l)"
 echo "Generating file lists..."
 > $filelist 
 for input_path in $(find $outputdir -name '*.png'); do
-  filename=$(basename -- "$input_path")
+  filename=${input_path##*/}
   filename="${filename%.*}"
   base="${input_path%.*}"
   text=$(cat $base.txt)
@@ -109,6 +112,6 @@ done
 
 # Create training and validation file lists
 echo "Splitting data into training and validation sets..."
-shuf $filelist | split -l $(( $(wc -l < $filelist) * $trainsplit / 100 ))
+shuf $filelist | split -l $(( $(wc -l <$filelist) * $trainsplit / 100 ))
 mv xab $filelistval
 mv xaa $filelisttrain

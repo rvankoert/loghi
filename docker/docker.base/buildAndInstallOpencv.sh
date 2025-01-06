@@ -1,12 +1,14 @@
 #!/bin/bash
 export ANT_HOME=/usr/share/ant/
-VERSION=4.9.0
+VERSION=4.10.0
 NODOTSVERSION=${VERSION//./}
 CURRENT=`pwd`
 rm -rf $CURRENT/opencv
 rm -rf $CURRENT/opencv_contrib
 
 set -e
+
+numcores=`nproc`
 
 git clone https://github.com/opencv/opencv_contrib.git
 git clone https://github.com/opencv/opencv.git
@@ -19,7 +21,7 @@ cd $CURRENT/opencv/build
 #cmake -D OPENCV_ENABLE_MEMALIGN=OFF -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D INSTALL_C_EXAMPLES=ON -D OPENCV_IO_ENABLE_JASPER=ON -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules -D WITH_TBB=ON ..
 #cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D INSTALL_C_EXAMPLES=ON -D OPENCV_IO_ENABLE_JASPER=ON -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules ..
 cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D INSTALL_C_EXAMPLES=ON -D OPENCV_IO_ENABLE_JASPER=ON -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules -D WITH_TBB=ON ..
-make -j 24
+make -j $numcores
 sudo make install
 sudo sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
 sudo ldconfig

@@ -1,38 +1,40 @@
 #!/bin/bash
-VERSION=2.0.0
+VERSION=2.1.6
 set -e
+set -o pipefail
 
 # User-configurable parameters
 # Stop on error, if set to 1 will exit program if any of the docker commands fail
 STOPONERROR=1
 
-# set to 1 if you want to enable, 0 otherwise, select just one
+# set to 1 if you want to enable the baseline or region prediction, 0 otherwise
 BASELINELAYPA=1
 REGIONLAYPA=0
 
-# Set the path to the yaml file and the pth file for the Laypa model
+# Set the path to the yaml file and the pth file for the Laypa baseline model. Not required if BASELINELAYPA is 0
 LAYPABASELINEMODEL=INSERT_FULL_PATH_TO_YAML_HERE
 LAYPABASELINEMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
 
-# Not required if REGIONLAYPA is 0
+# Set the path to the yaml file and the pth file for the Laypa region model. Not required if REGIONLAYPA is 0
 LAYPAREGIONMODEL=INSERT_FULL_PATH_TO_YAML_HERE
 LAYPAREGIONMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
 
-# Set to 1 if you want to enable, 0 otherwise, select just one
+# Set to 1 if you want to enable the HTR step, 0 otherwise
 HTRLOGHI=1
-HTRLOGHIMODEL=INSERT_FULL_PATH_TO_HTR_MODEL_HERE
+# Set the path to the htr model. Not required if HTRLOGHI is 0
+HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
 
 # Set this to 1 for recalculating reading order, line clustering and cleaning.
 # WARNING this will remove regions found by Laypa
 RECALCULATEREADINGORDER=1
 # If the edge of baseline is closer than x pixels...
 RECALCULATEREADINGORDERBORDERMARGIN=50
-# Clean if 1
+# Clean borders if 1
 RECALCULATEREADINGORDERCLEANBORDERS=0
-# How many threads to use
+# How many threads to use for recalculating reading order
 RECALCULATEREADINGORDERTHREADS=4
 
-# Detect language of pagexml, set to 1 to enable, disable otherwise
+# Detect language of pagexml, set to 1 to enable, 0 otherwise
 DETECTLANGUAGE=1
 # Interpolate word locations
 SPLITWORDS=1
@@ -66,8 +68,8 @@ fi
 tmpdir=$(mktemp -d)
 echo "Temporary directory created at: $tmpdir"
 
-mkdir -p $tmpdir/imagesnippets/
-mkdir -p $tmpdir/output
+mkdir -p "$tmpdir"/imagesnippets/
+mkdir -p "$tmpdir"/output
 
 DOCKERLOGHITOOLING=loghi/docker.loghi-tooling:$VERSION
 DOCKERLAYPA=loghi/docker.laypa:$VERSION
@@ -82,7 +84,7 @@ fi
 IMAGES_PATH=`realpath $1`
 
 # Housekeeping: remove any existing *.done files
-find $IMAGES_PATH -name '*.done' -exec rm -f "{}" \;
+find "$IMAGES_PATH" -name '*.done' -exec rm -f "{}" \;
 
 if [[ $USE2013NAMESPACE -eq 1 ]]; then
     namespace=" -use_2013_namespace "
@@ -96,16 +98,16 @@ if [[ $BASELINELAYPA -eq 1 ]]; then
     LAYPA_OUT=$IMAGES_PATH
     LAYPADIR="$(dirname "${LAYPABASELINEMODEL}")"
 
-    docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m \
-        -v $LAYPADIR:$LAYPADIR \
-        -v $LAYPA_IN:$LAYPA_IN \
-        -v $LAYPA_OUT:$LAYPA_OUT \
+    docker run $DOCKERGPUPARAMS --rm -it -u $(id -u "${USER}"):$(id -g "${USER}") -m 32000m --shm-size 10240m \
+        -v "$LAYPADIR":"$LAYPADIR" \
+        -v "$LAYPA_IN":"$LAYPA_IN" \
+        -v "$LAYPA_OUT":"$LAYPA_OUT" \
         $DOCKERLAYPA \
             python run.py \
             -c $LAYPABASELINEMODEL \
-            -i $LAYPA_IN \
-            -o $LAYPA_OUT \
-            --opts MODEL.WEIGHTS "" TEST.WEIGHTS $LAYPABASELINEMODELWEIGHTS | tee -a $tmpdir/log.txt
+            -i "$LAYPA_IN" \
+            -o "$LAYPA_OUT" \
+            --opts MODEL.WEIGHTS "" TEST.WEIGHTS $LAYPABASELINEMODELWEIGHTS | tee -a "$tmpdir"/log.txt
 
     # Check if failed
     status=$?
@@ -117,16 +119,17 @@ if [[ $BASELINELAYPA -eq 1 ]]; then
 
     if [[ $REGIONLAYPA -eq 1 ]]; then
         echo "Running Laypa region detection"
+        LAYPAREGIONDIR="$(dirname "${LAYPAREGIONMODEL}")"
 
-        docker run $DOCKERGPUPARAMS --rm -it -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m --shm-size 10240m \
-        -v $LAYPADIR:$LAYPADIR \
-        -v $LAYPA_IN:$LAYPA_IN \
-        -v $LAYPA_OUT:$LAYPA_OUT \
+        docker run $DOCKERGPUPARAMS --rm -it -u $(id -u "${USER}"):$(id -g "${USER}") -m 32000m --shm-size 10240m \
+        -v "$LAYPAREGIONDIR":"$LAYPAREGIONDIR" \
+        -v "$LAYPA_IN":"$LAYPA_IN" \
+        -v "$LAYPA_OUT":"$LAYPA_OUT" \
         $DOCKERLAYPA \
             python run.py \
             -c $LAYPAREGIONMODEL \
-            -i $LAYPA_IN \
-            -o $LAYPA_OUT \
+            -i "$LAYPA_IN" \
+            -o "$LAYPA_OUT" \
             --opts MODEL.WEIGHTS "" TEST.WEIGHTS $LAYPAREGIONMODELWEIGHTS | tee -a $tmpdir/log.txt
 
         # Check if failed
@@ -140,18 +143,18 @@ if [[ $BASELINELAYPA -eq 1 ]]; then
     # Second step: extract baselines and regions
     echo "Extracting baselines and regions"
 
-    docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) \
-        -v $LAYPA_IN:$LAYPA_IN \
-        -v $LAYPA_OUT:$LAYPA_OUT \
+    docker run --rm -u $(id -u "${USER}"):$(id -g "${USER}") \
+        -v "$LAYPA_IN":"$LAYPA_IN" \
+        -v "$LAYPA_OUT":"$LAYPA_OUT" \
         $DOCKERLOGHITOOLING \
             /src/loghi-tooling/minions/target/appassembler/bin/MinionExtractBaselines \
-            -input_path_image $LAYPA_IN \
-            -input_path_png $LAYPA_OUT/page/ \
-            -input_path_page $LAYPA_OUT/page/ \
-            -output_path_page $LAYPA_OUT/page/ \
+            -input_path_image "$LAYPA_IN" \
+            -input_path_png "$LAYPA_OUT"/page/ \
+            -input_path_page "$LAYPA_OUT"/page/ \
+            -output_path_page "$LAYPA_OUT"/page/ \
             -recalculate_textline_contours_from_baselines \
             $as_single_region \
-            $namespace | tee -a $tmpdir/log.txt
+            $namespace | tee -a "$tmpdir"/log.txt
 
     # Check if failed
     status=$?
@@ -164,40 +167,54 @@ fi
 if [[ $HTRLOGHI -eq 1 ]]; then
     echo "Cutting out snippets"
 
-    docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm \
-       -v $IMAGES_PATH/:$IMAGES_PATH/ \
-       -v $tmpdir:$tmpdir \
+    docker run -u $(id -u "${USER}"):$(id -g "${USER}") --rm \
+       -v "$IMAGES_PATH"/:"$IMAGES_PATH"/ \
+       -v "$tmpdir":"$tmpdir" \
        $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionCutFromImageBasedOnPageXMLNew \
-           -input_path $IMAGES_PATH \
-           -outputbase $tmpdir/imagesnippets/ \
+           -input_path "$IMAGES_PATH" \
+           -outputbase "$tmpdir"/imagesnippets/ \
            -output_type png \
            -channels 4 \
-           -threads 4 $namespace| tee -a $tmpdir/log.txt
+           -threads 4 $namespace| tee -a "$tmpdir"/log.txt
 
     # Check if failed
     status=$?
     check_error_and_exit "MinionCutFromImageBasedOnPageXMLNew" $status
 
     # Collect all the snippets in a file
-    find $tmpdir/imagesnippets/ -type f -name '*.png' > $tmpdir/lines.txt
+    find "$tmpdir"/imagesnippets/ -type f -name '*.png' > "$tmpdir"/lines.txt
 
     echo "Running HTR"
     LOGHIDIR="$(dirname "${HTRLOGHIMODEL}")"
 
-    docker run $DOCKERGPUPARAMS -u $(id -u ${USER}):$(id -g ${USER}) --rm -m 32000m --shm-size 10240m -ti \
+    echo docker run $DOCKERGPUPARAMS -u $(id -u "${USER}"):$(id -g "${USER}") --rm -m 32000m --shm-size 10240m -ti \
         -v /tmp:/tmp \
-        -v $tmpdir:$tmpdir \
-        -v $LOGHIDIR:$LOGHIDIR \
+        -v "$tmpdir":"$tmpdir" \
+        -v "$LOGHIDIR":"$LOGHIDIR" \
         $DOCKERLOGHIHTR \
             bash -c "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 python3 /src/loghi-htr/src/main.py \
             --model $HTRLOGHIMODEL  \
             --batch_size 64 \
-            --use_mask \
             --inference_list $tmpdir/lines.txt \
             --results_file $tmpdir/results.txt \
             --gpu $GPU \
             --output $tmpdir/output/ \
-            --beam_width $BEAMWIDTH " | tee -a $tmpdir/log.txt
+            --beam_width $BEAMWIDTH " | tee -a "$tmpdir"/log.txt
+
+
+    docker run $DOCKERGPUPARAMS -u $(id -u "${USER}"):$(id -g "${USER}") --rm -m 32000m --shm-size 10240m -ti \
+        -v /tmp:/tmp \
+        -v "$tmpdir":"$tmpdir" \
+        -v "$LOGHIDIR":"$LOGHIDIR" \
+        $DOCKERLOGHIHTR \
+            bash -c "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 python3 /src/loghi-htr/src/main.py \
+            --model $HTRLOGHIMODEL  \
+            --batch_size 64 \
+            --inference_list $tmpdir/lines.txt \
+            --results_file $tmpdir/results.txt \
+            --gpu $GPU \
+            --output $tmpdir/output/ \
+            --beam_width $BEAMWIDTH " | tee -a "$tmpdir"/log.txt
 
     # Check if failed
     status=$?
@@ -206,16 +223,16 @@ if [[ $HTRLOGHI -eq 1 ]]; then
     echo "Loghi HTR done"
 
     # Fourth step: merge results back into PageXML
-    docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm \
-        -v $LOGHIDIR:$LOGHIDIR \
-        -v $IMAGES_PATH/:$IMAGES_PATH/ \
-        -v $tmpdir:$tmpdir \
+    docker run -u $(id -u "${USER}"):$(id -g "${USER}") --rm \
+        -v "$LOGHIDIR":"$LOGHIDIR" \
+        -v "$IMAGES_PATH"/:"$IMAGES_PATH"/ \
+        -v "$tmpdir":"$tmpdir" \
         $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionLoghiHTRMergePageXML \
-            -input_path $IMAGES_PATH/page \
-            -results_file $tmpdir/results.txt \
+            -input_path "$IMAGES_PATH"/page \
+            -results_file "$tmpdir"/results.txt \
             -config_file $HTRLOGHIMODEL/config.json \
-            -htr_code_config_file $tmpdir/output/config.json \
-            $namespace | tee -a $tmpdir/log.txt
+            -htr_code_config_file "$tmpdir"/output/config.json \
+            $namespace | tee -a "$tmpdir"/log.txt
 
     # Check if failed
     status=$?
@@ -234,15 +251,15 @@ then
         echo "and cleaning borders"
         clean_borders=" -clean_borders "
     fi
-    docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm \
-        -v $IMAGES_PATH/:$IMAGES_PATH/ \
-        -v $tmpdir:$tmpdir \
+    docker run -u $(id -u "${USER}"):$(id -g "${USER}") --rm \
+        -v "$IMAGES_PATH"/:"$IMAGES_PATH"/ \
+        -v "$tmpdir":"$tmpdir" \
         $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionRecalculateReadingOrderNew \
-            -input_dir $IMAGES_PATH/page/ \
+            -input_dir "$IMAGES_PATH"/page/ \
             -border_margin $RECALCULATEREADINGORDERBORDERMARGIN \
             -threads $RECALCULATEREADINGORDERTHREADS \
             $clean_borders \
-            $namespace| tee -a $tmpdir/log.txt
+            $namespace| tee -a "$tmpdir"/log.txt
 
     # Check if failed
     status=$?
@@ -253,12 +270,12 @@ fi
 if [[ $DETECTLANGUAGE -eq 1 ]]
 then
     echo "Detecting language..."
-    docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm \
-        -v $IMAGES_PATH/:$IMAGES_PATH/ \
-        -v $tmpdir:$tmpdir \
+    docker run -u $(id -u "${USER}"):$(id -g "${USER}") --rm \
+        -v "$IMAGES_PATH"/:"$IMAGES_PATH"/ \
+        -v "$tmpdir":"$tmpdir" \
         $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionDetectLanguageOfPageXml \
-            -page $IMAGES_PATH/page/ \
-            $namespace | tee -a $tmpdir/log.txt
+            -page "$IMAGES_PATH"/page/ \
+            $namespace | tee -a "$tmpdir"/log.txt
 
     # Check if failed
     status=$?
@@ -269,12 +286,12 @@ fi
 if [[ $SPLITWORDS -eq 1 ]]
 then
     echo "MinionSplitPageXMLTextLineIntoWords..."
-    docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm \
-        -v $IMAGES_PATH/:$IMAGES_PATH/ \
-        -v $tmpdir:$tmpdir \
+    docker run -u $(id -u "${USER}"):$(id -g "${USER}") --rm \
+        -v "$IMAGES_PATH"/:"$IMAGES_PATH"/ \
+        -v "$tmpdir":"$tmpdir" \
         $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionSplitPageXMLTextLineIntoWords \
-            -input_path $IMAGES_PATH/page/ \
-            $namespace | tee -a $tmpdir/log.txt
+            -input_path "$IMAGES_PATH"/page/ \
+            $namespace | tee -a "$tmpdir"/log.txt
 
     # Check if failed
     status=$?
@@ -282,4 +299,4 @@ then
 fi
 
 # cleanup results
-rm -rf $tmpdir
+rm -rf "$tmpdir"

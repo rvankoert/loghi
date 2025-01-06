@@ -1,0 +1,97 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Loghi: An End-to-End Framework for Making Historical
+  Documents Machine-Readable
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - orcid: "https://orcid.org/0000-0001-6535-2849"
+    affiliation: Humanities Cluster KNAW
+    email: rutger.van.koert@di.huc.knaw.nl
+    given-names: Rutger
+    name-particle: van
+    family-names: Koert
+  - affiliation: Humanities Cluster KNAW
+    given-names: Stefan
+    family-names: Klut
+    email: stefan.klut@di.huc.knaw.nl
+    orcid: "https://orcid.org/0000-0002-1957-2442"
+  - given-names: Tim
+    family-names: Koornstra
+    email: tim.koornstra@nationaalarchief.nl
+    affiliation: Nationaal Archief
+    orcid: "https://orcid.org/0009-0002-5643-6180"
+  - given-names: Martijn
+    family-names: Maas
+    email: martijn.maas@di.huc.knaw.nl
+    affiliation: Humanities Cluster KNAW
+    orcid: "https://orcid.org/0009-0000-4850-2614"
+  - affiliation: Nationaal Archief
+    orcid: "https://orcid.org/0009-0000-2274-8608"
+    email: luke.peters@nationaalarchief.nl
+    given-names: Luke
+    family-names: Peters
+identifiers:
+  - type: doi
+    value: 10.1007/978-3-031-70645-5_6
+    description: DOI of the Springer publication
+  - type: url
+    value: "https://github.com/knaw-huc/loghi"
+    description: Github repo
+repository-code: "https://github.com/knaw-huc/loghi"
+abstract: >-
+  "Loghi is a novel framework and suite of tools for the layout analysis and text recognition of historical documents. Scans are processed in a modular pipeline, with the option to use alternative tools in most stages. Layout analysis and text recognition can be trained on example images with PageXML ground truth. The framework is intended to convert scanned documents to machine-readable PageXML. Additional tooling is provided for the creation of synthetic ground truth. A visualiser for troubleshooting the text recognition training is also made available. The result is a framework for end-to-end text recognition, which works from initial layout analysis on the scanned documents, and includes text line detection, text recognition, reading order detection and language detection. The Loghi pipeline has been used successfully in several projects. We achieve good results on the layout analysis and text recognition of both the handwritten and printed archives of the Dutch States General on resolutions spanning the 17th and 18th century. The CER on handwritten 17th century material is below 3 percent. Loghi is open source and free to use."
+keywords:
+  - pagexml
+  - handwritten text recognition
+  - layout analysis
+license: MIT
+preferred-citation:
+  type: conference-paper
+  authors:
+    - orcid: "https://orcid.org/0000-0001-6535-2849"
+      affiliation: Humanities Cluster KNAW
+      email: rutger.van.koert@di.huc.knaw.nl
+      given-names: Rutger
+      name-particle: van
+      family-names: Koert
+    - affiliation: Humanities Cluster KNAW
+      given-names: Stefan
+      family-names: Klut
+      email: stefan.klut@di.huc.knaw.nl
+      orcid: "https://orcid.org/0000-0002-1957-2442"
+    - given-names: Tim
+      family-names: Koornstra
+      email: tim.koornstra@nationaalarchief.nl
+      affiliation: Nationaal Archief
+      orcid: "https://orcid.org/0009-0002-5643-6180"
+    - given-names: Martijn
+      family-names: Maas
+      email: martijn.maas@di.huc.knaw.nl
+      affiliation: Humanities Cluster KNAW
+      orcid: "https://orcid.org/0009-0000-4850-2614"
+    - affiliation: Nationaal Archief
+      orcid: "https://orcid.org/0009-0000-2274-8608"
+      email: luke.peters@nationaalarchief.nl
+      given-names: Luke
+      family-names: Peters
+  title: >-
+    Loghi: An End-to-End Framework for Making Historical Documents Machine-Readable
+  isbn: 978-3-031-70645-5
+  conference:
+    name: "Document Analysis and Recognition -- ICDAR 2024 Workshops"
+    location: "Athens, Greece"
+    pages: 73-88
+  publisher: Springer Nature Switzerland
+  editors:
+    - name: "Mouchère, Harold"
+    - name: "Zhu, Anna"
+  year: 2024
+  doi: 10.1007/978-3-031-70645-5_6
+  abstract: >-
+    "Loghi is a novel framework and suite of tools for the layout analysis and text recognition of historical documents. Scans are processed in a modular pipeline, with the option to use alternative tools in most stages. Layout analysis and text recognition can be trained on example images with PageXML ground truth. The framework is intended to convert scanned documents to machine-readable PageXML. Additional tooling is provided for the creation of synthetic ground truth. A visualiser for troubleshooting the text recognition training is also made available. The result is a framework for end-to-end text recognition, which works from initial layout analysis on the scanned documents, and includes text line detection, text recognition, reading order detection and language detection. The Loghi pipeline has been used successfully in several projects. We achieve good results on the layout analysis and text recognition of both the handwritten and printed archives of the Dutch States General on resolutions spanning the 17th and 18th century. The CER on handwritten 17th century material is below 3 percent. Loghi is open source and free to use."
