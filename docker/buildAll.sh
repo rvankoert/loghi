@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=2.2.10
+VERSION=2.2.11
 set -e
 set -o pipefail
 
