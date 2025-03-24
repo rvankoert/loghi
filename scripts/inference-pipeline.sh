@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=2.1.5
+VERSION=2.2.13
 set -e
 set -o pipefail
 
@@ -195,7 +195,6 @@ if [[ $HTRLOGHI -eq 1 ]]; then
             bash -c "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 python3 /src/loghi-htr/src/main.py \
             --model $HTRLOGHIMODEL  \
             --batch_size 64 \
-            --use_mask \
             --inference_list $tmpdir/lines.txt \
             --results_file $tmpdir/results.txt \
             --gpu $GPU \
@@ -211,7 +210,6 @@ if [[ $HTRLOGHI -eq 1 ]]; then
             bash -c "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 python3 /src/loghi-htr/src/main.py \
             --model $HTRLOGHIMODEL  \
             --batch_size 64 \
-            --use_mask \
             --inference_list $tmpdir/lines.txt \
             --results_file $tmpdir/results.txt \
             --gpu $GPU \
