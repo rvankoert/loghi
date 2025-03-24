@@ -101,7 +101,8 @@ echo "Output files: $(find $outputdir | wc -l)"
 
 # Generate the image/text pair list
 echo "Generating file lists..."
-> $filelist 
+> $filelist
+old_ifs="$IFS"; IFS=$(echo -en "\n\b");
 for input_path in $(find $outputdir -name '*.png'); do
   filename=${input_path##*/}
   filename="${filename%.*}"
@@ -109,6 +110,7 @@ for input_path in $(find $outputdir -name '*.png'); do
   text=$(cat $base.txt)
   echo -e "$input_path\t$text" >> $filelist
 done
+IFS=$old_ifs
 
 # Create training and validation file lists
 echo "Splitting data into training and validation sets..."
