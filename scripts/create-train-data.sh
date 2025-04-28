@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=2.2.13
+VERSION=2.2.14
 set -e
 set -o pipefail
 
@@ -107,7 +107,7 @@ for input_path in $(find $outputdir -name '*.png'); do
   filename=${input_path##*/}
   filename="${filename%.*}"
   base="${input_path%.*}"
-  text=$(cat $base.txt)
+  text=$(< $base.txt)
   echo -e "$input_path\t$text" >> $filelist
 done
 IFS=$old_ifs
