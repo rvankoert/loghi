@@ -1,6 +1,6 @@
 # Loghi: Handwritten Text Recognition Toolkit
 
-Loghi is a comprehensive toolkit designed for Handwritten Text Recognition (HTR) and Optical Character Recognition (OCR), offering an accessible approach to transcribing historical documents and training models for specialized needs. This README provides a quick start guide for using Loghi, including how to install, run inference, train new models, and utilize our scripts for these tasks.
+Loghi is a comprehensive toolkit designed for Automatic Text Recognition (ATR), a combination of both Handwritten Text Recognition (HTR) and Optical Character Recognition (OCR), offering an accessible approach to transcribing historical documents and training models for specialized needs. This README provides a quick start guide for using Loghi, including how to install, run inference, train new models, and utilize our scripts for these tasks.
 
 ## Table of Contents
 - [Loghi: Handwritten Text Recognition Toolkit](#loghi-handwritten-text-recognition-toolkit)
@@ -16,14 +16,14 @@ Loghi is a comprehensive toolkit designed for Handwritten Text Recognition (HTR)
   - [Using Loghi](#using-loghi)
   - [Running the Web Service](#running-the-web-service)
   - [Updates](#updates)
-  - [Gradio Demo](#gradio-demo)
+  - [Gradio Demo](gradio.md)
   - [Contributing](#contributing)
   - [FAQ](#faq)
     - [Does Loghi work on Apple Silicon (M1/M2/M3)?](#does-loghi-work-on-apple-silicon-m1m2m3)
 
 ## Introduction to Loghi
 
-The Loghi framework is designed to streamline the process of Handwritten Text Recognition (HTR), from analyzing document layouts to transcribing handwritten text into digital format. At the core of Loghi are three critical components, each responsible for a distinct aspect of the HTR pipeline:
+The Loghi framework is designed to streamline the process of Automatic Text Recognition (ATR), from analyzing document layouts to transcribing handwritten text into digital format. At the core of Loghi are three critical components, each responsible for a distinct aspect of the HTR pipeline:
 
 ### Laypa: Layout Analysis and Segmentation
 
@@ -67,21 +67,27 @@ docker pull loghi/docker.loghi-tooling
 
 If Docker is not installed on your machine, follow [these instructions](https://docs.docker.com/engine/install/) to install it.
 
-But first go to:
-https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP
+But first go to: 
+[https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP?path=%2Flaypa#](https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP?path=%2Flaypa#)
+
 and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR).
 
 suggestion for laypa:
 ```text
-general
+general - baseline2
 ```
+click the three dots on the right and select "download" to download the model. It will be a zip file. Unzip it and you should have a folder with a .yaml and a .pth file in it.
+
+[https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP?path=%2Floghi-htr#](https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP?path=%2Floghi-htr#)
 suggestion for loghi-htr that should give some results:
 ```text
 generic-2023-02-15
 ```
+click the three dots on the right and select "download" to download the model. It will be a zip file. Unzip it and you should have a folder with a .yaml and a .pth file in it.
+
 It is not perfect, but a good starting point. It should work ok on 17th and 18th century handwritten dutch. For best results always finetune on your own specific data.
 
-edit the [`scripts/inference-pipeline.sh`](scripts/inference-pipeline.sh) using vi, nano, other whatever editor you prefer. We'll use nano in this example
+edit the [`scripts/inference-pipeline.sh`](scripts/inference-pipeline.sh) using vi, nano, code, other whatever editor you prefer. We'll use nano in this example
 
 ```bash
 nano scripts/inference-pipeline.sh
@@ -92,7 +98,10 @@ LAYPABASELINEMODEL=INSERT_FULL_PATH_TO_YAML_HERE
 LAYPABASELINEMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
 HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
 ```
-and update those paths with the location of the files you just downloaded. If you downloaded a zip: you should unzip it first.
+and update those paths with the location of the files you just downloaded. If you downloaded a zip: you should unzip it first. Make sure to use the full path; for example:
+```text
+LAYPABASELINEMODEL=/home/user/Downloads/laypa-baseline2.yaml
+```
 
 if you do not have a NVIDIA-GPU and nvidia-docker setup additionally change
 
@@ -111,12 +120,38 @@ Save the file and run it:
 ```
 replace /PATH_TO_FOLDER_CONTAINING_IMAGES with a valid directory containing images (.jpg is preferred/tested) directly below it.
 
-The file should run for a short while if you have a good nvidia GPU and nvidia-docker setup. It might be a long while if you just have CPU available. It should work either way, just a lot slower on CPU.
+The file should run for a short time if you have a good nvidia GPU and nvidia-docker setup. It might be a lot longer if you just have CPU available. It should work either way, just a lot slower on CPU.
 
 When it finishes without errors a new folder called "page" should be created in the directory with the images. This contains the PageXML output.
 
+If you run into errors, please check the [troubleshooting section](#troubleshooting) of the README. If you still have issues, please open an issue on GitHub with as much detail as possible and make sure to include the error message you received and the version of Loghi. This will help us assist you more effectively.
 
-## 
+
+## Troubleshooting
+
+#### Common Issues
+- For runtime errors, verify that the paths to your models are correct and that the models are compatible with your version of Loghi.
+- If you experience performance issues, consider checking your GPU settings and ensuring that Docker is configured to utilize GPU resources effectively. On Linux you could use `nvidia-smi` or `nvtop` to check if the GPU is being used correctly.
+- If you have a specific error message, search the issues to see if someone else has encountered the same problem. If not, please open a new issue with detailed information about your setup and the error.
+- For any other issues, please refer to the [GitHub Issues](https://github.com/knaw-huc/loghi/issues).
+- If you get the message "bash: ./scripts/inference-pipeline.sh: Permission denied" when trying to run the inference script, you may need to change the permissions of the script. You can do this by running:
+```bash
+chmod +x scripts/inference-pipeline.sh
+```
+
+
+#### using Docker
+- Ensure that Docker is installed and running correctly on your system.
+- If you encounter permission issues, try adding your user to the Docker group.
+- If you experience issues with GPU support, ensure that NVIDIA drivers and Docker are correctly configured to utilize GPU resources.
+- If you run into path issues, ensure that everything is mapped correctly using volume mappings.
+
+#### using the source code directly
+- If you encounter problems during installation, ensure that all dependencies are correctly installed.
+- If you are using a virtual environment, ensure that it is activated before running any commands.
+- If you are using a custom dataset, ensure that it is formatted correctly and that the paths to the images and annotations are correct.
+
+
 ### Build dockers from source
 
 As an alternative to using the tested and prebuild docker images, you can build the Docker images with the latest code yourself:
@@ -149,13 +184,6 @@ These scripts simplify the process of using Loghi for your HTR projects.
 > [!TIP]
 > The [Loghi-HTR repository](https://github.com/knaw-huc/loghi-htr/) contains a config folder that provides a few quick-start configurations for running Loghi-HTR. These configurations can be used to quickly set up more advanced training and inference pipelines, allowing you to get started with Loghi-HTR in no time. Simply copy the desired config file, adjust the parameters as needed, and run Loghi-HTR using the `--config_file` parameter.
 
-## Running the Web Service
-
-The [`webservice`](webservice) directory contains a README with instructions on how to get started with running the Loghi web service for online transcription tasks. This setup is designed to provide an accessible way to engage with the service, catering both to those new to the platform and to seasoned users looking for advanced functionalities.
-
-Within the [`webservice`](webservice) directory, you'll find a subdirectory named [`webservice-scripts`](webservice/webservice-scripts/) that includes detailed instructions and scripts for utilizing the entire transcription pipeline. These scripts are designed to demonstrate the workflow from start to finish, providing a hands-on approach to understanding and implementing the transcription process.
-
-For further customization and in-depth information, please refer to the original repositories linked within our toolkit. These resources offer comprehensive documentation on adjusting parameters, understanding the technology behind Loghi, and exploring advanced use cases. Whether you're looking to fine-tune the service to your specific needs or dive into the technicalities of transcription technologies, these repositories are invaluable resources.
 
 ## Updates
 
@@ -167,11 +195,6 @@ git submodule update --recursive --remote
 
 This ensures you have access to the most recent (though possibly unstable) versions of the code.
 
-## Gradio Demo
-
-Explore the capabilities of Loghi Software with our interactive Gradio demo. The demo provides a user-friendly graphical interface, allowing you to upload document images, perform layout analysis, and view Handwritten Text Recognition (HTR) results in real-time.
-
-For detailed instructions on how to set up and use the demo, visit the [Gradio directory](gradio) and follow the README provided there.
 
 ## Contributing
 
