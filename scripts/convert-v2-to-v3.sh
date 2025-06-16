@@ -21,6 +21,6 @@ fi
 
 # This script converts the legacy loghi models which were based on keras v2 to the new loghi models based on keras v3
 docker run --rm -e HOME=/tmp -u $(id -u "${USER}"):$(id -g "${USER}") $VOLUMES loghi/docker.htr:2.2.21 \
-    bash -c "set -e; sed 's/\"None\"/None/g' ~/src/loghi-htr/utils/convert-v2-to-v3/convert.py >/tmp/conert.py ; chmod +x /tmp/convert.py;  python3 -m pip install --user -r /src/loghi-htr/utils/convert-v2-to-v3/requirements.txt;
+    bash -c "set -e; sed 's/\"None\"/None/g' /src/loghi-htr/utils/convert-v2-to-v3/convert.py >/tmp/conert.py ; chmod +x /tmp/convert.py;  python3 -m pip install --user -r /src/loghi-htr/utils/convert-v2-to-v3/requirements.txt;
 python3 /tmp/convert.py --savedmodel_dir $input_model_path --output_directory $output_model_path
 "
