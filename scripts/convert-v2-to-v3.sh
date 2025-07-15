@@ -20,7 +20,7 @@ else
 fi
 
 # This script converts the legacy loghi models which were based on keras v2 to the new loghi models based on keras v3
-docker run --rm -e HOME=/tmp -u $(id -u "${USER}"):$(id -g "${USER}") $VOLUMES loghi/docker.htr:2.2.19 \
+docker run --rm -e HOME=/tmp -u $(id -u "${USER}"):$(id -g "${USER}") $VOLUMES loghi/docker.htr:2.2.22 \
     bash -c "set -e; python3 -m pip install --user -r /src/loghi-htr/utils/convert-v2-to-v3/requirements.txt;
 python3 /src/loghi-htr/utils/convert-v2-to-v3/convert.py --savedmodel_dir $input_model_path --output_directory $output_model_path
 "
