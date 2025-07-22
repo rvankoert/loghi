@@ -76,16 +76,16 @@ if [[ $GPU -gt -1 ]]; then
     echo "Using GPU ${GPU}"
 fi
 
-IMAGES_PATH=`realpath $1`
+IMAGES_PATH=`realpath "$1"`
 
-tmpdir=$(mktemp -d --tmpdir=$IMAGES_PATH tmp.loghi-inference-XXXXXX)
+tmpdir=$(mktemp -d --tmpdir="$IMAGES_PATH" tmp.loghi-inference-XXXXXX)
 echo "Temporary directory created at: $tmpdir"
 
 mkdir -p "$tmpdir"/imagesnippets/
 mkdir -p "$tmpdir"/output
 
 # Housekeeping: remove any existing *.done files
-find "$IMAGES_PATH" -name '*.done' -exec rm -f "{}" \;
+find "$IMAGES_PATH" -name '*.done' -delete
 
 if [[ $USE2013NAMESPACE -eq 1 ]]; then
     namespace=" -use_2013_namespace "
@@ -190,10 +190,10 @@ if [[ $HTRLOGHI -eq 1 ]]; then
             bash -c "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 python3 /src/loghi-htr/src/main.py \
             --model $HTRLOGHIMODEL  \
             --batch_size 64 \
-            --inference_list $tmpdir/lines.txt \
-            --results_file $tmpdir/results.txt \
+            --inference_list \"$tmpdir\"/lines.txt \
+            --results_file \"$tmpdir\"/results.txt \
             --gpu $GPU \
-            --output $tmpdir/output/ \
+            --output \"$tmpdir\"/output/ \
             --beam_width $BEAMWIDTH " | tee -a "$tmpdir"/log.txt
 
 
@@ -204,16 +204,16 @@ if [[ $HTRLOGHI -eq 1 ]]; then
             bash -c "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 python3 /src/loghi-htr/src/main.py \
             --model $HTRLOGHIMODEL  \
             --batch_size 64 \
-            --inference_list $tmpdir/lines.txt \
-            --results_file $tmpdir/results.txt \
+            --inference_list \"$tmpdir\"/lines.txt \
+            --results_file \"$tmpdir\"/results.txt \
             --gpu $GPU \
-            --output $tmpdir/output/ \
+            --output \"$tmpdir\"/output/ \
             --beam_width $BEAMWIDTH " | tee -a "$tmpdir"/log.txt
 
     # Check if failed
     status=$?
     check_error_and_exit "Loghi HTR" $status
-    
+
     echo "Loghi HTR done"
 
     # Fourth step: merge results back into PageXML
