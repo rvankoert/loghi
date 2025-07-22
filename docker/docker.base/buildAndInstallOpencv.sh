@@ -1,6 +1,6 @@
 #!/bin/bash
 export ANT_HOME=/usr/share/ant/
-VERSION=4.10.0
+VERSION=4.12.0
 NODOTSVERSION=${VERSION//./}
 CURRENT=`pwd`
 rm -rf $CURRENT/opencv
