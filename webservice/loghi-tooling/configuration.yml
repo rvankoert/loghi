@@ -5,32 +5,38 @@ p2palaConfigFile: ${P2PALA_CONFIG_FILE:- /data/P2Pala_trainset/config.json}
 extractBaseLinesExecutorServiceConfig:
   maxThreads: ${EXTRACT_BASELINES_MAX_THREADS:- 1}
   name: ExtractBaselines
-  queueLength: ${EXTRACT_BASELINES_QUEUE_LENGTH:- 50}
+  queueLength: ${EXTRACT_BASELINES_QUEUE_LENGTH:- 1000}
+  ledgerSize: ${EXTRACT_BASELINES_LEDGER_SIZE:- 1000000}
 
 cutFromImageBasedOnPageXmlExecutorServiceConfig:
   maxThreads: ${CUT_FROM_IMAGE_MAX_THREADS:- 1}
   name: CutFromImage
   queueLength: ${CUT_FROM_IMAGE_QUEUE_LENGTH:- 50}
+  ledgerSize: ${CUT_FROM_IMAGE_LEDGER_SIZE:- 1000000}
 
 loghiHTRMergePageXMLResourceExecutorServiceConfig:
   maxThreads: ${LOGHI_HTR_MERGE_PAGE_MAX_THREADS:- 1}
   name: LoghiHTRMergePageXML
   queueLength: ${LOGHI_HTR_MERGE_PAGE_QUEUE_LENGTH:- 50}
+  ledgerSize: ${LOGHI_HTR_MERGE_PAGE_LEDGER_SIZE:- 1000000}
 
 recalculateReadingOrderNewResourceExecutorServiceConfig:
   maxThreads: ${RECALCULATE_READING_ORDER_NEW_MAX_THREADS:- 1}
   name: RecalculateReadingOrderNew
   queueLength: ${RECALCULATE_READING_ORDER_NEW_QUEUE_LENGTH:- 50}
+  ledgerSize: ${RECALCULATE_READING_ORDER_NEW_LEDGER_SIZE:- 1000000}
 
 splitPageXMLTextLineIntoWordsResourceExecutorServiceConfig:
   maxThreads: ${SPLIT_PAGE_TEXT_LINE_INTO_WORDS_MAX_THREADS:- 1}
   name: SplitPageXMLTextLineIntoWords
   queueLength: ${SPLIT_PAGE_TEXT_LINE_INTO_WORDS_QUEUE_LENGTH:- 50}
+  ledgerSize: ${SPLIT_PAGE_TEXT_LINE_INTO_WORDS_LEDGER_SIZE:- 1000000}
 
 detectLanguageOfPageXmlResourceExecutorService:
   maxThreads: ${DETECT_LANGUAGE_OF_PAGE_XML_MAX_THREADS:- 1}
   name: DetectLanguageOfPageXml
   queueLength: ${DETECT_LANGUAGE_OF_PAGE_XML_QUEUE_LENGTH:- 50}
+  ledgerSize: ${DETECT_LANGUAGE_OF_PAGE_XML_LEDGER_SIZE:- 1000000}
 
 securityConfig:
   enabled: ${ENABLE_SECURITY:- false}

@@ -3,13 +3,6 @@ services:
     user: ${MY_UID}:${MY_GID}
     image: 'loghi/docker.laypa'
     command: 'python api/gunicorn_app.py'
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: ${LAYPA_GPU_COUNT}
-              capabilities: [gpu]
     container_name: 'laypa'
     ports:
       - '127.0.0.1:5000:5000'  # Expose only on localhost
@@ -17,6 +10,7 @@ services:
       LAYPA_MAX_QUEUE_SIZE: 128
       LAYPA_MODEL_BASE_PATH: ${LAYPA_MODEL_PATH}
       LAYPA_OUTPUT_BASE_PATH: ${LAYPA_OUTPUT_PATH}
+      LAYPA_LEDGER_SIZE: 100
       GUNICORN_RUN_HOST: '0.0.0.0:5000'
       GUNICORN_WORKERS: 1
       GUNICORN_THREADS: 1
@@ -64,18 +58,10 @@ services:
     user: ${MY_UID}:${MY_GID}
     image: 'loghi/docker.htr'
     command: sh -c 'cd api && uvicorn app:app --host 0.0.0.0 --port 5000'
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: ${HTR_GPU_COUNT}
-              capabilities: [gpu]
     container_name: 'htr'
     ports:
       - '127.0.0.1:5001:5000'  # Bind only to localhost
     environment:
-      LOGHI_MODEL_PATH: ${LOGHI_MODEL_PATH}
       LOGHI_BASE_MODEL_DIR: ${LOGHI_BASE_MODEL_DIR}
       LOGHI_MODEL_NAME: ${LOGHI_MODEL_NAME}
       LOGHI_BATCH_SIZE: 64
