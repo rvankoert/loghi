@@ -76,12 +76,14 @@ services:
       - '127.0.0.1:5001:5000'  # Bind only to localhost
     environment:
       LOGHI_MODEL_PATH: ${LOGHI_MODEL_PATH}
+      LOGHI_BASE_MODEL_DIR: ${LOGHI_BASE_MODEL_DIR}
+      LOGHI_MODEL_NAME: ${LOGHI_MODEL_NAME}
       LOGHI_BATCH_SIZE: 64
       LOGHI_OUTPUT_PATH: ${LOGHI_OUTPUT_PATH}
       LOGHI_MAX_QUEUE_SIZE: 50000
       LOGHI_PATIENCE: 0.5
     volumes:
-      - '${LOGHI_MODEL_PATH}:${LOGHI_MODEL_PATH}'
+      - '${LOGHI_BASE_MODEL_DIR}:${LOGHI_BASE_MODEL_DIR}'
       - '${LOGHI_OUTPUT_PATH}:${LOGHI_OUTPUT_PATH}'
     networks:
       - pipeline
