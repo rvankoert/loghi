@@ -37,7 +37,9 @@ The [Loghi Tooling](https://github.com/knaw-huc/loghi-tooling) module offers a s
 
 At the heart of the Loghi framework, the [Loghi HTR](https://github.com/knaw-huc/loghi-htr) module is responsible for the actual transcription of text from images. This system is not limited to handwritten text, as it is also capable of processing machine-printed text. By converting line images into textual data, Loghi HTR forms the final step in the HTR process, bridging the gap between visual data and usable digital text.
 
-Together, these components form a comprehensive ecosystem for handling HTR tasks, from initial layout analysis to the final transcription of text. The Loghi framework offers a modular approach, allowing users to engage with individual components based on their specific needs, while also providing a cohesive solution for end-to-end handwritten text recognition.
+Together, these components form a comprehensive ecosystem for handling HTR tasks, from initial layout analysis to the final transcription of text. The Loghi framework offers a modular approach, allowing users to engage with individual components based on their specific needs, while also providing a cohesive solution for end-to-end handwritten text recognition. 
+
+The modular approach allows users to also utilize other PageXML based frameworks for different steps. As such it is possible to use Transkribus for layout analysis and Loghi HTR for text transcription, or Laypa for layout analysis and Kraken for text transcription. As long as the input and output is PageXML it should be possible to mix and match different tools.
 
 ## Quick Start
 
@@ -95,11 +97,13 @@ Look for the following lines:
 ```
 LAYPABASELINEMODEL=INSERT_FULL_PATH_TO_YAML_HERE
 LAYPABASELINEMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
-HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
+HTRLOGHIMODEL=INSERT_FULL_PATH_TO_FOLDER_CONTAINING_LOGHI_HTR_MODEL_HERE
 ```
-and update those paths with the location of the files you just downloaded. If you downloaded a zip: you should unzip it first. Make sure to use the full path; for example:
+and update those paths with the location of the files you just downloaded. If you downloaded a zip: you should unzip it first. Make sure to use the full path; for example if you downloaded the ijsberg model for laypa and generic-2023-02-15 for loghi-htr:
 ```text
-LAYPABASELINEMODEL=/home/user/Downloads/laypa-baseline2.yaml
+LAYPABASELINEMODEL=/home/user/Downloads/ijsberg/laypa-baseline2.yaml
+LAYPABASELINEMODELWEIGHTS=/home/user/Downloads/ijsberg/model_best_mIoU.pth
+HTRLOGHIMODEL=/home/user/Downloads/generic-2023-02-15
 ```
 
 if you do not have a NVIDIA-GPU and nvidia-docker setup additionally change
