@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=2.2.25
+VERSION=2.2.31
 set -e
 set -o pipefail
 
@@ -62,4 +62,3 @@ docker tag loghi/docker.loghi-tooling:latest loghi/docker.loghi-tooling:$VERSION
 docker tag loghi/docker.htr:latest loghi/docker.htr:$VERSION
 docker tag loghi/docker.htr-wsl:latest loghi/docker.htr-wsl:$VERSION
 docker tag loghi/docker.laypa:latest loghi/docker.laypa:$VERSION
-
