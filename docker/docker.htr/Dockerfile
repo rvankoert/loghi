@@ -1,14 +1,15 @@
 #FROM nvidia/cuda:12.2.0-runtime-ubuntu22.04
 FROM nvidia/cuda:12.5.0-runtime-ubuntu22.04
 
-ENV DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
 
 WORKDIR /src/
 
-RUN apt-get update && apt-get install -y software-properties-common wget git python3-pip python3 python3-dev
+RUN apt-get update && apt-get install -y software-properties-common wget git python3-pip python3 python3-dev && apt-get dist-upgrade -y
 
 RUN apt-get install -y libtcmalloc-minimal4 ffmpeg libsm6 libxext6 libcudnn8 
 RUN apt-get install -y cuda-nvcc-11-8 g++ nvidia-cudnn
