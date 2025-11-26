@@ -38,6 +38,9 @@ RECALCULATEREADINGORDERTHREADS=4
 # set to 1 to create pdf
 createpdf=0
 
+# set to 1 to create txt files alongside pagexml
+createtxt=0
+
 # Detect language of pagexml, set to 1 to enable, 0 otherwise
 DETECTLANGUAGE=1
 # Interpolate word locations
@@ -299,6 +302,18 @@ if [[ $createpdf -eq 1 ]]; then
     # Check if failed
     status=$?
     check_error_and_exit "MinionConvertToPdf" $status
+fi
+
+if [[ $createtxt -eq 1 ]]; then
+    echo "Creating TXT files..."
+    docker run -u $(id -u "${USER}"):$(id -g "${USER}") --rm \
+        -v "$IMAGES_PATH"/:"$IMAGES_PATH"/ \
+        $DOCKERLOGHITOOLING /src/loghi-tooling/minions/target/appassembler/bin/MinionConvertPageToTxt \
+            -pagexmldir "$IMAGES_PATH"/page/ | tee -a "$tmpdir"/log.txt
+
+    # Check if failed
+    status=$?
+    check_error_and_exit "MinionConvertPageToTxt" $status
 fi
 
 # cleanup results
