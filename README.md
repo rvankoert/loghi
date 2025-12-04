@@ -48,7 +48,7 @@ Loghi works best on Linux. Although it can run on Windows using WSL, it is not t
 Begin by cloning the Loghi repository to access the toolkit and navigate into the directory:
 
 ```bash
-git clone git@github.com:knaw-huc/loghi.git
+git clone https://github.com/rvankoert/loghi.git
 cd loghi
 ```
 
@@ -71,15 +71,13 @@ But first go to:
 https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP
 and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR).
 
-suggestion for laypa:
-```text
-general
-```
-suggestion for loghi-htr that should give some results:
-```text
-generic-2023-02-15
-```
+suggestion for laypa: https://surfdrive.surf.nl/s/?dir=/laypa/general/baseline2
+
+suggestion for loghi-htr that should give some results: https://surfdrive.surf.nl/s/YA8HJuukIUKznSP?dir=/loghi-htr/generic-2023-02-15
+
 It is not perfect, but a good starting point. It should work ok on 17th and 18th century handwritten dutch. For best results always finetune on your own specific data.
+
+If you downloaded a zip: you should unzip it first.
 
 edit the [`scripts/inference-pipeline.sh`](scripts/inference-pipeline.sh) using vi, nano, other whatever editor you prefer. We'll use nano in this example
 
@@ -92,7 +90,7 @@ LAYPABASELINEMODEL=INSERT_FULL_PATH_TO_YAML_HERE
 LAYPABASELINEMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
 HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
 ```
-and update those paths with the location of the files you just downloaded. If you downloaded a zip: you should unzip it first.
+and update those paths with the location of the files you just downloaded. Note that "loghi htr model" refers to the folder, not one single document.
 
 if you do not have a NVIDIA-GPU and nvidia-docker setup additionally change
 
