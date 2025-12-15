@@ -10,8 +10,8 @@ Loghi is a comprehensive toolkit designed for Handwritten Text Recognition (HTR)
     - [Loghi Tooling: Pre and Post-Processing Toolkit](#loghi-tooling-pre-and-post-processing-toolkit)
     - [Loghi HTR: Text Transcription](#loghi-htr-text-transcription)
   - [Quick Start](#quick-start)
+    - [OS requirement](#os-requirement)
     - [Installation](#installation)
-    - [Docker Images](#docker-images)
     - [GPU Acceleration](#gpu-acceleration)
   - [Using Loghi](#using-loghi)
   - [Running the Web Service](#running-the-web-service)
@@ -20,6 +20,7 @@ Loghi is a comprehensive toolkit designed for Handwritten Text Recognition (HTR)
   - [Contributing](#contributing)
   - [FAQ](#faq)
     - [Does Loghi work on Apple Silicon (M1/M2/M3)?](#does-loghi-work-on-apple-silicon-m1m2m3)
+    - [How can I cite this software?](#how-can-i-cite-this-software)
 
 ## Introduction to Loghi
 
@@ -40,24 +41,26 @@ At the heart of the Loghi framework, the [Loghi HTR](https://github.com/knaw-huc
 Together, these components form a comprehensive ecosystem for handling HTR tasks, from initial layout analysis to the final transcription of text. The Loghi framework offers a modular approach, allowing users to engage with individual components based on their specific needs, while also providing a cohesive solution for end-to-end handwritten text recognition.
 
 ## Quick Start
+### OS requirement
+Loghi works best on Linux. Although it can run on Windows using WSL, it is not the recommended approach. Mac's are currently not supported (see also [Does Loghi work on Apple Silicon (M1/M2/M3)?](#does-loghi-work-on-apple-silicon-m1m2m3)).
 
 ### Installation
 
-Loghi works best on Linux. Although it can run on Windows using WSL, it is not the recommended approach. Mac's are currently not supported.
-
+#### 1. Cloning the repository
 Begin by cloning the Loghi repository to access the toolkit and navigate into the directory:
 
 ```bash
 git clone https://github.com/knaw-huc/loghi.git
 cd loghi
 ```
-
-### Docker Images
-
+#### 2. Docker images
+For most users, Docker offers the easiest and most straightforward way to deploy and use Loghi. If Docker is not installed on your machine, follow [these instructions](https://docs.docker.com/engine/install/) to install it.
 > [!CAUTION]
 > Loghi currently does not work with the snap version of Docker out of the box, when installing please use the `apt` version. See Issue https://github.com/knaw-huc/loghi/issues/40 for updates
 
-For most users, Docker offers the easiest and most straightforward way to deploy and use Loghi. Pre-built Docker images contain all the necessary dependencies and can be easily pulled from [Docker Hub](https://hub.docker.com/u/loghi):
+You can either use pre-built Docker images, or build them yourself. 
+##### 2.1 Pull pre-built images
+Pre-built Docker images contain all the necessary dependencies and can be easily pulled from [Docker Hub](https://hub.docker.com/u/loghi):
 
 ```bash
 docker pull loghi/docker.laypa
@@ -65,21 +68,28 @@ docker pull loghi/docker.htr
 docker pull loghi/docker.loghi-tooling
 ```
 
-If Docker is not installed on your machine, follow [these instructions](https://docs.docker.com/engine/install/) to install it.
+##### 2.2 Build from source
+As an alternative to using the tested and prebuild docker images, you can build the Docker images with the latest code yourself:
 
-But first go to:
+```bash
+git submodule update --init --recursive
+cd docker
+./buildAll.sh
+```
+
+#### 3. Download models
+Go to
 https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP
 and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR).
 
 suggestion for laypa: http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/laypa/general/baseline2?accept=zip
 
-suggestion for loghi-htr that should give some results: http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/generic-2023-02-15?accept=zip
-
-It is not perfect, but a good starting point. It should work ok on 17th and 18th century handwritten dutch. For best results always finetune on your own specific data.
+suggestion for loghi-htr that should give some results: http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/generic-2023-02-15?accept=zip. It is not perfect, but a good starting point. It should work ok on 17th and 18th century handwritten dutch. For best results always finetune on your own specific data.
 
 If you downloaded a zip: you should unzip it first.
 
-edit the [`scripts/inference-pipeline.sh`](scripts/inference-pipeline.sh) using vi, nano, other whatever editor you prefer. We'll use nano in this example
+#### 4. Update paths and run Loghi
+Edit the [`scripts/inference-pipeline.sh`](scripts/inference-pipeline.sh) using vi, nano, other whatever editor you prefer. We'll use nano in this example
 
 ```bash
 nano scripts/inference-pipeline.sh
@@ -90,9 +100,9 @@ LAYPABASELINEMODEL=INSERT_FULL_PATH_TO_YAML_HERE
 LAYPABASELINEMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
 HTRLOGHIMODEL=INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE
 ```
-and update those paths with the location of the files you just downloaded. Note that "FULL_PATH_TO_LOGHI_HTR_MODEL" refers to the entire folder containing the "model" folder and other documents.
+and update those paths with the location of the files you just downloaded in Step 3. Note that "FULL_PATH_TO_LOGHI_HTR_MODEL" refers to the entire folder containing the "model" folder and other documents.
 
-if you do not have a NVIDIA-GPU and nvidia-docker setup additionally change
+If you do not have a NVIDIA-GPU and nvidia-docker setup, additionally change
 
 ```text
 GPU=0
@@ -113,17 +123,6 @@ The file should run for a short while if you have a good nvidia GPU and nvidia-d
 
 When it finishes without errors a new folder called "page" should be created in the directory with the images. This contains the PageXML output.
 
-
-## 
-### Build dockers from source
-
-As an alternative to using the tested and prebuild docker images, you can build the Docker images with the latest code yourself:
-
-```bash
-git submodule update --init --recursive
-cd docker
-./buildAll.sh
-```
 
 ### GPU Acceleration
 
