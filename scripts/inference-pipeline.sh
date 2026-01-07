@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=2.2.32
+VERSION=2.2.33
 set -e
 set -o pipefail
 
@@ -13,11 +13,11 @@ REGIONLAYPA=0
 
 # Set the path to the yaml file and the pth file for the Laypa baseline model. Not required if BASELINELAYPA is 0
 LAYPABASELINEMODEL=INSERT_FULL_PATH_TO_YAML_HERE
-LAYPABASELINEMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
+LAYPABASELINEMODELWEIGHTS=INSERT_FULL_PATH_TO_PTH_HERE
 
 # Set the path to the yaml file and the pth file for the Laypa region model. Not required if REGIONLAYPA is 0
 LAYPAREGIONMODEL=INSERT_FULL_PATH_TO_YAML_HERE
-LAYPAREGIONMODELWEIGHTS=INSERT_FULLPATH_TO_PTH_HERE
+LAYPAREGIONMODELWEIGHTS=INSERT_FULL_PATH_TO_PTH_HERE
 
 # Set to 1 if you want to enable the HTR step, 0 otherwise
 HTRLOGHI=1
@@ -93,6 +93,19 @@ mkdir -p "$tmpdir"/output
 
 # Housekeeping: remove any existing *.done files
 find "$IMAGES_PATH" -name '*.done' -delete
+
+if [[ $BASELINELAYPA -eq 1 && ($LAYPABASELINEMODEL == *"INSERT_FULL_PATH_TO_YAML_HERE"* || $LAYPABASELINEMODELWEIGHTS == *"INSERT_FULL_PATH_TO_PTH_HERE"*) ]]; then
+    echo "Error: Please set the LAYPABASELINEMODEL and LAYPABASELINEMODELWEIGHTS variables in the script before running."
+    exit 1
+fi
+if [[ $REGIONLAYPA -eq 1 && ($LAYPAREGIONMODEL == *"INSERT_FULL_PATH_TO_YAML_HERE"* || $LAYPAREGIONMODELWEIGHTS == *"INSERT_FULL_PATH_TO_PTH_HERE"*) ]]; then
+    echo "Error: Please set the LAYPAREGIONMODEL and LAYPAREGIONMODELWEIGHTS variables in the script before running."
+    exit 1
+fi
+if [[ $HTRLOGHI -eq 1 && ($HTRLOGHIMODEL == *"INSERT_FULL_PATH_TO_LOGHI_HTR_MODEL_HERE"*) ]]; then
+    echo "Error: Please set the HTRLOGHIMODEL variable in the script before running."
+    exit 1
+fi
 
 if [[ $USE2013NAMESPACE -eq 1 ]]; then
     namespace=" -use_2013_namespace "
