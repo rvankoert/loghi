@@ -1,21 +1,19 @@
 # Installation
 
-
-## How to install Loghi
-### 1. Cloning the repository
+## 1. Cloning the repository
 Begin by cloning the Loghi repository to access the toolkit and navigate into the directory:
 
 ```bash
 git clone https://github.com/knaw-huc/loghi.git
 cd loghi
 ```
-### 2. Docker images
+## 2. Docker images
 For most users, Docker offers the easiest and most straightforward way to deploy and use Loghi. If Docker is not installed on your machine, follow [these instructions](https://docs.docker.com/engine/install/) to install it.
 > [!CAUTION]
 > Loghi currently does not work with the snap version of Docker out of the box, when installing please use the `apt` version. See Issue https://github.com/knaw-huc/loghi/issues/40 for updates
 
 You can either use pre-built Docker images, or build them yourself. 
-#### 2.1 Pull pre-built images
+### 2.1 Pull pre-built images
 Pre-built Docker images contain all the necessary dependencies and can be easily pulled from [Docker Hub](https://hub.docker.com/u/loghi):
 
 ```bash
@@ -24,7 +22,7 @@ docker pull loghi/docker.htr
 docker pull loghi/docker.loghi-tooling
 ```
 
-#### 2.2 Build from source
+### 2.2 Build from source
 As an alternative to using the tested and prebuild docker images, you can build the Docker images with the latest code yourself:
 
 ```bash
@@ -33,7 +31,7 @@ cd docker
 ./buildAll.sh
 ```
 
-### 3. Download models
+## 3. Download models
 Go to
 https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP
 and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR).
@@ -44,7 +42,7 @@ suggestion for loghi-htr that should give some results: http://surfdrive.surf.nl
 
 If you downloaded a zip: you should unzip it first.
 
-### 4. Update paths and run Loghi
+## 4. Update paths and run Loghi
 Edit the [`scripts/inference-pipeline.sh`](scripts/inference-pipeline.sh) using vi, nano, other whatever editor you prefer. We'll use nano in this example
 
 ```bash
@@ -78,12 +76,3 @@ replace /PATH_TO_FOLDER_CONTAINING_IMAGES with a valid directory containing imag
 The file should run for a short while if you have a good nvidia GPU and nvidia-docker setup. It might be a long while if you just have CPU available. It should work either way, just a lot slower on CPU.
 
 When it finishes without errors a new folder called "page" should be created in the directory with the images. This contains the PageXML output.
-
-
-## GPU Acceleration
-
-To harness the full power of Loghi for faster processing, running it on a GPU is recommended. For users with NVIDIA GPUs, ensure you have NVIDIA Docker installed or your Docker setup supports GPU acceleration. This allows Loghi to utilize GPU resources for processing tasks, significantly speeding up operations like image segmentation with Laypa and text recognition with Loghi HTR.
-
-Setting up Docker to run with GPU support involves installing NVIDIA's Docker extension and specifying the use of a GPU when running a Docker container. For detailed instructions on enabling Docker to work with your NVIDIA GPU, please refer to the official NVIDIA Docker documentation.
-
-Note: Running Loghi with GPU acceleration is particularly beneficial for processing large datasets or when high throughput is required. Ensure your system meets the necessary hardware and software requirements for optimal performance.
