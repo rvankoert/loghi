@@ -8,7 +8,7 @@ Loghi is a comprehensive toolkit designed for Automatic Text Recognition (ATR), 
 :maxdepth: 1
 
 introduction
-installation
+installation/index
 usage
 updates
 gradio
