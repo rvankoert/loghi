@@ -6,10 +6,8 @@ Here is a step-by-step guide for installing Loghi.
 Loghi works best on Linux. Although it can run on Windows using WSL, it is not the recommended approach. Mac's are currently not supported (see also [FAQ](FAQ.md)).
 
 ## Steps
-```{toctree}
-:maxdepth: 2
-
-steps
+```{include} steps.md
+:start-after: "# Steps of installation"
 ```
 
 ## Problems with installation
