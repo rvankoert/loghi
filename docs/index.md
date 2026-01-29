@@ -1,11 +1,11 @@
 # Welcome to Loghi's documentation!
 
-## Table of Contents
+## Contents
 
 ```{toctree}
 :maxdepth: 2
-:caption: Contents
 
+index.md
 installation
 usage
 updates
