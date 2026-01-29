@@ -62,6 +62,6 @@ html_title = "Loghi Documentation"
 html_theme = "sphinx_rtd_theme"
 
 html_theme_options = {
-    'prev_next_buttons_location': 'bottom'
+    'prev_next_buttons_location': 'bottom',
     'navigation_depth': 4,
 }
