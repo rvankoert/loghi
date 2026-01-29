@@ -1,3 +1,5 @@
+# Installation
+
 Here is a step-by-step guide for installing Loghi.
 
 ## OS requirement
