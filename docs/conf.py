@@ -58,3 +58,5 @@ exclude_patterns = []
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['static']
 
+html_title = "Loghi Documentation"
+html_theme = "sphinx_rtd_theme"
