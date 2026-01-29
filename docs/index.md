@@ -7,6 +7,7 @@ Loghi is a comprehensive toolkit designed for Automatic Text Recognition (ATR), 
 ```{toctree}
 :maxdepth: 1
 
+Home <self>
 introduction
 installation/index
 usage
