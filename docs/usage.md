@@ -1,11 +1,11 @@
 # Using Loghi
 
-For detailed instructions on running inference, training new models, and other advanced features, refer to the [`scripts`](scripts) directory in this repository. There, you'll find sample scripts and a README designed to guide you through these processes efficiently:
+For detailed instructions on running inference, training new models, and other advanced features, refer to the [`scripts`](https://github.com/knaw-huc/loghi/tree/main/scripts) directory in this repository. There, you'll find sample scripts and a README designed to guide you through these processes efficiently:
 
-- [`create-train-data.sh`](scripts/create-train-data.sh) for preparing training data for HTR models.
-- [`generate-synthetic-images.sh`](scripts/generate-synthetic-images.sh) for generating synthetic text lines.
-- [`htr-train-pipeline.sh`](scripts/htr-train-pipeline.sh) for training new HTR models.
-- [`inference-pipeline.sh`](scripts/inference-pipeline.sh) for transcribing complete scans.
+- [`create-train-data.sh`](https://github.com/knaw-huc/loghi/blob/main/scripts/create-train-data.sh) for preparing training data for HTR models.
+- [`generate-synthetic-images.sh`](https://github.com/knaw-huc/loghi/blob/main/scripts/generate-synthetic-images.sh) for generating synthetic text lines.
+- [`htr-train-pipeline.sh`](https://github.com/knaw-huc/loghi/blob/main/scripts/htr-train-pipeline.sh) for training new HTR models.
+- [`inference-pipeline.sh`](https://github.com/knaw-huc/loghi/blob/main/scripts/inference-pipeline.sh) for transcribing complete scans.
 
 These scripts simplify the process of using Loghi for your HTR projects.
 
