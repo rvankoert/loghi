@@ -9,8 +9,9 @@ cd loghi
 ```
 ## 2. Docker images
 For most users, Docker offers the easiest and most straightforward way to deploy and use Loghi. If Docker is not installed on your machine, follow [these instructions](https://docs.docker.com/engine/install/) to install it.
-> [!CAUTION]
-> Loghi currently does not work with the snap version of Docker out of the box, when installing please use the `apt` version. See Issue https://github.com/knaw-huc/loghi/issues/40 for updates
+```{!CAUTION}
+Loghi currently does not work with the snap version of Docker out of the box, when installing please use the `apt` version. See Issue https://github.com/knaw-huc/loghi/issues/40 for updates
+```
 
 You can either use pre-built Docker images, or build them yourself. 
 ### 2.1 Pull pre-built images
