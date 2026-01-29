@@ -1,5 +1,3 @@
-# Steps
-
 ## 1. Cloning the repository
 Begin by cloning the Loghi repository to access the toolkit and navigate into the directory:
 
