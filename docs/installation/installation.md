@@ -1,7 +1,5 @@
 # Installation
 
-## OS requirement
-Loghi works best on Linux. Although it can run on Windows using WSL, it is not the recommended approach. Mac's are currently not supported (see also [Does Loghi work on Apple Silicon (M1/M2/M3)?](#does-loghi-work-on-apple-silicon-m1m2m3)).
 
 ## How to install Loghi
 ### 1. Cloning the repository
@@ -80,9 +78,6 @@ replace /PATH_TO_FOLDER_CONTAINING_IMAGES with a valid directory containing imag
 The file should run for a short while if you have a good nvidia GPU and nvidia-docker setup. It might be a long while if you just have CPU available. It should work either way, just a lot slower on CPU.
 
 When it finishes without errors a new folder called "page" should be created in the directory with the images. This contains the PageXML output.
-
-## Problems with installation?
-If you run into errors, please check the [troubleshooting section](troubleshooting.md). If you still have issues, please open an issue on GitHub with as much detail as possible and make sure to include the error message you received and the version of Loghi. This will help us assist you more effectively.
 
 
 ## GPU Acceleration
