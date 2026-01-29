@@ -9,8 +9,9 @@ For detailed instructions on running inference, training new models, and other a
 
 These scripts simplify the process of using Loghi for your HTR projects.
 
-> [!TIP]
+``` {tip}
 > The [Loghi-HTR repository](https://github.com/knaw-huc/loghi-htr/) contains a config folder that provides a few quick-start configurations for running Loghi-HTR. These configurations can be used to quickly set up more advanced training and inference pipelines, allowing you to get started with Loghi-HTR in no time. Simply copy the desired config file, adjust the parameters as needed, and run Loghi-HTR using the `--config_file` parameter.
+```
 
 ### Training using the HTR module 
 #### Beginner / default
