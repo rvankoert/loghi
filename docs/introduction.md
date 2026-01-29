@@ -1,4 +1,4 @@
-# Introduction to Loghi
+# Introduction
 
 The Loghi framework is designed to streamline the process of Automatic Text Recognition (ATR), from analyzing document layouts to transcribing handwritten text into digital format. At the core of Loghi are three critical components, each responsible for a distinct aspect of the HTR pipeline:
 
