@@ -1,4 +1,6 @@
-## Running the Web Service
+# Web Service
+
+<!-- content to be updated and explained -->
 
 The [`webservice`](webservice) directory contains a README with instructions on how to get started with running the Loghi web service for online transcription tasks. This setup is designed to provide an accessible way to engage with the service, catering both to those new to the platform and to seasoned users looking for advanced functionalities.
 

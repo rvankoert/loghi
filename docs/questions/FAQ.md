@@ -1,5 +1,7 @@
 # FAQ
 
+<!-- content to be updated and explained -->
+
 Here are some frequently asked questions about Loghi and their answers to help you get started and troubleshoot common issues.
 
 ## My results are not as good as I expected, what can I do?

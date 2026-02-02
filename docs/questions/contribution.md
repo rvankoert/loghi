@@ -1,5 +1,7 @@
 # Contributing
 
+<!-- content to be updated and explained -->
+
 We welcome contributions to Loghi and its components! Whether you encounter issues, have suggestions for improvements, or wish to contribute code, we encourage you to engage with us. Contributions can be made to this repository or any of its subdirectories, which include other component repositories.
 
 Here's how you can contribute:

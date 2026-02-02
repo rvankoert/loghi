@@ -1,5 +1,7 @@
 # Installation
 
+<!-- content to being updated-->
+
 Loghi works best on Linux. Although it can run on Windows using WSL, it is not the recommended approach. macOS is currently not supported (see also [FAQ](FAQ.md)).
 
 Here is a step-by-step guide for installing Loghi on Linux. If you run into errors during installation, please check the [troubleshooting page](troubleshooting.md).

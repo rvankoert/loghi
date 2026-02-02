@@ -1,5 +1,7 @@
 # Troubleshooting
 
+<!-- content to being updated -->
+
 Here are some common issues that you could encounter. If you have a specific error message, you may also look at the open and close issues on the [GitHub Issues page](https://github.com/knaw-huc/loghi/issues) and see if someone else has encountered the same problem. Please [open a new issue] (#i-cannot-find-a-solution-to-my-error-in-this-page-or-the-github-issues-what-should-i-do) if you don't find a solution to your error.
 
 ### I got a runtime error. What should I do?

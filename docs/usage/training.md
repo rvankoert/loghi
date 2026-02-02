@@ -1,5 +1,7 @@
 # Training and finetuning Laypa and Loghi models
 
+<!-- content to be updated and explained -->
+
 ## Laypa
 The Laypa training pipeline (scripts/laypa-train-pipeline.sh) is designed to train or fine-tune a Laypa model using Docker. Key steps include:
 

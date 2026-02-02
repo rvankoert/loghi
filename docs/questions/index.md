@@ -4,6 +4,6 @@
 :maxdepth: 2
 
 troubleshooting
-contributing
+contribution
 FAQ
 ```
