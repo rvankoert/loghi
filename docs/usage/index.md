@@ -13,7 +13,7 @@ gradio
 
 ## Using Loghi
 
-<!-- content to be distributed to child pages? -->
+<!-- below is content from the old docs/index.md. need to be distributed to child pages? -->
 
 For detailed instructions on running inference, training new models, and other advanced features, refer to the [`scripts`](https://github.com/knaw-huc/loghi/tree/main/scripts) directory in this repository. There, you'll find sample scripts and a README designed to guide you through these processes efficiently:
 

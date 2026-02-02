@@ -2,7 +2,8 @@
 
 <!-- content being updated-->
 
-Here is a step-by-step guide for installing Loghi on Linux. If you run into errors during installation, please check the [troubleshooting page](questions/troubleshooting.md).
+Here is a step-by-step guide for installing Loghi on Linux. If you run into errors during installation, please check the [troubleshooting page](../questions/troubleshooting).
+
 
 ## 1. Clone the repository
 Begin by cloning the Loghi repository to access the toolkit and navigate into the directory. Please copy the following commands, paste them into your terminal, then press `Enter`:
@@ -17,26 +18,22 @@ Docker is a tool that offers the easiest and most straightforward way to deploy 
 ```bash
 docker --version
 ```
-### 2.1 "Docker version 29.1.2, build 890dcca"
-A message similar to this shows the version of Dokcer installed. You may now proceed to [the next step](#build-docker-images). 
-
-### 2.2 "docker: command not found"
+If you get a message similar to "Docker version 29.1.2, build 890dcca", you can proceed to [build Docker images]](#build-docker-images). 
 If you see "docker: command not found", please follow 
 [the official guide](https://docs.docker.com/engine/install/) to install Docker using the `apt` version. 
 
-#### Reminders
+### Reminders
 1. Make sure to choose the right Linux platform. Don't know what platform your machine uses? Run the following command in the terminal:
 ```bash
 lsb_release -a
 ```
    You will then see the name of the platform listed after "Distributor ID" or "Description" (e.g. Ubuntu, Fedora, Debian).
 
-2. Make sure that you install Docker using the `apt` repository, as Loghi currently does not work with the snap version of Docker. See Issue https://github.com/knaw-huc/loghi/issues/40 for updates
-<!-- question: how to better phrase it -->
+2. Make sure that you install Docker using the `apt` repository, as Loghi might not work with the snap version of Docker. 
 
 ## 3. Build Docker images
 A Docker image is not a picture, but a special package that prepares the environment for running tools. There are two ways to build Docker images: you can either use pre-built ones, or build them yourself. Both could take some time to complete, so please be patient.
-### 3.1 Get pre-built images
+### Option 1: Get pre-built images
 Pre-built Docker images contain all the necessary dependencies and can be easily pulled from [Docker Hub](https://hub.docker.com/u/loghi) by running the following commands:
 
 ```bash
@@ -45,7 +42,7 @@ docker pull loghi/docker.htr
 docker pull loghi/docker.loghi-tooling
 ```
 
-### 3.2 Build from source
+### Option 2: Build from source
 As an alternative to using the the pre-built Docker images, you can build them yourself. The following commands update the downloaded scripts to the latest version and build the Docker images:
 
 ```bash
@@ -54,18 +51,28 @@ cd docker
 ./buildAll.sh
 ```
 
+<!-- add section about NVIDIA, but where?-->
+
 ## 4. Download models
 Go to [this webpage](https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP) and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR): click on the three dots on the right of the corresponding folder and select "Download", or tick the box preceding the corresponding folder and click the "Download" that then appears.
 
 We recommend these two models: [laypa general baseline2](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/laypa/general/baseline2?accept=zip) and [loghi-htr generic-2023-02-15](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/generic-2023-02-15?accept=zip) (it works ok on 17th and 18th century handwritten Dutch; if you want best results, see [training](usage/training.md) to finetune the models on your specific data).
 
-<!-- how to explain the following-->
-If you are using the pretrained model and run on CPU: please make sure to download the Loghi-htr model starting with "float32-". This will run faster on CPU than the default mixed_float16 models.
+```{note}
+If you do not have the NVIDIA GPU, download the [float32 Loghi-htr model](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/float32-generic-2023-02-15?accept=zip) instead. This will run faster on CPU than the default mixed_float16 models.
+```
+
+```{tip}
+Unsure if you have the NVIDIA GPU? Run `lspci | grep -i nvidia` in your terminal. 
+If nothing appears, you either don't have an NVIDIA GPU or the drivers aren’t installed. 
+Something like "01:00.0 VGA compatible controller: NVIDIA Corporation GeForce GTX 1080" appears means that you have it, and it is possible for Loghi to process faster. Refer to [GPU Acceleration](acceleration.md) for more information.
+```
+<!-- may need to update this part, depending on how the installation of NVIDIA docker goes -->
 
 Please be reminded to unzip the downloaded files, which will each become a folder containing a `.yaml` file and a `.pth` file.
 
 ## 5. Update paths
-Edit the [`scripts/inference-pipeline.sh`] script downloaded in Step 2 with an editor of your choice. We'll use nano in this example so that you can edit it directly in the terminal:
+Edit the `scripts/inference-pipeline.sh` script downloaded in Step 2 with an editor of your choice. We'll use nano in this example so that you can edit it directly in the terminal:
 ```bash
 nano scripts/inference-pipeline.sh
 ```
@@ -94,7 +101,7 @@ Something like "01:00.0 VGA compatible controller: NVIDIA Corporation GeForce GT
 
 After editing, save the script with `Ctrl + S`, and press `Ctrl + X` to exit the editor.
 
-## 6. Run Loghi
+## 6. Run Loghi on your images
 Run the script with the following command:
 ```bash
 ./scripts/inference-pipeline.sh /PATH_TO_FOLDER_CONTAINING_IMAGES

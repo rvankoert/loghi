@@ -1,6 +1,6 @@
 # Installation
 
-Loghi works best on Linux. Although it can run on Windows using WSL, it is not the recommended approach. macOS is currently not supported (see also [FAQ](questions/FAQ.md)).
+Loghi works best on Linux. Although it can run on Windows using WSL, it is not the recommended approach. macOS is currently not supported (see also [FAQ](../questions/FAQ)).
 
 Now we will teach you how to install Loghi in the terminal, the place where you send commands to your computer. On a Linux desktop, you can access the terminal by pressing `Ctrl + Alt + T`. Alternatively, you can look for "Terminal" in your applications menu.
 

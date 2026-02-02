@@ -32,3 +32,10 @@ Proposed structure:
    ├─ Contributing
    └─ FAQ
 -->
+
+<!-- steps
+1. establish the rtd site: done
+2. design the structure: done
+3. update the pages
+4. provide output / screenshots for clarity
+5. check if the links all work-->

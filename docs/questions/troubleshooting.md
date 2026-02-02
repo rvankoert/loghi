@@ -1,18 +1,10 @@
 # Troubleshooting
 
-<!-- content to being updated -->
+<!-- content to be updated, section headings to be added -->
 
 Here are some common issues that you could encounter. If you have a specific error message, you may also look at the open and close issues on the [GitHub Issues page](https://github.com/knaw-huc/loghi/issues) and see if someone else has encountered the same problem. Please [open a new issue] (#i-cannot-find-a-solution-to-my-error-in-this-page-or-the-github-issues-what-should-i-do) if you don't find a solution to your error.
 
 ## Installation
-
-### I got a runtime error. What should I do?
-You can try to verify that the paths to your models are correct and that the models are compatible with your version of Loghi.
-<!-- update this part with more details -->
-
-### I have issues with the performance. What should I do?
-You can consider checking your GPU settings and ensuring that Docker is configured to utilize GPU resources effectively. On Linux you could use `nvidia-smi` or `nvtop` to check if the GPU is being used correctly.
-<!-- update this part with more details -->
 
 ### What should I do if I get the message "bash: ./scripts/inference-pipeline.sh: Permission denied" when trying to run the inference script?
 You may need to change the permissions of the script by running:
@@ -20,10 +12,7 @@ You may need to change the permissions of the script by running:
 chmod +x scripts/inference-pipeline.sh
 ```
 
-### The error message says "No such file or directory". What should I do?
-You can verify the file name or directory in the command line: Does the file exist at all? Is the directory an absolute one or a relative one? Which folder are you currently in?
-<!-- update this part with more details -->
-
+<!-- wording to be revised, questions to be categorized -->
 ## using Docker
 - Ensure that Docker is installed and running correctly on your system.
 - If you encounter permission issues, try adding your user to the Docker group.
@@ -35,6 +24,26 @@ You can verify the file name or directory in the command line: Does the file exi
 - If you are using a virtual environment, ensure that it is activated before running any commands.
 - If you are using a custom dataset, ensure that it is formatted correctly and that the paths to the images and annotations are correct.
 
+## Update
+### How can I update Loghi while keeping local changes to some of its files?
+You can stash the changes, git pull, then . <!-- update this part with more details -->
+
+### The error message says "fatal: Need to specify how to reconcile divergent branches.". What should I do?
+See the previous question.
+
+## Others
+
+### The error message says "No such file or directory". What should I do?
+You can verify the file name or directory in the command line: Does the file exist at all? Is the directory an absolute one or a relative one? Which folder are you currently in?
+<!-- update this part with more details -->
+
+### I got a runtime error. What should I do?
+You can try to verify that the paths to your models are correct and that the models are compatible with your version of Loghi.
+<!-- update this part with more details -->
+
+### I have issues with the performance. What should I do?
+You can consider checking your GPU settings and ensuring that Docker is configured to utilize GPU resources effectively. On Linux you could use `nvidia-smi` or `nvtop` to check if the GPU is being used correctly.
+<!-- update this part with more details -->
 
 ### I cannot find a solution to my error in this page or the [GitHub Issues](https://github.com/knaw-huc/loghi/issues). What should I do?
 Please follow the steps below to open a new issue:
