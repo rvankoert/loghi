@@ -1,20 +1,36 @@
 # Steps of installation
 
-## 1. Cloning the repository
-Begin by cloning the Loghi repository to access the toolkit and navigate into the directory:
+## 1. Go to the terminal
+The terminal is the place where you send commands to your computer. On a Linux desktop, you can access the terminal by pressing `Ctrl + Alt + T`. Alternatively, you can look for "Terminal" in your applications menu.
+
+## 2. Clone the repository
+Begin by cloning the Loghi repository to access the toolkit and navigate into the directory. Please copy the following commands, paste them into your terminal, then press `Enter`:
 
 ```bash
 git clone https://github.com/knaw-huc/loghi.git
 cd loghi
 ```
-## 2. Docker images
-For most users, Docker offers the easiest and most straightforward way to deploy and use Loghi. If Docker is not installed on your machine, follow [these instructions](https://docs.docker.com/engine/install/) to install it.
+
+## 3. Install Docker
+Docker is a tool that offers the easiest and most straightforward way to deploy and use Loghi. Run the following command to see if Docker is installed:
+```bash
+docker --version
+```
+### 3.1 "Docker version 29.1.2, build 890dcca"
+A message similar to this shows the version of Dokcer installed. You may now process to [Step 4](#build-docker-images). 
+
+### 3.2 "docker: command not found"
+If you see "docker: command not found", please follow 
+[these instructions](https://docs.docker.com/engine/install/) to install it.
+<!-- question: copy paste from the page, or redirect the user? -->
+
 ```{note}
 Loghi currently does not work with the snap version of Docker out of the box, when installing please use the `apt` version. See Issue https://github.com/knaw-huc/loghi/issues/40 for updates
 ```
 
-You can either use pre-built Docker images, or build them yourself. 
-### 2.1 Pull pre-built images
+## 4 Build Docker images
+A Docker image is a special package that contains . There are two ways to build Docker images: you can either use pre-built ones, or build them yourself. 
+### 4.1 Get pre-built images
 Pre-built Docker images contain all the necessary dependencies and can be easily pulled from [Docker Hub](https://hub.docker.com/u/loghi):
 
 ```bash
@@ -23,7 +39,7 @@ docker pull loghi/docker.htr
 docker pull loghi/docker.loghi-tooling
 ```
 
-### 2.2 Build from source
+### 4.2 Build from source
 As an alternative to using the tested and prebuild docker images, you can build the Docker images with the latest code yourself:
 
 ```bash
@@ -32,7 +48,7 @@ cd docker
 ./buildAll.sh
 ```
 
-## 3. Download models
+## 5. Download models
 Go to
 https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP
 and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR).
@@ -43,7 +59,7 @@ suggestion for loghi-htr that should give some results: http://surfdrive.surf.nl
 
 If you downloaded a zip: you should unzip it first.
 
-## 4. Update paths and run Loghi
+## 6. Update paths and run Loghi
 Edit the [`scripts/inference-pipeline.sh`](scripts/inference-pipeline.sh) using vi, nano, other whatever editor you prefer. We'll use nano in this example
 
 ```bash
