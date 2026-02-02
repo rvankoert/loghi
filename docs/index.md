@@ -2,6 +2,8 @@
 
 Loghi is a comprehensive toolkit designed for Automatic Text Recognition (ATR), a combination of both Handwritten Text Recognition (HTR) and Optical Character Recognition (OCR), offering an accessible approach to transcribing historical documents and training models for specialized needs. This site provides a detailed documentation for Loghi, including how to install, run inference, train new models, and utilize our scripts for these tasks.
 
+<!-- mention the languages that the models have been trained on? -->
+
 ## Contents
 
 ```{toctree}
@@ -10,10 +12,23 @@ Loghi is a comprehensive toolkit designed for Automatic Text Recognition (ATR), 
 Home <self>
 introduction
 installation/index
-usage
-updates
-gradio
-troubleshooting
-contributing
-FAQ
+usage/index
+questions/index
 ```
+
+<!-- 
+Proposed structure:
+1. Introduction
+2. Installation
+   ├─ Installation
+   └─ Updates
+3. Usage
+   ├─ Training
+   ├─ Acceleration
+   ├─ Web service
+   └─ Gradio demo
+4. Questions
+   ├─ Troubleshooting
+   ├─ Contributing
+   └─ FAQ
+-->
