@@ -2,8 +2,6 @@
 
 <!-- content is pasted from readme.md in gradio, needs to be updated and explained -->
 
-# Loghi Software Gradio Demo
-
 This directory contains the Gradio demo for Loghi Software. It features a graphical user interface (GUI) to demonstrate the capabilities of Loghi tools including Loghi Tooling, Laypa, and Loghi-HTR. 
 
 > [!NOTE]

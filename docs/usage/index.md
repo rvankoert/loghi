@@ -9,6 +9,8 @@ webservice
 gradio
 ```
 
+<!-- add a section teaching the user to read the pagexml output? -->
+
 ## Using Loghi
 
 <!-- content to be distributed to child pages? -->
