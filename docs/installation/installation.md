@@ -19,7 +19,7 @@ Docker is a tool that offers the easiest and most straightforward way to deploy 
 ```bash
 docker --version
 ```
-If you get a message similar to "Docker version 29.1.2, build 890dcca", you can proceed to [build Docker images](#13-build-docker-images).
+If you get a message similar to "Docker version 29.1.2, build 890dcca", you can proceed to the next step.
 If you see "docker: command not found", please follow 
 [the official guide](https://docs.docker.com/engine/install/) to install Docker using the `apt` version. 
 
@@ -51,7 +51,7 @@ lspci | grep -i nvidia
 
 **Possible outcomes:**
 
-1. **Nothing appears**: You either don't have an NVIDIA GPU, or it's not detected. Skip to [Build Docker images](#13-build-docker-images) and continue without GPU acceleration.
+1. **Nothing appears**: You either don't have an NVIDIA GPU, or it's not detected. Skip to [Build Docker images](#4-build-docker-images) and continue without GPU acceleration.
 
 2. **Output appears** (e.g., "01:00.0 VGA compatible controller: NVIDIA Corporation GeForce GTX 1080"): You have an NVIDIA GPU. 
 
