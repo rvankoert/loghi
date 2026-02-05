@@ -27,16 +27,17 @@ If you see "docker: command not found", please follow
 ```bash
 lsb_release -a
 ```
-   You will then see the name of the platform listed after "Distributor ID" or "Description" (e.g. Ubuntu, Fedora, Debian).
+You will then see the name of the platform listed after "Distributor ID" or "Description" (e.g. Ubuntu, Fedora, Debian).
 
 2. Make sure that you install Docker using the `apt` repository, as Loghi might not work with the snap version of Docker. 
 
 ## 3. Build Docker images
+
 A Docker image is not a picture, but a special package that prepares the environment for running tools. There are two ways to build Docker images: you can either use pre-built ones, or build them yourself. Both could take some time to complete, so please be patient.
 
-`````{tab-set}
+::::{tab-set}
 
-````{tab-item} Option 1: Get pre-built images
+:::{tab-item} Option 1: Get pre-built images
 
 Pre-built Docker images contain all the necessary dependencies and can be easily pulled from [Docker Hub](https://hub.docker.com/u/loghi) by running the following commands:
 
@@ -46,9 +47,9 @@ docker pull loghi/docker.htr
 docker pull loghi/docker.loghi-tooling
 ```
 
-````
+:::
 
-````{tab-item} Option 2: Build from source
+:::{tab-item} Option 2: Build from source
 
 As an alternative to using the the pre-built Docker images, you can build them yourself. The following commands update the downloaded scripts to the latest version and build the Docker images:
 
@@ -57,9 +58,10 @@ git submodule update --init --recursive
 ./docker/buildAll.sh
 ```
 
-````
+:::
 
-`````
+::::
+
 <!-- add section about NVIDIA, but where?-->
 
 ## 4. Download models
@@ -110,6 +112,11 @@ Run the script with the following command:
 ./scripts/inference-pipeline.sh /PATH_TO_FOLDER_CONTAINING_IMAGES
 ```
 You need to replace `/PATH_TO_FOLDER_CONTAINING_IMAGES` with a valid directory containing images (.jpg is preferred/tested) directly below it. For example, if the images are placed in the folder `/home/user/images`, the command should be:
+
+2. Make sure that you install Docker using the `apt` repository, as Loghi might not work with the snap version of Docker. 
+
+## 3. Build Docker images
+A Docker image is not a picture, but a special package that prepares the environment for running tools. There are two
 ```bash
 ./scripts/inference-pipeline.sh /home/user/images
 ```
