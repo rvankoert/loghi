@@ -34,8 +34,7 @@ lsb_release -a
 ## 3. Build Docker images
 A Docker image is not a picture, but a special package that prepares the environment for running tools. There are two ways to build Docker images: you can either use pre-built ones, or build them yourself. Both could take some time to complete, so please be patient.
 
-`````{tab-set}
-````{tab-item} Option 1: Get pre-built images
+### Option 1: Get pre-built images
 
 Pre-built Docker images contain all the necessary dependencies and can be easily pulled from [Docker Hub](https://hub.docker.com/u/loghi) by running the following commands:
 
@@ -44,9 +43,8 @@ docker pull loghi/docker.laypa
 docker pull loghi/docker.htr
 docker pull loghi/docker.loghi-tooling
 ```
-````
 
-````{tab-item} Option 2: Build from source
+### Option 2: Build from source
 
 As an alternative to using the the pre-built Docker images, you can build them yourself. The following commands update the downloaded scripts to the latest version and build the Docker images:
 
@@ -54,8 +52,6 @@ As an alternative to using the the pre-built Docker images, you can build them y
 git submodule update --init --recursive
 ./docker/buildAll.sh
 ```
-````
-`````
 <!-- add section about NVIDIA, but where?-->
 
 ## 4. Download models
