@@ -11,7 +11,7 @@ Docker is a tool that offers the easiest and most straightforward way to deploy 
 ```bash
 docker --version
 ```
-If you get a message similar to "Docker version 29.1.2, build 890dcca", you can proceed to [build Docker images](#build-docker-images). 
+If you get a message similar to "Docker version 29.1.2, build 890dcca", you can proceed to [build Docker images](#13-build-docker-images).
 If you see "docker: command not found", please follow 
 [the official guide](https://docs.docker.com/engine/install/) to install Docker using the `apt` version. 
 
@@ -126,7 +126,6 @@ Go to [this webpage](https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP
 If you have a NVIDIA GPU, we recommend these two models: [laypa general baseline2](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/laypa/general/baseline2?accept=zip) and [loghi-htr generic-2023-02-15](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/generic-2023-02-15?accept=zip) (it works ok on 17th and 18th century handwritten Dutch; if you want best results, see [training](../usage/training) to finetune the models on your specific data).
 
 :::
-<!-- remove the 'want best results comment? -->
 
 :::{tab-item} Recommended models for CPU
 
