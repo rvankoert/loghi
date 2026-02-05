@@ -49,7 +49,7 @@ You can consider checking your GPU settings and ensuring that Docker is configur
 Please follow the steps below to open a new issue:
 1. Go to [GitHub Issues](https://github.com/knaw-huc/loghi/issues).
 2. Click the green "New issue" button in the upper right corner of the page. 
-3. Please add a clear title for your issue and provide a description as detailed as possible. You may consider this format:
+3. Add a clear title for your issue and provide a description as detailed as possible. You may consider this format:
 ```md
 ## Description
 Brifely describe the problem and what you were trying to do. 

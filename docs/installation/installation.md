@@ -33,7 +33,8 @@ lsb_release -a
 
 ## 3. Build Docker images
 A Docker image is not a picture, but a special package that prepares the environment for running tools. There are two ways to build Docker images: you can either use pre-built ones, or build them yourself. Both could take some time to complete, so please be patient.
-### Option 1: Get pre-built images
+````{tabs}
+```{tab} Option 1: Get pre-built images
 Pre-built Docker images contain all the necessary dependencies and can be easily pulled from [Docker Hub](https://hub.docker.com/u/loghi) by running the following commands:
 
 ```bash
@@ -41,16 +42,17 @@ docker pull loghi/docker.laypa
 docker pull loghi/docker.htr
 docker pull loghi/docker.loghi-tooling
 ```
+```
 
-### Option 2: Build from source
+```{tab} Option 2: Build from source
 As an alternative to using the the pre-built Docker images, you can build them yourself. The following commands update the downloaded scripts to the latest version and build the Docker images:
 
 ```bash
 git submodule update --init --recursive
-cd docker
-./buildAll.sh
+./docker/buildAll.sh
 ```
-
+```
+````
 <!-- add section about NVIDIA, but where?-->
 
 ## 4. Download models
@@ -59,7 +61,7 @@ Go to [this webpage](https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP
 We recommend these two models: [laypa general baseline2](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/laypa/general/baseline2?accept=zip) and [loghi-htr generic-2023-02-15](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/generic-2023-02-15?accept=zip) (it works ok on 17th and 18th century handwritten Dutch; if you want best results, see [training](usage/training.md) to finetune the models on your specific data).
 
 ```{note}
-If you do not have the NVIDIA GPU, download the [float32 Loghi-htr model](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/float32-generic-2023-02-15?accept=zip) instead. This will run faster on CPU than the default mixed_float16 models.
+If you do not have the NVIDIA GPU, download the [float32 Loghi-htr model](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/float32-generic-2023-02-15?accept=zip) instead. This will run faster on CPU than the model recommended above, which is mixed_float16 .
 ```
 
 ```{tip}
@@ -91,12 +93,6 @@ GPU=0
 to
 ```text
 GPU=-1
-```
-
-```{tip}
-Unsure if you have the NVIDIA GPU? Run `lspci | grep -i nvidia` in your terminal. 
-If nothing appears, you either don't have an NVIDIA GPU or the drivers aren’t installed. 
-Something like "01:00.0 VGA compatible controller: NVIDIA Corporation GeForce GTX 1080" appears means that you have it, and it is possible for Loghi to process faster. Refer to [GPU Acceleration](acceleration.md) for more information.
 ```
 
 After editing, save the script with `Ctrl + S`, and press `Ctrl + X` to exit the editor.
