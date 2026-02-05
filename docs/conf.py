@@ -14,7 +14,7 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
-extensions = ['myst_parser', 'sphinx_tabs.tabs']
+extensions = ['myst_parser', 'sphinx_inline_tabs']
 
 # -- Project information -----------------------------------------------------
 
