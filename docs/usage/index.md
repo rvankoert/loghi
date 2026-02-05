@@ -4,10 +4,9 @@
 :maxdepth: 2
 
 training
-acceleration
 webservice
 gradio
-understanding-output
+output
 ```
 
 ## Using Loghi

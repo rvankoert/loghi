@@ -69,10 +69,6 @@ nvidia-smi
 
 3. **"NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver"**: Drivers are installed but not working properly. Try rebooting or reinstalling the drivers.
 
-:::{tip}
-If you're unsure about your GPU or don't want to deal with GPU setup, you can skip this section. Loghi will work on CPU, just significantly slower.
-:::
-
 #### 1.2.3 Install NVIDIA Container Toolkit
 
 Follow the [official guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) to install the NVIDIA Container Toolkit.
