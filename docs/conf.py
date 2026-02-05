@@ -16,6 +16,12 @@
 
 extensions = ['myst_parser', 'sphinx_inline_tabs']
 
+# MyST parser configuration
+myst_enable_extensions = [
+    "colon_fence",
+]
+
+
 # -- Project information -----------------------------------------------------
 
 project = 'Loghi'
