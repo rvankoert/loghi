@@ -43,7 +43,7 @@ lspci | grep -i nvidia
 
 **Possible outcomes:**
 
-1. **Nothing appears**: You either don't have an NVIDIA GPU, or it's not detected. Skip to [Build Docker images](#13-build-docker-imagesbuild-docker-images) and continue without GPU acceleration.
+1. **Nothing appears**: You either don't have an NVIDIA GPU, or it's not detected. Skip to [Build Docker images](#13-build-docker-images) and continue without GPU acceleration.
 
 2. **Output appears** (e.g., "01:00.0 VGA compatible controller: NVIDIA Corporation GeForce GTX 1080"): You have an NVIDIA GPU. 
 
@@ -56,7 +56,7 @@ nvidia-smi
 
 **Possible outcomes:**
 
-1. **Shows GPU information**: Drivers are installed! Note the CUDA version shown at the top of the output. Continue to [install NVIDIA Container Toolkit](#123-install-nvidia-container-toolkit).
+1. **Shows GPU information**: Drivers are installed! Note the CUDA version shown at the top of the output. Continue to install NVIDIA Container Toolkit below.
 
 2. **"command not found" or error**: NVIDIA drivers are not installed. Install them:
    ```bash
@@ -122,14 +122,18 @@ Go to [this webpage](https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP
 ::::{tab-set}
 
 :::{tab-item} Recommended models for NVIDIA GPU
-If you have a NVIDIA GPU, we recommend these two models: [laypa general baseline2](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/laypa/general/baseline2?accept=zip) and [loghi-htr generic-2023-02-15](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/generic-2023-02-15?accept=zip) (it works ok on 17th and 18th century handwritten Dutch; if you want best results, see [training](usage/training.md) to finetune the models on your specific data).
+
+If you have a NVIDIA GPU, we recommend these two models: [laypa general baseline2](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/laypa/general/baseline2?accept=zip) and [loghi-htr generic-2023-02-15](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/generic-2023-02-15?accept=zip) (it works ok on 17th and 18th century handwritten Dutch; if you want best results, see [training](../usage/training) to finetune the models on your specific data).
+
 :::
 <!-- remove the 'want best results comment? -->
 
 :::{tab-item} Recommended models for CPU
+
 If you do not have a NVIDIA GPU, we recommend these two models: [laypa general baseline2](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/laypa/general/baseline2?accept=zip) and the [float32 Loghi-htr model](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/float32-generic-2023-02-15?accept=zip) (it will run faster on CPU than the other recommended model, which is mixed_float16).
 
 :::
+
 ::::
 
 ### 2.3 Update paths
