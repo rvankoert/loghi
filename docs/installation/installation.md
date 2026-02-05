@@ -4,8 +4,16 @@
 
 Here is a step-by-step guide for installing Loghi on Linux. If you run into errors during installation, please check the [troubleshooting page](../questions/troubleshooting).
 
-## 1. Prepare the environment
-### 1.1 Install Docker
+## 1. Clone the repository
+
+Begin by cloning the Loghi repository to access the toolkit and navigate into the directory:
+
+```bash
+git clone https://github.com/knaw-huc/loghi.git
+cd loghi
+```
+
+## 2. Install Docker
 
 Docker is a tool that offers the easiest and most straightforward way to deploy and use Loghi. Run the following command to see if Docker has already been installed in your machine by copying it, pasting it into your terminal, then pressing `Enter`:
 ```bash
@@ -25,7 +33,7 @@ If you see "docker: command not found", please follow
 2. Make sure that you install Docker using the `apt` repository, as Loghi might not work with the snap version of Docker. 
 :::
 
-### 1.2 Set up GPU acceleration with NVIDIA (optional)
+## 3. Set up GPU acceleration with NVIDIA (optional)
 <!-- section prepared by claude, to be verified-->
 
 For users with NVIDIA GPUs, it is recommended to run Loghi on GPU for faster processing. This allows Loghi to utilize GPU resources for processing tasks, significantly speeding up operations like image segmentation with Laypa and text recognition with Loghi HTR. Running Loghi with GPU acceleration is particularly beneficial for processing large datasets or when high throughput is required.
@@ -34,7 +42,7 @@ For users with NVIDIA GPUs, it is recommended to run Loghi on GPU for faster pro
 This setup is optional. You can skip it if you don't have a NVIDIA GPU or if you don't want to deal with GPU setup. Loghi will work on CPU, just significantly slower.
 :::
 
-#### 1.2.1 Check for NVIDIA GPU
+### 3.1 Check for NVIDIA GPU
 
 Let's first check if you have an NVIDIA GPU. Run this command in your terminal:
 ```bash
@@ -47,7 +55,7 @@ lspci | grep -i nvidia
 
 2. **Output appears** (e.g., "01:00.0 VGA compatible controller: NVIDIA Corporation GeForce GTX 1080"): You have an NVIDIA GPU. 
 
-#### 1.2.2 Check for NVIDIA drivers
+### 3.2 Check for NVIDIA drivers
 Now check if NVIDIA drivers are installed.
 
 ```bash
@@ -69,11 +77,11 @@ nvidia-smi
 
 3. **"NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver"**: Drivers are installed but not working properly. Try rebooting or reinstalling the drivers.
 
-#### 1.2.3 Install NVIDIA Container Toolkit
+### 3.3 Install NVIDIA Container Toolkit
 
 Follow the [official guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) to install the NVIDIA Container Toolkit.
 
-### 1.3 Build Docker images
+## 4. Build Docker images
 
 A Docker image is not a picture, but a special package that prepares the environment for running tools. There are two ways to build Docker images: you can either use pre-built ones, or build them yourself. Both could take some time to complete.
 ::::{tab-set}
@@ -100,17 +108,7 @@ git submodule update --init --recursive
 :::
 ::::
 
-## 2. Download and run Loghi
-### 2.1 Clone the repository
-
-Begin by cloning the Loghi repository to access the toolkit and navigate into the directory:
-
-```bash
-git clone https://github.com/knaw-huc/loghi.git
-cd loghi
-```
-
-### 2.2 Download models
+## 5. Download models
 
 Go to [this webpage](https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP) and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR): click on the three dots on the right of the corresponding folder and select "Download", or tick the box preceding the corresponding folder and click the "Download" that then appears. Also be reminded to unzip the downloaded files for the use in the next step.
 
@@ -131,7 +129,7 @@ If you do not have a NVIDIA GPU, we recommend these two models: [laypa general b
 
 ::::
 
-### 2.3 Update paths
+## 6. Update paths
 
 Edit the `scripts/inference-pipeline.sh` script downloaded in the cloned repository with an editor of your choice. We'll use nano in this example because it allows you to directly change the script in the terminal. Enter this command in the terminal to open the script:
 ```bash
@@ -157,7 +155,7 @@ GPU=-1
 
 After editing, save the script with `Ctrl + S`, and press `Ctrl + X` to exit the editor.
 
-### 2.4 Run Loghi
+## 7. Run Loghi
 
 Run the script with the following command:
 ```bash

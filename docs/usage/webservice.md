@@ -12,7 +12,6 @@ Here's an overview of the [`webservice/` directory](https://github.com/knaw-huc/
 - `webservice-scripts/`: Includes example scripts for each part of the [pipeline](../introduction.md/#how-loghi-works), designed to demonstrate how to integrate and automate various Loghi components. 
 - `docker-compose.yml`: An example Docker Compose file to orchestrate the startup of all web services (tooling, HTR, and Laypa) with a simple `docker compose up` command.
 
-
 ## Getting Started
 
 ### 1. Prepare the environment
@@ -25,6 +24,7 @@ docker-compose --version  # Check Docker Compose version
 
 If you want to use GPU acceleration, ensure you have Docker Compose version 1.28.0 or higher.
 
+<!-- below is provided by copilot, needs to be verified-->
 ### 2. Navigate to the webservice directory
 
 ```bash
@@ -88,6 +88,8 @@ When you're done, stop the services:
 ```bash
 docker compose down
 ```
+
+<!-- end of copilot creation-->
 
 ## Customization
 

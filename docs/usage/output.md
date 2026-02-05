@@ -20,7 +20,7 @@ The PageXML files contain:
 After running Loghi, you'll find the PageXML output in a `page/` subdirectory within your image directory:
 
 ```
-your-images/
+images/
 ├── image1.jpg
 ├── image2.jpg
 └── page/
@@ -131,51 +131,13 @@ The `conf` attribute in `TextEquiv` indicates the model's confidence in the tran
 Lines with confidence below 0.7 often contain errors and should be reviewed manually.
 :::
 
-## Viewing and Editing PageXML
-
-### Viewing Tools
+## Viewing PageXML
 
 Several tools can visualize PageXML alongside the original images:
 
 - **Transkribus**: Desktop application for viewing and editing transcriptions
 - **PAGE Viewer**: Lightweight viewer for PageXML files
 - **eScriptorium**: Web-based platform supporting PageXML import
-
-### Programmatic Access
-
-You can also process PageXML files programmatically using Python:
-
-```python
-import xml.etree.ElementTree as ET
-
-# Parse the PageXML file
-tree = ET.parse('page/image1.xml')
-root = tree.getroot()
-
-# Define namespace
-ns = {'page': 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2013-07-15'}
-
-# Extract all text lines
-for line in root.findall('.//page:TextLine', ns):
-    text_elem = line.find('.//page:Unicode', ns)
-    if text_elem is not None:
-        print(text_elem.text)
-```
-
-## Reading Order
-
-PageXML can include a `ReadingOrder` element that specifies the sequence in which text regions should be read. This is especially useful for documents with complex layouts (multiple columns, mixed text and images, etc.).
-
-The reading order is represented as ordered groups and references to region IDs:
-
-```xml
-<ReadingOrder>
-  <OrderedGroup id="reading_order_1">
-    <RegionRefIndexed index="0" regionRef="region_1"/>
-    <RegionRefIndexed index="1" regionRef="region_2"/>
-  </OrderedGroup>
-</ReadingOrder>
-```
 
 ## Next Steps
 

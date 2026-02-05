@@ -21,12 +21,12 @@ Proposed structure:
 1. Introduction
 2. Installation
    ├─ Installation
-   └─ Updates [done]
+   └─ Updates
 3. Usage
    ├─ Training
-   ├─ Acceleration
    ├─ Web service
-   └─ Gradio demo
+   ├─ Gradio demo
+   └─ Understanding output
 4. Questions
    ├─ Troubleshooting
    ├─ Contributing
