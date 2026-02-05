@@ -21,7 +21,7 @@ Proposed structure:
 1. Introduction
 2. Installation
    ├─ Installation
-   └─ Updates
+   └─ Updates [done]
 3. Usage
    ├─ Training
    ├─ Acceleration

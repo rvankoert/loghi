@@ -3,18 +3,26 @@
 ## Updating Loghi
 
 It is recommended to update the entire Loghi repository in the following scenarios:
-1. we release new features;
-2. we add bug fixes;
-3. you run into issues;
-4. you download a new model.
+1. We release new features;
+2. We add bug fixes;
+3. You run into issues.
 
 To that end, run the following command:
 ```bash
 git pull origin main
 ```
 
-You might have made local edits to files like `scripts/inference-pipeline.sh`. [Here](../questions/troubleshooting) we provide a solution for you to keep the local changes while updating the repository. 
-<!-- link to be updated -->
+:::{note}
+If you have made local edits to files like `scripts/inference-pipeline.sh`, you can preserve your changes while updating:
+
+```bash
+git stash                # Temporarily stores local changes
+git pull origin main
+git stash pop            # Restores local changes
+```
+
+If there are conflicts between your changes and the update, Git will notify you and you'll need to resolve them manually.
+:::
 
 ## Updating the submodules
 
@@ -24,4 +32,6 @@ Additionally, to stay updated with the latest versions of the submodules, run:
 git submodule update --recursive --remote
 ```
 
-This ensures you have access to the most recent (though possibly unstable) versions of the code.
+:::{caution}
+The `--remote` flag fetches the most recent versions of the code, which may include unstable changes.
+:::
