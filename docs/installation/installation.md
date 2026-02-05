@@ -17,10 +17,10 @@ If you see "docker: command not found", please follow
 
 :::{important}
 1. Make sure to choose the right Linux platform. Don't know what platform your machine uses? Run the following command in the terminal:
-```bash
-lsb_release -a
-```
-You will then see the name of the platform listed after "Distributor ID" or "Description" (e.g. Ubuntu, Fedora, Debian).
+    ```bash
+    lsb_release -a
+    ```
+    You will then see the name of the platform listed after "Distributor ID" or "Description" (e.g. Ubuntu, Fedora, Debian).
 
 2. Make sure that you install Docker using the `apt` repository, as Loghi might not work with the snap version of Docker. 
 :::
