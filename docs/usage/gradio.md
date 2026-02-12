@@ -1,6 +1,6 @@
 # Gradio Demo
 
-<!-- content pasted from readme.md in gradio, now being updated -->
+<!-- content partly pasted from readme.md in gradio and partly created by claude, now being updated -->
 
 The Gradio Demo features an interactive graphical user interface (GUI) for process visualization and result inspection, demonstrating the capabilities of Loghi tools including Loghi Tooling, Laypa, and Loghi-HTR. 
 
@@ -10,10 +10,11 @@ This is a demonstration setup and is not optimized for batch processing or high-
 
 ## Prerequisites
 
-Before you begin, ensure you have the necessary tools installed:
-
-- **Docker**: Required if you opt for the recommended Docker setup.
-- **Python and pip**: Necessary for running the demo using Python.
+Before starting, ensure you have:
+- Cloned the Loghi repository (see [Installation](../installation/installation.md#1-clone-the-repository))
+- Installed Docker and Docker Compose (see [Installation](../installation/installation.md#2-install-docker))
+- Downloaded Loghi models (see [Installation](../installation/installation.md#5-download-models))
+- Installed Python and pip (optional, only if you opt for the Python setup)
 
 ## Setup and Running the Demo
 
@@ -67,21 +68,71 @@ Before you begin, ensure you have the necessary tools installed:
    pip install -r requirements.txt
    ```
    
-2. Start each necessary service component:
+2. Start the required services (Laypa, HTR, and Loghi Tooling) individually:
    
-   Since the services cannot be started with a single command, you'll need to either:
-   - Start each Docker container individually, ensuring they run in webservice mode, or
-   - Navigate to each submodule repository and follow the specific instructions provided there to start each service.
+   **Build and run Laypa service:**
+   ```bash
+   # Navigate to the relevant folder and build the Docker image using the provided script
+   cd docker/docker.laypa
+   ./buildImage.sh ../../laypa
+   
+   # Run the container
+   docker run -d \
+     --name laypa-service \
+     -p 5000:5000 \
+     -v /path/to/your/laypa/model:/models \
+     -e LAYPA_MODEL_BASE_PATH=/models \
+     -e LAYPA_LEDGER_SIZE=1024 \
+     loghi/docker.laypa
+   ```
+   
+   **Build and run HTR service:**
+   ```bash
+   # Navigate to the relevant folder and build the Docker image using the provided script
+   cd ../docker.htr
+   ./buildImage.sh ../../loghi-htr
+   
+   # Run the container
+   docker run -d \
+     --name htr-service \
+     -p 5001:5001 \
+     -v /path/to/your/htr/model:/models \
+     -e LOGHI_MODEL_PATH=/models \
+     loghi/docker.htr
+   ```
+   
+   **Build and run Loghi Tooling service:**
+   ```bash
+   # Navigate to the relevant folder and build the Docker image using the provided script
+   cd ../docker.loghi-tooling
+   ./buildImage.sh ../../prima-core-libs ../../loghi-tooling 1.0.0
+   
+   # Run the container
+   docker run -d \
+     --name tooling-service \
+     -p 8080:8080 \
+     -v /path/to/configuration.yml:/app/config.yml \
+     loghi/docker.loghi-tooling
+   ```
+   
+   :::{important}
+   Replace `/path/to/your/laypa/model` and `/path/to/your/htr/model` with your actual local paths to the model directories.
+   
+   Replace `/path/to/configuration.yml` with the full path to the `configuration.yml` file in your cloned Loghi repository's `webservice/loghi-tooling/` directory.
+   
+   The paths on the left side of `:` are your local machine paths. The paths on the right side are inside the container and should not be changed.
+   :::
 
-
-3. To launch the Gradio demo interface:
+3. Launch the Gradio demo interface:
 
    ```bash
+   cd ../../gradio
    ./start_with_python.sh
    ```
 :::
 
 ::::
+
 ## Using the Demo
 
 After you've set up the demo using Docker or Python, here's how you can proceed with using it:
@@ -96,7 +147,7 @@ After you've set up the demo using Docker or Python, here's how you can proceed 
 
 The following screenshots provide a visual overview of the Gradio interface and the workflow for the Loghi Software demo:
 
-1. **Start Screen with Uploaded Image**: This is the initial screen where users can upload a document image to process. It’s the starting point of the demo where you begin your interaction with the Loghi tools.
+1. **Start Screen with Uploaded Image**: This is the initial screen where users can upload a document image to process. It's the starting point of the demo where you begin your interaction with the Loghi tools.
 
    ![Start Screen with Uploaded Image](https://github.com/rvankoert/loghi/assets/89044870/d343dae8-ca74-4e25-b438-05f3d1fbcb6d)
 
@@ -112,3 +163,40 @@ The following screenshots provide a visual overview of the Gradio interface and 
 
    ![PageXML Output](https://github.com/rvankoert/loghi/assets/89044870/b2bb96a2-d19d-41d7-995d-a738e7640c56)
 
+
+## Stopping the Demo
+<!-- to be verified, check the paths-->
+
+::::{tab-set}
+
+:::{tab-item} Docker Setup
+
+To stop the demo and all services:
+
+```bash
+docker-compose down
+```
+
+This will stop and remove all containers started by the Docker setup.
+:::
+
+:::{tab-item} Python Setup
+
+1. **Stop the Gradio interface**: Press `Ctrl+C` in the terminal where `start_with_python.sh` is running
+
+2. **Stop the Docker containers**:
+   ```bash
+   docker stop laypa-service htr-service tooling-service
+   ```
+
+3. **Remove the containers** (optional, only if you want to clean up completely):
+   ```bash
+   docker rm laypa-service htr-service tooling-service
+   ```
+   
+   :::{note}
+   If you skip step 3, you can restart the stopped containers later with `docker start laypa-service htr-service tooling-service` without having to rebuild them.
+   :::
+:::
+
+::::
