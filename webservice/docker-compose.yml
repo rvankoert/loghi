@@ -15,15 +15,16 @@ services:
       - '5000:5000'
     environment:
       LAYPA_MAX_QUEUE_SIZE: 128
-      LAYPA_MODEL_BASE_PATH: /home/tim/Documents/laypa-models/NA-LA-CABR-M0003-Turbo/
-      LAYPA_OUTPUT_BASE_PATH: /tmp/output/laypa/
+      LAYPA_MODEL_BASE_PATH: /PATH/TO/LAYPA/MODELS/
+      LAYPA_OUTPUT_BASE_PATH: /PATH/TO/LAYPA/OUTPUT
+      LAYPA_LEDGER_SIZE: 1000000
       GUNICORN_RUN_HOST: '0.0.0.0:5000'
       GUNICORN_WORKERS: 1
       GUNICORN_THREADS: 1
       GUNICORN_ACCESSLOG: '-'
     volumes:
-      - '/home/tim/Documents/laypa-models/:/home/tim/Documents/laypa-models/'
-      - '/tmp/output/laypa:/tmp/output/laypa'
+      - '/PATH/TO/LAYPA/MODELS/:/PATH/TO/LAYPA/MODELS/'
+      - '/PATH/TO/LAYPA/OUTPUT:/PATH/TO/LAYPA/OUTPUT'
     networks:
       - pipeline
     shm_size: 512mb
@@ -36,7 +37,7 @@ services:
       - '8080:8080'
       - '8081:8081'
     environment:
-      STORAGE_LOCATION: /tmp/upload
+      STORAGE_LOCATION: /PATH/TO/STORAGE/LOCATION
       P2PALA_CONFIG_FILE: /doesnotexist
       EXTRACT_BASELINES_MAX_THREADS: 4
       EXTRACT_BASELINES_QUEUE_LENGTH: 64
@@ -51,8 +52,8 @@ services:
       DETECT_LANGUAGE_OF_PAGE_XML_MAX_THREADS: 4
       DETECT_LANGUAGE_OF_PAGE_XML_QUEUE_LENGTH: 64
     volumes: 
-      - '/home/tim/Documents/loghi/webservice/loghi-tooling/configuration.yml:/home/tim/Documents/loghi/webservice/loghi-tooling/configuration.yml'
-      - '/tmp/upload:/tmp/upload'
+      - '/PATH/TO/LOGHI/TOOLING/CONFIGURATION.YML:/PATH/TO/LOGHI/TOOLING/CONFIGURATION.YML'
+      - '/PATH/TO/STORAGE/LOCATION:/PATH/TO/STORAGE/LOCATION'
     networks:
       - pipeline
     shm_size: 512mb
@@ -71,14 +72,14 @@ services:
     ports:
       - '5001:5000'
     environment:
-      LOGHI_MODEL_PATH: '/home/tim/Documents/loghi-models/NA-HTR-CABR-M0003/'
+      LOGHI_MODEL_PATH: '/PATH/TO/LOGHI/MODELS/'
       LOGHI_BATCH_SIZE: 64
-      LOGHI_OUTPUT_PATH: '/tmp/output/loghi-htr'
+      LOGHI_OUTPUT_PATH: '/PATH/TO/LOGHI/OUTPUT'
       LOGHI_MAX_QUEUE_SIZE: 50000
       LOGHI_PATIENCE: 0.5
     volumes:
-      - '/home/tim/Documents/loghi-models/:/home/tim/Documents/loghi-models/'
-      - '/tmp/output/loghi-htr:/tmp/output/loghi-htr'
+      - '/PATH/TO/LOGHI/MODELS/:/PATH/TO/LOGHI/MODELS/'
+      - '/PATH/TO/LOGHI/OUTPUT:/PATH/TO/LOGHI/OUTPUT'
     networks:
       - pipeline
     shm_size: 512mb
