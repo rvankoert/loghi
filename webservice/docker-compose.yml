@@ -15,29 +15,29 @@ services:
       - '5000:5000'
     environment:
       LAYPA_MAX_QUEUE_SIZE: 128
-      LAYPA_MODEL_BASE_PATH: /PATH/TO/LAYPA/MODELS/
-      LAYPA_OUTPUT_BASE_PATH: /PATH/TO/LAYPA/OUTPUT
+      LAYPA_MODEL_BASE_PATH: /PATH/TO/LAYPA/MODEL/
+      LAYPA_OUTPUT_BASE_PATH: /PATH/TO/LAYPA/OUTPUT/
       LAYPA_LEDGER_SIZE: 1000000
       GUNICORN_RUN_HOST: '0.0.0.0:5000'
       GUNICORN_WORKERS: 1
       GUNICORN_THREADS: 1
       GUNICORN_ACCESSLOG: '-'
     volumes:
-      - '/PATH/TO/LAYPA/MODELS/:/PATH/TO/LAYPA/MODELS/'
-      - '/PATH/TO/LAYPA/OUTPUT:/PATH/TO/LAYPA/OUTPUT'
+      - '/PATH/TO/LAYPA/MODEL/:/PATH/TO/LAYPA/MODEL/'
+      - '/PATH/TO/LAYPA/OUTPUT/:/PATH/TO/LAYPA/OUTPUT/'
     networks:
       - pipeline
     shm_size: 512mb
     restart: always
   loghi-tooling:
     image: 'loghi/docker.loghi-tooling'
-    command: '/src/loghi-tooling/loghiwebservice/target/appassembler/bin/LoghiWebserviceApplication server /home/tim/Documents/loghi/webservice/loghi-tooling/configuration.yml'
+    command: '/src/loghi-tooling/loghiwebservice/target/appassembler/bin/LoghiWebserviceApplication server /PATH/TO/LOGHI/TOOLING/CONFIGURATION.yml'
     container_name: 'loghi-tooling'
     ports:
       - '8080:8080'
       - '8081:8081'
     environment:
-      STORAGE_LOCATION: /PATH/TO/STORAGE/LOCATION
+      STORAGE_LOCATION: /PATH/TO/STORAGE/LOCATION/
       P2PALA_CONFIG_FILE: /doesnotexist
       EXTRACT_BASELINES_MAX_THREADS: 4
       EXTRACT_BASELINES_QUEUE_LENGTH: 64
@@ -52,8 +52,8 @@ services:
       DETECT_LANGUAGE_OF_PAGE_XML_MAX_THREADS: 4
       DETECT_LANGUAGE_OF_PAGE_XML_QUEUE_LENGTH: 64
     volumes: 
-      - '/PATH/TO/LOGHI/TOOLING/CONFIGURATION.YML:/PATH/TO/LOGHI/TOOLING/CONFIGURATION.YML'
-      - '/PATH/TO/STORAGE/LOCATION:/PATH/TO/STORAGE/LOCATION'
+      - '/PATH/TO/LOGHI/TOOLING/CONFIGURATION.yml:/PATH/TO/LOGHI/TOOLING/CONFIGURATION.yml'
+      - '/PATH/TO/STORAGE/LOCATION/:/PATH/TO/STORAGE/LOCATION/'
     networks:
       - pipeline
     shm_size: 512mb
@@ -72,14 +72,14 @@ services:
     ports:
       - '5001:5000'
     environment:
-      LOGHI_MODEL_PATH: '/PATH/TO/LOGHI/MODELS/'
+      LOGHI_MODEL_PATH: '/PATH/TO/LOGHI/MODEL/'
       LOGHI_BATCH_SIZE: 64
-      LOGHI_OUTPUT_PATH: '/PATH/TO/LOGHI/OUTPUT'
+      LOGHI_OUTPUT_PATH: '/PATH/TO/LOGHI/OUTPUT/'
       LOGHI_MAX_QUEUE_SIZE: 50000
       LOGHI_PATIENCE: 0.5
     volumes:
-      - '/PATH/TO/LOGHI/MODELS/:/PATH/TO/LOGHI/MODELS/'
-      - '/PATH/TO/LOGHI/OUTPUT:/PATH/TO/LOGHI/OUTPUT'
+      - '/PATH/TO/LOGHI/MODEL/:/PATH/TO/LOGHI/MODEL/'
+      - '/PATH/TO/LOGHI/OUTPUT/:/PATH/TO/LOGHI/OUTPUT/'
     networks:
       - pipeline
     shm_size: 512mb
