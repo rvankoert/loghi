@@ -18,9 +18,9 @@ Before starting, ensure you have:
 
 ## Setup and Running the Demo
 
-::::{tab-set}
+:::::{tab-set}
 
-:::{tab-item} Recommended: Docker Setup
+::::{tab-item} Recommended: Docker Setup
 
 1. Navigate to the `gradio` directory from your cloned Loghi repository:
 
@@ -58,9 +58,9 @@ Before starting, ensure you have:
    ```
 
    This starts all necessary services including the Gradio server.
-:::
+::::
 
-:::{tab-item} Alternative: Python Setup
+::::{tab-item} Alternative: Python Setup
 
 1. Install the required Python dependencies:
 
@@ -129,9 +129,9 @@ Before starting, ensure you have:
    cd ../../gradio
    ./start_with_python.sh
    ```
-:::
-
 ::::
+
+:::::
 
 ## Using the Demo
 
