@@ -167,9 +167,9 @@ The following screenshots provide a visual overview of the Gradio interface and 
 ## Stopping the Demo
 <!-- to be verified, check the paths-->
 
-::::{tab-set}
+:::::{tab-set}
 
-:::{tab-item} Docker Setup
+::::{tab-item} Docker Setup
 
 To stop the demo and all services:
 
@@ -178,9 +178,9 @@ docker-compose down
 ```
 
 This will stop and remove all containers started by the Docker setup.
-:::
+::::
 
-:::{tab-item} Python Setup
+::::{tab-item} Python Setup
 
 1. **Stop the Gradio interface**: Press `Ctrl+C` in the terminal where `start_with_python.sh` is running
 
@@ -197,6 +197,6 @@ This will stop and remove all containers started by the Docker setup.
    :::{note}
    If you skip step 3, you can restart the stopped containers later with `docker start laypa-service htr-service tooling-service` without having to rebuild them.
    :::
-:::
-
 ::::
+
+:::::
