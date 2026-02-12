@@ -6,8 +6,7 @@ Here is a step-by-step guide for installing Loghi on Linux. If you run into erro
 
 ## 1. Clone the repository
 
-Begin by cloning the Loghi repository to access the toolkit and navigate into the directory:
-
+The first step is to clone the Loghi repository to access the toolkit and navigate into the directory. Copy the following commands, pasting them into your terminal, and press `Enter`:
 ```bash
 git clone https://github.com/knaw-huc/loghi.git
 cd loghi
@@ -15,15 +14,19 @@ cd loghi
 
 ## 2. Install Docker
 
-Docker is a tool that offers the easiest and most straightforward way to deploy and use Loghi. Run the following command to see if Docker has already been installed in your machine by copying it, pasting it into your terminal, then pressing `Enter`:
+Docker is a tool that offers the easiest and most straightforward way to deploy and use Loghi. Run the following command to see if Docker has already been installed in your machine:
 ```bash
 docker --version
 ```
-If you get a message similar to "Docker version 29.1.2, build 890dcca", you can proceed to the next step.
-If you see "docker: command not found", please follow 
+**Possible outcomes:**
+
+1. **A message similar to "Docker version 29.1.2, build 890dcca"**: Docker has been installed. You can proceed to [build Docker images](#3-build-docker-images).
+
+2. **A message reading "docker: command not found"**: No Docker installation has been found. Follow 
 [the official guide](https://docs.docker.com/engine/install/) to install Docker using the `apt` version. 
 
 :::{important}
+When installing Docker:
 1. Make sure to choose the right Linux platform. Don't know what platform your machine uses? Run the following command in the terminal:
     ```bash
     lsb_release -a
@@ -33,55 +36,7 @@ If you see "docker: command not found", please follow
 2. Make sure that you install Docker using the `apt` repository, as Loghi might not work with the snap version of Docker. 
 :::
 
-## 3. Set up GPU acceleration with NVIDIA (optional)
-<!-- section prepared by claude, to be verified-->
-
-For users with NVIDIA GPUs, it is recommended to run Loghi on GPU for faster processing. This allows Loghi to utilize GPU resources for processing tasks, significantly speeding up operations like image segmentation with Laypa and text recognition with Loghi HTR. Running Loghi with GPU acceleration is particularly beneficial for processing large datasets or when high throughput is required.
-
-:::{note}
-This setup is optional. You can skip it if you don't have a NVIDIA GPU or if you don't want to deal with GPU setup. Loghi will work on CPU, just significantly slower.
-:::
-
-### 3.1 Check for NVIDIA GPU
-
-Let's first check if you have an NVIDIA GPU. Run this command in your terminal:
-```bash
-lspci | grep -i nvidia
-```
-
-**Possible outcomes:**
-
-1. **Nothing appears**: You either don't have an NVIDIA GPU, or it's not detected. Skip to [Build Docker images](#4-build-docker-images) and continue without GPU acceleration.
-
-2. **Output appears** (e.g., "01:00.0 VGA compatible controller: NVIDIA Corporation GeForce GTX 1080"): You have an NVIDIA GPU. 
-
-### 3.2 Check for NVIDIA drivers
-Now check if NVIDIA drivers are installed.
-
-```bash
-nvidia-smi
-```
-
-**Possible outcomes:**
-
-1. **Shows GPU information**: Drivers are installed! Note the CUDA version shown at the top of the output. Continue to install NVIDIA Container Toolkit below.
-
-2. **"command not found" or error**: NVIDIA drivers are not installed. Install them:
-   ```bash
-   # For Ubuntu/Debian
-   sudo ubuntu-drivers autoinstall
-   # Or manually install the driver:
-   # sudo apt install nvidia-driver-XXX  (replace XXX with version)
-   ```
-   After installation, reboot your system and run `nvidia-smi` again to verify.
-
-3. **"NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver"**: Drivers are installed but not working properly. Try rebooting or reinstalling the drivers.
-
-### 3.3 Install NVIDIA Container Toolkit
-
-Follow the [official guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) to install the NVIDIA Container Toolkit.
-
-## 4. Build Docker images
+## 3. Build Docker images
 
 A Docker image is not a picture, but a special package that prepares the environment for running tools. There are two ways to build Docker images: you can either use pre-built ones, or build them yourself. Both could take some time to complete.
 ::::{tab-set}
@@ -107,6 +62,54 @@ git submodule update --init --recursive
 ```
 :::
 ::::
+
+## 4. Set up GPU acceleration with NVIDIA (optional)
+
+For users with NVIDIA GPUs, running Loghi with GPU acceleration significantly speeds up operations like image segmentation with Laypa and text recognition with Loghi HTR. This is particularly beneficial for processing large datasets.
+
+:::{note}
+This setup is optional. If you skip this section, Loghi will run on CPU (just slower). You can always come back and set up GPU support later.
+:::
+
+### 4.1 Check for NVIDIA GPU
+
+Check if you have an NVIDIA GPU:
+```bash
+lspci | grep -i nvidia
+```
+
+**Possible outcomes:**
+
+1. **Nothing appears**: You don't have an NVIDIA GPU or it's not detected. Skip to [Download models](#5-download-models) and continue with CPU mode.
+
+2. **Output appears** (e.g., "01:00.0 VGA compatible controller: NVIDIA Corporation GeForce GTX 1080"): You have an NVIDIA GPU. Continue to the next step.
+
+### 4.2 Check for NVIDIA drivers
+
+Check if NVIDIA drivers are installed:
+
+```bash
+nvidia-smi
+```
+
+**Possible outcomes:**
+
+1. **Shows GPU information**: Drivers are installed! Note the CUDA version shown at the top. Continue to install NVIDIA Container Toolkit below.
+
+2. **"command not found" or error**: NVIDIA drivers are not installed. Install them:
+   ```bash
+   # For Ubuntu/Debian
+   sudo ubuntu-drivers autoinstall
+   # Or manually install the driver:
+   # sudo apt install nvidia-driver-XXX  (replace XXX with version)
+   ```
+   After installation, reboot your system and run `nvidia-smi` again to verify.
+
+3. **"NVIDIA-SMI has failed"**: Drivers are installed but not working properly. Try rebooting or reinstalling the drivers.
+
+### 4.3 Install NVIDIA Container Toolkit
+
+Follow the [official guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) to install the NVIDIA Container Toolkit. This allows Docker to access your GPU.
 
 ## 5. Download models
 
@@ -167,7 +170,7 @@ You need to replace `/PATH_TO_FOLDER_CONTAINING_IMAGES` with a valid directory c
 ./scripts/inference-pipeline.sh /home/user/images
 ```
 
-It might be a long while if you don't have a NVIDIA GPU. When it finishes without errors, a new folder called "page" should be created in the directory with the images, containing the output in PageXML format.
+It would run for a short while if you have a good NVIDIA GPU and NVIDIA Docker setup, and much longer if you don't. When it finishes without errors, a new folder called "page" should be created in the directory with the images, containing the output in PageXML format.
 
 :::{tip}
 To learn how to read and understand the PageXML output files, see [Understanding Loghi Output](../usage/output).

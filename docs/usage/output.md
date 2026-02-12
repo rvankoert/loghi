@@ -2,7 +2,7 @@
 
 <!-- content created by copilot, needs to be proofread-->
 
-After running Loghi on your documents, the results are saved in PageXML format. This page explains how to read and understand the output files.
+After Loghi is run on your documents, the results are saved in PageXML format. This page explains how to read and understand the output.
 
 ## What is PageXML?
 
@@ -17,10 +17,10 @@ The PageXML files contain:
 
 ## File Location
 
-After running Loghi, you'll find the PageXML output in a `page/` subdirectory within your image directory:
+After running Loghi, you'll find the PageXML output in a `page/` subdirectory within your image directory. For example, if the images are placed in the folder `/home/user/images`, you will see:
 
 ```
-images/
+/home/user/images/
 ├── image1.jpg
 ├── image2.jpg
 └── page/

@@ -6,7 +6,7 @@ Here are some common issues that you could encounter. If you have a specific err
 
 ## Installation
 
-### What should I do if I get the message "bash: ./scripts/inference-pipeline.sh: Permission denied" when trying to run the inference script?
+### I get the message "bash: ./scripts/inference-pipeline.sh: Permission denied" when trying to run the inference script. What should I do?
 You may need to change the permissions of the script by running:
 ```bash
 chmod +x scripts/inference-pipeline.sh
@@ -24,17 +24,10 @@ chmod +x scripts/inference-pipeline.sh
 - If you are using a virtual environment, ensure that it is activated before running any commands.
 - If you are using a custom dataset, ensure that it is formatted correctly and that the paths to the images and annotations are correct.
 
-## Update
-### How can I update Loghi while keeping local changes to some of its files?
-You can stash the changes, git pull, then . <!-- update this part with more details -->
-
-### The error message says "fatal: Need to specify how to reconcile divergent branches.". What should I do?
-See the previous question.
-
 ## Others
 
 ### The error message says "No such file or directory". What should I do?
-You can verify the file name or directory in the command line: Does the file exist at all? Is the directory an absolute one or a relative one? Which folder are you currently in?
+You can verify the file name or directory: Does the file exist? Is the directory an absolute one or a relative one? Which folder are you currently in?
 <!-- update this part with more details -->
 
 ### I got a runtime error. What should I do?
