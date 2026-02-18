@@ -25,7 +25,7 @@ myst_enable_extensions = [
 # -- Project information -----------------------------------------------------
 
 project = 'Loghi'
-copyright = '2025, Rutger van Koert, Stefan Klut, Tim Koornstra, Luke Peters'
+copyright = '2026, Rutger van Koert, Stefan Klut, Tim Koornstra, Luke Peters'
 author = 'Rutger van Koert, Stefan Klut, Tim Koornstra, Luke Peters'
 
 # The short X.Y version
