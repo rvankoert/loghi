@@ -23,7 +23,7 @@ docker --version
 1. **A message similar to "Docker version 29.1.2, build 890dcca"**: Docker has been installed. You can proceed to [build Docker images](#3-build-docker-images).
 
 2. **A message reading "docker: command not found"**: No Docker installation has been found. Follow 
-[the official guide](https://docs.docker.com/engine/install/) to install Docker using the `apt` version. 
+[the official guide](https://docs.docker.com/engine/install/)[^docker-install] to install Docker using the `apt` version. 
 
 :::{important}
 When installing Docker:
@@ -43,7 +43,7 @@ A Docker image is not a picture, but a special package that prepares the environ
 
 :::{tab-item} Option 1: Get pre-built images
 
-Pre-built Docker images contain all the necessary dependencies and can be easily pulled from [Docker Hub](https://hub.docker.com/u/loghi) by running the following commands:
+Pre-built Docker images contain all the necessary dependencies and can be easily pulled from [Docker Hub](https://hub.docker.com/u/loghi)[^docker-hub] by running the following commands:
 
 ```bash
 docker pull loghi/docker.laypa
@@ -109,24 +109,24 @@ nvidia-smi
 
 ### 4.3 Install NVIDIA Container Toolkit
 
-Follow the [official guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) to install the NVIDIA Container Toolkit. This allows Docker to access your GPU.
+Follow the [official guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)[^nvidia-toolkit] to install the NVIDIA Container Toolkit. This allows Docker to access your GPU.
 
 ## 5. Download models
 
-Go to [this webpage](https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP) and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR): click on the three dots on the right of the corresponding folder and select "Download", or tick the box preceding the corresponding folder and click the "Download" that then appears. Also be reminded to unzip the downloaded files for the use in the next step.
+Go to [this webpage](https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP)[^surfdrive-models] and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR): click on the three dots on the right of the corresponding folder and select "Download", or tick the box preceding the corresponding folder and click the "Download" that then appears. Also be reminded to unzip the downloaded files for the use in the next step.
 
 
 ::::{tab-set}
 
 :::{tab-item} Recommended models for NVIDIA GPU
 
-If you have a NVIDIA GPU, we recommend these two models: [laypa general baseline2](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/laypa/general/baseline2?accept=zip) and [loghi-htr generic-2023-02-15](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/generic-2023-02-15?accept=zip) (it works ok on 17th and 18th century handwritten Dutch; if you want best results, see [training](../usage/training) to finetune the models on your specific data).
+If you have a NVIDIA GPU, we recommend these two models: [laypa general baseline2](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/laypa/general/baseline2?accept=zip)[^laypa-baseline2] and [loghi-htr generic-2023-02-15](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/generic-2023-02-15?accept=zip)[^htr-generic] (it works ok on 17th and 18th century handwritten Dutch; if you want best results, see [training](../usage/training) to finetune the models on your specific data).
 
 :::
 
 :::{tab-item} Recommended models for CPU
 
-If you do not have a NVIDIA GPU, we recommend these two models: [laypa general baseline2](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/laypa/general/baseline2?accept=zip) and the [float32 Loghi-htr model](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/float32-generic-2023-02-15?accept=zip) (it will run faster on CPU than the other recommended model, which is mixed_float16).
+If you do not have a NVIDIA GPU, we recommend these two models: [laypa general baseline2](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/laypa/general/baseline2?accept=zip)[^laypa-baseline2] and the [float32 Loghi-htr model](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/float32-generic-2023-02-15?accept=zip)[^htr-float32] (it will run faster on CPU than the other recommended model, which is mixed_float16).
 
 :::
 
@@ -175,3 +175,11 @@ It would run for a short while if you have a good NVIDIA GPU and NVIDIA Docker s
 :::{tip}
 To learn how to read and understand the PageXML output files, see [Understanding Loghi Output](../usage/output).
 :::
+
+[^docker-install]: https://docs.docker.com/engine/install/
+[^docker-hub]: https://hub.docker.com/u/loghi
+[^nvidia-toolkit]: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+[^surfdrive-models]: https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP
+[^laypa-baseline2]: http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/laypa/general/baseline2?accept=zip
+[^htr-generic]: http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/generic-2023-02-15?accept=zip
+[^htr-float32]: http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/float32-generic-2023-02-15?accept=zip
