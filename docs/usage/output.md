@@ -1,7 +1,5 @@
 # Understanding Loghi Output
 
-<!-- content created by copilot, needs to be proofread-->
-
 After Loghi is run on your documents, the results are saved in PageXML format. This page explains how to read and understand the output.
 
 ## What is PageXML?
@@ -17,7 +15,7 @@ The PageXML files contain:
 
 ## File Location
 
-After running Loghi, you'll find the PageXML output in a `page/` subdirectory within your image directory. For example, if the images are placed in the folder `/home/user/images`, you will see:
+After running Loghi, you'll find the PageXML output in a `page/` subdirectory within your image directory. For example, if you process two images placed in the folder `/home/user/images`, you will see:
 
 ```
 /home/user/images/
@@ -50,27 +48,27 @@ PcGts (root)
 
 ### Key Elements
 
-**Page**: The top-level container representing the entire document page
+**Page**: the top-level container representing the entire document page
 - Contains the image filename and dimensions
 
-**TextRegion**: A region of text on the page (e.g., a paragraph, column)
+**TextRegion**: a region of text on the page (e.g., a paragraph, column)
 - Has coordinates defining its boundary
 - Can have a type (e.g., "paragraph", "heading")
 
-**TextLine**: A single line of text
+**TextLine**: a single line of text
 - Contains the actual transcription
 - Includes baseline coordinates (the line the text sits on)
 - Has a bounding box (Coords)
 
-**Baseline**: The line that text characters sit on
+**Baseline**: the line that text characters sit on
 - Stored as a series of x,y coordinate points
 - Used by HTR models for text extraction
 
-**TextEquiv**: Contains the transcribed text
+**TextEquiv**: contains the transcribed text
 - Includes a confidence score
 - The actual text is in the `<Unicode>` tag
 
-**Word**: Individual words within a text line (if word splitting is enabled)
+**Word**: individual words within a text line (if word splitting is enabled)
 - Each word has its own coordinates and transcription
 
 ## Viewing PageXML

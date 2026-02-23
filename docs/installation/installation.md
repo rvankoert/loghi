@@ -1,7 +1,5 @@
 # Installation
 
-<!-- content being updated-->
-
 Here is a step-by-step guide for installing Loghi on Linux. If you run into errors during installation, please check the [troubleshooting page](../questions/troubleshooting).
 
 (clone-repo)=
@@ -117,7 +115,7 @@ Follow the [official guide](https://docs.nvidia.com/datacenter/cloud-native/cont
 (download-models)=
 ## 5. Download Models
 
-Go to [this webpage](https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP)[^surfdrive-models] and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR): click on the three dots on the right of the corresponding folder and select "Download", or tick the box preceding the corresponding folder and click the "Download" that then appears. Also be reminded to unzip the downloaded files for the use in the next step.
+Go to [our SURFdrive page](https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP)[^surfdrive-models] and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR): click on the three dots on the right of the corresponding folder and select "Download", or tick the box preceding the corresponding folder and click the "Download" that then appears. Also be reminded to unzip the downloaded files for the use in the next step.
 
 
 ::::{tab-set}
