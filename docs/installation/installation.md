@@ -4,6 +4,7 @@
 
 Here is a step-by-step guide for installing Loghi on Linux. If you run into errors during installation, please check the [troubleshooting page](../questions/troubleshooting).
 
+(clone-repo)=
 ## 1. Clone the Repository
 
 The first step is to clone the Loghi repository to access the toolkit and navigate into the directory. Copy the following commands, pasting them into your terminal, and press `Enter`:
@@ -12,6 +13,7 @@ git clone https://github.com/knaw-huc/loghi.git
 cd loghi
 ```
 
+(install-docker)=
 ## 2. Install Docker
 
 Docker is a tool that offers the easiest and most straightforward way to deploy and use Loghi. Run the following command to see if Docker has already been installed in your machine:
@@ -63,6 +65,7 @@ git submodule update --init --recursive
 :::
 ::::
 
+(set-up-gpu)=
 ## 4. Set up GPU Acceleration with NVIDIA (optional)
 
 For users with NVIDIA GPUs, running Loghi with GPU acceleration significantly speeds up operations like image segmentation with Laypa and text recognition with Loghi HTR. This is particularly beneficial for processing large datasets.
@@ -111,6 +114,7 @@ nvidia-smi
 
 Follow the [official guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)[^nvidia-toolkit] to install the NVIDIA Container Toolkit. This allows Docker to access your GPU.
 
+(download-models)=
 ## 5. Download Models
 
 Go to [this webpage](https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP)[^surfdrive-models] and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR): click on the three dots on the right of the corresponding folder and select "Download", or tick the box preceding the corresponding folder and click the "Download" that then appears. Also be reminded to unzip the downloaded files for the use in the next step.
@@ -158,6 +162,7 @@ GPU=-1
 
 After editing, save the script with `Ctrl + S`, and press `Ctrl + X` to exit the editor.
 
+(run-loghi)=
 ## 7. Run Loghi
 
 Run the script with the following command:

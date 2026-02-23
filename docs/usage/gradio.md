@@ -1,20 +1,24 @@
 # Gradio Demo
 
-<!-- content partly pasted from readme.md in gradio and partly created by claude, now being updated -->
+:::{note}
+The contents of this page are under review.
+:::
 
 The Gradio Demo features an interactive graphical user interface (GUI) for process visualization and result inspection, demonstrating the capabilities of Loghi tools including Loghi Tooling, Laypa, and Loghi-HTR. 
 
 :::{note}
-This is a demonstration setup and is not optimized for batch processing or high-workload production environments.
+1. This is a demonstration setup and is not optimized for batch processing or high-workload production environments.
+2. The Gradio demo accepts image files only (`.jpg`, `.jpeg`, `.png`, `.tiff`, `.bmp`, etc.). PDF files are not supported. 
 :::
 
 ## Prerequisites
 
 Before starting, ensure you have:
-- Cloned the Loghi repository (see [Installation](../installation/installation.md#1-clone-the-repository))
-- Installed Docker and Docker Compose (see [Installation](../installation/installation.md#2-install-docker))
-- Downloaded Loghi models (see [Installation](../installation/installation.md#5-download-models))
-- Installed Python and pip (optional, only if you opt for the Python setup)
+- Cloned the Loghi repository (see [Clone the Repository](clone-repo))
+- Installed Docker (see [Install Docker](install-docker))
+- Installed Docker Compose (usually included with Docker; verify with `docker compose version`)
+- Downloaded Loghi models (see [Download Models](download-models))
+- Installed Python and pip (**optional**, only if you opt for the Python setup)
 
 ## Setup and Running the Demo
 
@@ -34,99 +38,156 @@ Before starting, ensure you have:
    docker build -t loghi-demo .
    ```
 
-3. Navigate to the `docker` subdirectory:
+3. Navigate to the `docker` subdirectory under the `gradio` directory:
 
    ```bash
    cd docker
    ```
 
-4. Open the `.env` file in a text editor and update these paths to match your system:
+4. Open the `.env` file in a text editor and update the following variables:
    
-   - `LAYPA_MODEL_PATH`: Full path to your Laypa model directory (e.g., `/home/yourname/Downloads/laypa-models/general/baseline`)
-   - `LOGHI_BASE_MODEL_DIR`: Full path to the directory containing your HTR models (e.g., `/home/yourname/Downloads/loghi-models`)
+   **Required changes**:
+   - `LAYPA_MODEL_PATH`: Full path to your downloaded Laypa model directory (for example `/home/Downloads/laypa-models/baseline`)
+   - `LOGHI_BASE_MODEL_DIR`: Full path to the directory containing HTR model(s) you downloaded (for example `/home/Downloads/loghi-models`)
    - `LOGHI_MODEL_NAME`: Name of the specific HTR model to use (the folder name inside `LOGHI_BASE_MODEL_DIR`)
    - `TOOLING_CONFIG_FILE`: Full path to `loghi/webservice/loghi-tooling/configuration.yml` in your cloned repository
-   
-   You may also want to:
-   - Change `LAYPA_OUTPUT_PATH`, `LOGHI_OUTPUT_PATH`, and `TOOLING_OUTPUT_PATH` to where you want output files saved (directories must exist)
-   - Set `LAYPA_GPU_COUNT` and `HTR_GPU_COUNT` to `1` if you have GPU support (keep at `0` for CPU mode)
+   - `LAYPA_OUTPUT_PATH`, `LOGHI_OUTPUT_PATH`, and `TOOLING_OUTPUT_PATH`: Change to where you want output files saved (directories must exist)
 
-5. Run the demo:
+   **Optional changes** (GPU configuration):
+   - Keep both `LAYPA_GPU_COUNT` and `HTR_GPU_COUNT` at `0` for CPU mode, or
+   - Leave `LAYPA_GPU_COUNT` at `0` and set `HTR_GPU_COUNT` to `1` if you have a single GPU, or
+   - Set both `LAYPA_GPU_COUNT` and `HTR_GPU_COUNT` to `1` if you have multiple GPUs
+
+5. Save the changes in the `.env` file, then run the demo:
 
    ```bash
-   docker-compose up
+   docker compose up
    ```
 
    This starts all necessary services including the Gradio server.
+
+:::{note}
+If your system uses legacy Compose v1, run `docker-compose up` instead.
+:::
+
 ::::
 
 ::::{tab-item} Alternative: Python Setup
 
-1. Install the required Python dependencies:
+1. Navigate to the `gradio` directory and install the required Python dependencies:
 
    ```bash
+   cd gradio
    pip install -r requirements.txt
    ```
    
-2. Start the required services (Laypa, HTR, and Loghi Tooling) individually:
+2. Navigate back to the main Loghi directory to build and start the required services (Laypa, HTR, and Loghi Tooling) individually:
    
-   **Build and run Laypa service:**
+   **2.1 Build Docker images:**
    ```bash
-   # Navigate to the relevant folder and build the Docker image using the provided script
-   cd docker/docker.laypa
-   ./buildImage.sh ../../laypa
+   cd ..
+   # Build Laypa image
+   ./docker/docker.laypa/buildImage.sh ./laypa
    
-   # Run the container
-   docker run -d \
-     --name laypa-service \
-     -p 5000:5000 \
-     -v /path/to/your/laypa/model:/models \
-     -e LAYPA_MODEL_BASE_PATH=/models \
-     -e LAYPA_LEDGER_SIZE=1024 \
-     loghi/docker.laypa
+   # Build HTR image
+   ./docker/docker.htr/buildImage.sh ./loghi-htr
+   
+   # Build Loghi Tooling image
+   ./docker/docker.loghi-tooling/buildImage.sh ./prima-core-libs ./loghi-tooling 1.0.0
    ```
    
-   **Build and run HTR service:**
+   **2.2 Create output directories:**
    ```bash
-   # Navigate to the relevant folder and build the Docker image using the provided script
-   cd ../docker.htr
-   ./buildImage.sh ../../loghi-htr
-   
-   # Run the container
-   docker run -d \
-     --name htr-service \
-     -p 5001:5001 \
-     -v /path/to/your/htr/model:/models \
-     -e LOGHI_MODEL_PATH=/models \
-     loghi/docker.htr
+   # Create output directories in your home folder to avoid permission issues
+   mkdir -p ~/loghi-output/laypa ~/loghi-output/loghi-htr ~/loghi-output/upload
    ```
    
-   **Build and run Loghi Tooling service:**
-   ```bash
-   # Navigate to the relevant folder and build the Docker image using the provided script
-   cd ../docker.loghi-tooling
-   ./buildImage.sh ../../prima-core-libs ../../loghi-tooling 1.0.0
+   **2.3 Start the services:**
    
-   # Run the container
-   docker run -d \
-     --name tooling-service \
-     -p 8080:8080 \
-     -v /path/to/configuration.yml:/app/config.yml \
-     loghi/docker.loghi-tooling
+   Replace all paths with your actual model and configuration locations before running these commands.
+   
+   **Laypa service:**
+   ```bash
+   docker run -d --name laypa -p 5000:5000 --shm-size 512mb \
+     --user $(id -u):$(id -g) \
+     -e LAYPA_MODEL_BASE_PATH=/path/to/your/laypa/model/ \
+     -e LAYPA_OUTPUT_BASE_PATH=/output \
+     -e LAYPA_MAX_QUEUE_SIZE=128 \
+     -e LAYPA_LEDGER_SIZE=1000000 \
+     -e GUNICORN_RUN_HOST=0.0.0.0:5000 \
+     -e GUNICORN_WORKERS=1 \
+     -e GUNICORN_THREADS=1 \
+     -e GUNICORN_ACCESSLOG=- \
+     -v /path/to/your/laypa/model/:/path/to/your/laypa/model/ \
+     -v ~/loghi-output/laypa:/output \
+     loghi/docker.laypa python api/gunicorn_app.py
+   ```
+   
+   **HTR service:**
+   ```bash
+   docker run -d --name htr -p 5001:5000 --shm-size 512mb \
+     --user $(id -u):$(id -g) \
+     -e LOGHI_MODEL_PATH=/path/to/your/htr/model/ \
+     -e LOGHI_BASE_MODEL_DIR=/path/to/your/htr/models/directory/ \
+     -e LOGHI_MODEL_NAME=your-model-folder-name \
+     -e LOGHI_OUTPUT_PATH=/output \
+     -e LOGHI_BATCH_SIZE=64 \
+     -e LOGHI_MAX_QUEUE_SIZE=50000 \
+     -v /path/to/your/htr/models/directory/:/path/to/your/htr/models/directory/ \
+     -v ~/loghi-output/loghi-htr:/output \
+     loghi/docker.htr \
+     sh -c 'cd api && python3 -m uvicorn app:app --host 0.0.0.0 --port 5000'
+   ```
+   
+   **Loghi Tooling service:**
+   ```bash
+   docker run -d --name loghi-tooling -p 8080:8080 -p 8081:8081 --shm-size 512mb \
+     --user $(id -u):$(id -g) \
+     -e STORAGE_LOCATION=/output \
+     -v /path/to/loghi/webservice/loghi-tooling/configuration.yml:/config/configuration.yml \
+     -v ~/loghi-output/upload:/output \
+     loghi/docker.loghi-tooling \
+     /src/loghi-tooling/loghiwebservice/target/appassembler/bin/LoghiWebserviceApplication \
+     server /config/configuration.yml
    ```
    
    :::{important}
-   Replace `/path/to/your/laypa/model` and `/path/to/your/htr/model` with your actual local paths to the model directories.
+   **Required path replacements:**
+   - `/path/to/your/laypa/model/`: Full path to your Laypa model directory (must match in both `-e` and `-v`)
+   - `/path/to/your/htr/model/`: Full path to the specific HTR model directory
+   - `/path/to/your/htr/models/directory/`: Full path to the parent directory containing your HTR model(s)
+   - `your-model-folder-name`: The folder name of your HTR model (e.g., `generic-2023-02-15`)
+   - `/path/to/loghi/webservice/loghi-tooling/configuration.yml`: Full path to configuration.yml in your cloned repository
    
-   Replace `/path/to/configuration.yml` with the full path to the `configuration.yml` file in your cloned Loghi repository's `webservice/loghi-tooling/` directory.
+   **Note:** The HTR model must include a `config.json` file. If your model is missing this file, the service will not work properly.
    
-   The paths on the left side of `:` are your local machine paths. The paths on the right side are inside the container and should not be changed.
+   **For GPU support:** Add `--gpus all` after `docker run` in the Laypa and HTR commands and remove the `--user` flag.
+   
    :::
 
-3. Launch the Gradio demo interface:
+3. Configure environment variables for the Gradio interface:
+
+   Open `gradio/start_with_python.sh` in a text editor and update the placeholder values:
+   ```bash
+   export LAYPA_MODEL_PATH=/path/to/your/laypa/model/
+   export LAYPA_OUTPUT_PATH=~/loghi-output/laypa/
+   export LAYPA_LEDGER_SIZE=1000000
+   export LOGHI_MODEL_BASE_DIR=/path/to/your/htr/models/directory/
+   export LOGHI_MODEL_NAME=your-model-folder-name
+   export LOGHI_OUTPUT_PATH=~/loghi-output/loghi-htr
+   export TOOLING_OUTPUT_PATH=~/loghi-output/upload
+   ```
+   
+   :::{important}
+   - `LAYPA_MODEL_PATH`: Must match the path you used in the Laypa docker run command
+   - `LOGHI_MODEL_BASE_DIR` + `LOGHI_MODEL_NAME`: Together they form the full HTR model path
+   - All paths should match what you configured in the Docker containers
+   :::
+
+4. Launch the Gradio demo interface:
 
    ```bash
-   cd ../../gradio
+   cd gradio
    ./start_with_python.sh
    ```
 ::::
@@ -165,37 +226,34 @@ The following screenshots provide a visual overview of the Gradio interface and 
 
 
 ## Stopping the Demo
-<!-- to be verified, check the paths-->
 
 :::::{tab-set}
 
 ::::{tab-item} Docker Setup
 
-To stop the demo and all services:
+To stop the demo
 
 ```bash
-docker-compose down
+docker compose down
 ```
-
-This will stop and remove all containers started by the Docker setup.
 ::::
 
 ::::{tab-item} Python Setup
 
-1. **Stop the Gradio interface**: Press `Ctrl+C` in the terminal where `start_with_python.sh` is running
+1. Stop the Gradio interface: Press `Ctrl+C` in the terminal where `start_with_python.sh` is running
 
-2. **Stop the Docker containers**:
+2. Stop the Docker containers:
    ```bash
-   docker stop laypa-service htr-service tooling-service
+   docker stop laypa htr loghi-tooling
    ```
 
-3. **Remove the containers** (optional, only if you want to clean up completely):
+3. Remove the containers (optional, only if you want to clean up completely):
    ```bash
-   docker rm laypa-service htr-service tooling-service
+   docker rm laypa htr loghi-tooling
    ```
    
    :::{note}
-   If you skip step 3, you can restart the stopped containers later with `docker start laypa-service htr-service tooling-service` without having to rebuild them.
+   If you skip step 3, you can restart the stopped containers later with `docker start laypa htr loghi-tooling` without having to rebuild them.
    :::
 ::::
 
