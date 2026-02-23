@@ -24,7 +24,7 @@ git stash pop            # Restores local changes
 If there are conflicts between your changes and the update, Git will notify you and you'll need to resolve them manually.
 :::
 
-## Updating the submodules
+## Updating the Submodules
 
 Additionally, to stay updated with the latest versions of the submodules, run:
 

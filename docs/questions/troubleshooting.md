@@ -6,7 +6,7 @@ The contents of this page are under review.
 
 <!-- content to be updated, section headings to be added -->
 
-Here are some common issues that you could encounter. If you have a specific error message, you may also look at the open and close issues on the [GitHub Issues page](https://github.com/knaw-huc/loghi/issues) and see if someone else has encountered the same problem. Please [open a new issue](#i-cannot-find-a-solution-to-my-error-in-this-page-or-the-github-issues-what-should-i-do) if you don't find a solution to your error.
+Here are some common issues that you could encounter. If you have a specific error message, you may also look at the open and close issues on the [GitHub Issues page](https://github.com/knaw-huc/loghi/issues)[^github-issues] and see if someone else has encountered the same problem. Please [open a new issue](open-github-issue) if you don't find a solution to your error.
 
 ## Path
 ### The error message says "No such file or directory". What should I do?
@@ -42,10 +42,10 @@ You can try to verify that the paths to your models are correct and that the mod
 You can consider checking your GPU settings and ensuring that Docker is configured to utilize GPU resources effectively. On Linux you could use `nvidia-smi` or `nvtop` to check if the GPU is being used correctly.
 <!-- update this part with more details -->
 
-(anchor-name)=open-github-issue
-### I cannot find a solution to my error in this page or the [GitHub Issues](https://github.com/knaw-huc/loghi/issues). What should I do?
+(open-github-issue)=
+### I cannot find a solution to my error in this page or the GitHub Issues. What should I do?
 Please follow the steps below to open a new issue:
-1. Go to [the GitHub Issues page for Loghi](https://github.com/knaw-huc/loghi/issues).
+1. Go to [GitHub Issues page](https://github.com/knaw-huc/loghi/issues)[^github-issues].
 2. Click the green "New issue" button in the upper right corner of the page. 
 3. Add a clear title for your issue and provide a description as detailed as possible. You may consider this format:
 ```md
@@ -65,3 +65,5 @@ Python version:
 Docker version:
 Install method:
 ```
+
+[^github-issues]: https://github.com/knaw-huc/loghi/issues

@@ -4,7 +4,7 @@
 
 Here is a step-by-step guide for installing Loghi on Linux. If you run into errors during installation, please check the [troubleshooting page](../questions/troubleshooting).
 
-## 1. Clone the repository
+## 1. Clone the Repository
 
 The first step is to clone the Loghi repository to access the toolkit and navigate into the directory. Copy the following commands, pasting them into your terminal, and press `Enter`:
 ```bash
@@ -36,7 +36,7 @@ When installing Docker:
 2. Make sure that you install Docker using the `apt` repository, as Loghi might not work with the snap version of Docker. 
 :::
 
-## 3. Build Docker images
+## 3. Build Docker Images
 
 A Docker image is not a picture, but a special package that prepares the environment for running tools. There are two ways to build Docker images: you can either use pre-built ones, or build them yourself. Both could take some time to complete.
 ::::{tab-set}
@@ -63,7 +63,7 @@ git submodule update --init --recursive
 :::
 ::::
 
-## 4. Set up GPU acceleration with NVIDIA (optional)
+## 4. Set up GPU Acceleration with NVIDIA (optional)
 
 For users with NVIDIA GPUs, running Loghi with GPU acceleration significantly speeds up operations like image segmentation with Laypa and text recognition with Loghi HTR. This is particularly beneficial for processing large datasets.
 
@@ -111,7 +111,7 @@ nvidia-smi
 
 Follow the [official guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)[^nvidia-toolkit] to install the NVIDIA Container Toolkit. This allows Docker to access your GPU.
 
-## 5. Download models
+## 5. Download Models
 
 Go to [this webpage](https://surfdrive.surf.nl/files/index.php/s/YA8HJuukIUKznSP)[^surfdrive-models] and download a laypa model (for detection of baselines) and a loghi-htr model (for HTR): click on the three dots on the right of the corresponding folder and select "Download", or tick the box preceding the corresponding folder and click the "Download" that then appears. Also be reminded to unzip the downloaded files for the use in the next step.
 
@@ -132,7 +132,7 @@ If you do not have a NVIDIA GPU, we recommend these two models: [laypa general b
 
 ::::
 
-## 6. Update paths
+## 6. Update Paths
 
 Edit the `scripts/inference-pipeline.sh` script downloaded in the cloned repository with an editor of your choice. We'll use nano in this example because it allows you to directly change the script in the terminal. Enter this command in the terminal to open the script:
 ```bash

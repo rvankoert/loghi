@@ -14,7 +14,7 @@ The [Loghi Tooling](https://github.com/knaw-huc/loghi-tooling)[^loghi-tooling-gi
 
 At the heart of the Loghi framework, the [Loghi HTR](https://github.com/knaw-huc/loghi-htr)[^loghi-htr-github] module is responsible for the actual transcription of text from images. This system is not limited to handwritten text, as it is also capable of processing machine-printed text. By converting line images into textual data, Loghi HTR forms the final step in the HTR process, bridging the gap between visual data and usable digital text.
 
-## How Loghi works 
+## How Loghi Works 
 Together, these components form a comprehensive ecosystem for handling HTR tasks, from initial layout analysis to the final transcription of text. The Loghi framework provides a flexible pipeline, and here is a generalized workflow to guide your usage:
 
 1. **Baseline Detection:** Use Laypa to identify text baselines and regions in your documents, preparing them for HTR.
