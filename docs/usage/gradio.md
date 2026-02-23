@@ -47,17 +47,20 @@ Before starting, ensure you have:
 4. Open the `.env` file in a text editor and update the following variables:
    
    **Required changes**:
-   - `LAYPA_MODEL_PATH`: Full path to your downloaded Laypa model directory (for example `/home/downloads/laypa-models/baseline`)
-   - `LOGHI_BASE_MODEL_DIR`: Full path to the directory containing HTR model(s) you downloaded (for example `/home/downloads/loghi-models`)
-   - `LOGHI_MODEL_NAME`: Name of the specific HTR model to use (the folder name inside `LOGHI_BASE_MODEL_DIR`)
-   - `TOOLING_CONFIG_FILE`: Full path to `loghi/webservice/loghi-tooling/configuration.yml` in your cloned repository
-   - `LAYPA_OUTPUT_PATH`, `LOGHI_OUTPUT_PATH`, and `TOOLING_OUTPUT_PATH`: Change to where you want output files saved (directories must exist)
+   - `LAYPA_MODEL_PATH`: Full path to your downloaded Laypa model directory (e.g., `/home/downloads/laypa-models/general/baseline`)
+   - `LOGHI_BASE_MODEL_DIR`: Full path to the parent directory containing your HTR model(s) (e.g., `/home/downloads/loghi-htr-models`)
+   - `LOGHI_MODEL_NAME`: Name of the specific HTR model folder inside `LOGHI_BASE_MODEL_DIR` (e.g., `float32-generic-2023-02-15`)
+   - `TOOLING_CONFIG_FILE`: Full path to `configuration.yml` in your cloned repository (e.g., `/home/loghi/webservice/loghi-tooling/configuration.yml`)
+   - `LAYPA_OUTPUT_PATH`, `LOGHI_OUTPUT_PATH`, and `TOOLING_OUTPUT_PATH`: Directories where output files will be saved. These directories must exist before running the container, otherwise you will get permission errors. Use `/tmp` paths for the simplest setup (e.g., `/tmp/loghi/laypa`, `/tmp/loghi/htr`, `/tmp/loghi/tooling`).
 
-   **Optional changes** (for GPU configuration):
-   - Keep both `LAYPA_GPU_COUNT` and `HTR_GPU_COUNT` at `0` for CPU mode, or
-   - Leave `LAYPA_GPU_COUNT` at `0` and set `HTR_GPU_COUNT` to `1` if you have a single GPU, or
-   - Set both `LAYPA_GPU_COUNT` and `HTR_GPU_COUNT` to `1` if you have multiple GPUs
-
+   **Optional changes**:
+   - `MY_UID` and `MY_GID`: User and group IDs for file ownership. Default is `1000`, which is the standard first user on most Linux systems. Run `id -u` and `id -g` to check yours.
+   - GPU configuration:
+     - Keep both `LAYPA_GPU_COUNT` and `HTR_GPU_COUNT` at `0` for CPU mode, or
+     - Leave `LAYPA_GPU_COUNT` at `0` and set `HTR_GPU_COUNT` to `1` if you have a single GPU, or
+     - Set both `LAYPA_GPU_COUNT` and `HTR_GPU_COUNT` to `1` if you have multiple GPUs
+   - `GRADIO_QUEUE_SIZE`: Maximum number of queued requests (default: `10`)
+   - `GRADIO_WORKERS`: Number of concurrent workers (default: `1`)
 
 5. Save the changes in the `.env` file, then run the demo:
 
@@ -99,13 +102,16 @@ If your system uses legacy Compose v1, run `docker-compose up` instead.
    
    **2.2 Create output directories:**
    ```bash
-   # Create output directories in your home folder to avoid permission issues
-   mkdir -p ~/loghi-output/laypa ~/loghi-output/loghi-htr ~/loghi-output/upload
+   mkdir -p /tmp/loghi/laypa /tmp/loghi/htr /tmp/loghi/tooling
    ```
+   
+   :::{note}
+   Using `/tmp` is the simplest option. These directories are cleared on reboot, so copy any results you want to keep. If you prefer persistent storage, use a directory elsewhere (e.g., `~/loghi-output/`) but make sure the permissions allow Docker containers to write to it.
+   :::
    
    **2.3 Start the services:**
    
-   Replace all paths with your actual model and configuration locations before running these commands.
+   Replace all placeholder paths with your actual model and configuration locations before running these commands.
    
    **Laypa service:**
    ```bash
@@ -120,7 +126,7 @@ If your system uses legacy Compose v1, run `docker-compose up` instead.
      -e GUNICORN_THREADS=1 \
      -e GUNICORN_ACCESSLOG=- \
      -v /path/to/your/laypa/model/:/path/to/your/laypa/model/ \
-     -v ~/loghi-output/laypa:/output \
+     -v /tmp/loghi/laypa:/output \
      loghi/docker.laypa python api/gunicorn_app.py
    ```
    
@@ -128,16 +134,16 @@ If your system uses legacy Compose v1, run `docker-compose up` instead.
    ```bash
    docker run -d --name htr -p 5001:5000 --shm-size 512mb \
      --user $(id -u):$(id -g) \
-     -e LOGHI_MODEL_PATH=/path/to/your/htr/model/ \
      -e LOGHI_BASE_MODEL_DIR=/path/to/your/htr/models/directory/ \
      -e LOGHI_MODEL_NAME=your-model-folder-name \
      -e LOGHI_OUTPUT_PATH=/output \
      -e LOGHI_BATCH_SIZE=64 \
      -e LOGHI_MAX_QUEUE_SIZE=50000 \
+     -e LOGHI_PATIENCE=0.5 \
      -v /path/to/your/htr/models/directory/:/path/to/your/htr/models/directory/ \
-     -v ~/loghi-output/loghi-htr:/output \
+     -v /tmp/loghi/htr:/output \
      loghi/docker.htr \
-     sh -c 'cd api && python3 -m uvicorn app:app --host 0.0.0.0 --port 5000'
+     sh -c 'cd api && uvicorn app:app --host 0.0.0.0 --port 5000'
    ```
    
    **Loghi Tooling service:**
@@ -146,7 +152,7 @@ If your system uses legacy Compose v1, run `docker-compose up` instead.
      --user $(id -u):$(id -g) \
      -e STORAGE_LOCATION=/output \
      -v /path/to/loghi/webservice/loghi-tooling/configuration.yml:/config/configuration.yml \
-     -v ~/loghi-output/upload:/output \
+     -v /tmp/loghi/tooling:/output \
      loghi/docker.loghi-tooling \
      /src/loghi-tooling/loghiwebservice/target/appassembler/bin/LoghiWebserviceApplication \
      server /config/configuration.yml
@@ -155,10 +161,9 @@ If your system uses legacy Compose v1, run `docker-compose up` instead.
    :::{important}
    **Required path replacements:**
    - `/path/to/your/laypa/model/`: Full path to your Laypa model directory (must match in both `-e` and `-v`)
-   - `/path/to/your/htr/model/`: Full path to the specific HTR model directory
-   - `/path/to/your/htr/models/directory/`: Full path to the parent directory containing your HTR model(s)
-   - `your-model-folder-name`: The folder name of your HTR model (e.g., `generic-2023-02-15`)
-   - `/path/to/loghi/webservice/loghi-tooling/configuration.yml`: Full path to configuration.yml in your cloned repository
+   - `/path/to/your/htr/models/directory/`: Full path to the parent directory containing your HTR model(s) (must match in both `-e` and `-v`)
+   - `your-model-folder-name`: The folder name of your HTR model inside the above directory (e.g., `generic-2023-02-15`)
+   - `/path/to/loghi/webservice/loghi-tooling/configuration.yml`: Full path to `configuration.yml` in your cloned repository
    
    **Note:** The HTR model must include a `config.json` file. If your model is missing this file, the service will not work properly.
    
@@ -171,18 +176,18 @@ If your system uses legacy Compose v1, run `docker-compose up` instead.
    Open `gradio/start_with_python.sh` in a text editor and update the placeholder values:
    ```bash
    export LAYPA_MODEL_PATH=/path/to/your/laypa/model/
-   export LAYPA_OUTPUT_PATH=~/loghi-output/laypa/
+   export LAYPA_OUTPUT_PATH=/tmp/loghi/laypa
    export LAYPA_LEDGER_SIZE=1000000
    export LOGHI_MODEL_BASE_DIR=/path/to/your/htr/models/directory/
    export LOGHI_MODEL_NAME=your-model-folder-name
-   export LOGHI_OUTPUT_PATH=~/loghi-output/loghi-htr
-   export TOOLING_OUTPUT_PATH=~/loghi-output/upload
+   export LOGHI_OUTPUT_PATH=/tmp/loghi/htr
+   export TOOLING_OUTPUT_PATH=/tmp/loghi/tooling
    ```
    
    :::{important}
    - `LAYPA_MODEL_PATH`: Must match the path you used in the Laypa docker run command
-   - `LOGHI_MODEL_BASE_DIR` + `LOGHI_MODEL_NAME`: Together they form the full HTR model path
-   - All paths should match what you configured in the Docker containers
+   - `LOGHI_MODEL_BASE_DIR` + `LOGHI_MODEL_NAME`: Together they form the full HTR model path (must match the HTR docker run command)
+   - All output paths must match the corresponding `-v` mount targets in the Docker containers
    :::
 
 4. Launch the Gradio demo interface:

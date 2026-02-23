@@ -27,7 +27,7 @@ Before starting, ensure you have:
 - Installed Docker (see [Installation: Install Docker](install-docker))
 - Installed Docker Compose (usually included with Docker; verify with `docker compose version`)
 - Downloaded Loghi models (see [Installation: Download Models](download-models))
-- Completed GPU setup (optional, only if you want GPU acceleration) (see [Installation: Set up GPU](set-up-gpu)))
+- Completed GPU setup (optional, only if you want GPU acceleration) (see [Installation: Set up GPU](set-up-gpu))
 
 ## Getting Started
 
@@ -38,9 +38,9 @@ From your cloned Loghi repository:
 cd webservice
 ```
 
-### 2. Configure model paths
+### 2. Configure paths
 
-The `docker-compose.yml` file contains example paths that you must update to match your system.
+The `docker-compose.yml` file contains placeholder paths (e.g., `/PATH/TO/...`) that you must update to match your system. Open the file in a text editor and update the following for each service.
 
 #### Understanding volume mounts
 
@@ -50,57 +50,66 @@ volumes:
   - /your/local/path:/path/inside/container
 ```
 
-The **left side** (before `:`) is where files are on your computer. The **right side** is where the container sees them. The right side is typically predefined and should usually stay unchanged.
+The **left side** (before `:`) is where files are on your computer. The **right side** is where the container sees them. In this configuration, both sides use the same path, so you simply replace the placeholder with your actual path on both sides.
 
 #### Configure Laypa
 
-1. Find the `laypa:` service in `docker-compose.yml`
+Find the `laypa:` service and update:
 
-2. Update the volume mount. If your Laypa model is at `/home/yourname/Downloads/laypa-models/general/baseline/`, change:
-   ```yaml
-   volumes:
-     - '/home/tim/Documents/laypa-models/:/home/tim/Documents/laypa-models/'
-   ```
-   To:
-   ```yaml
-   volumes:
-     - '/home/yourname/Downloads/laypa-models/general/baseline:/home/tim/Documents/laypa-models/'
-   ```
-
-3. Update `LAYPA_MODEL_BASE_PATH` to match the container path (right side of volume mount):
+1. **Model path** — replace `/PATH/TO/LAYPA/MODEL/` with the full path to your Laypa model directory (e.g., `/home/downloads/laypa-models/general/baseline/`). This path appears in three places:
    ```yaml
    environment:
-     LAYPA_MODEL_BASE_PATH: /home/tim/Documents/laypa-models/
+     LAYPA_MODEL_BASE_PATH: /PATH/TO/LAYPA/MODEL/
+   volumes:
+     - '/PATH/TO/LAYPA/MODEL/:/PATH/TO/LAYPA/MODEL/'
+   ```
+
+2. **Output path** — replace `/PATH/TO/LAYPA/OUTPUT/` with where you want Laypa output saved (e.g., `/tmp/loghi/laypa/`). This path appears in two places:
+   ```yaml
+   environment:
+     LAYPA_OUTPUT_BASE_PATH: /PATH/TO/LAYPA/OUTPUT/
+   volumes:
+     - '/PATH/TO/LAYPA/OUTPUT/:/PATH/TO/LAYPA/OUTPUT/'
    ```
 
 #### Configure HTR
 
-1. Find the `htr:` service in `docker-compose.yml`
+Find the `htr:` service and update:
 
-2. Update the volume mount. If your HTR model is at `/home/yourname/Downloads/htr-models/float32-generic-2023-02-15/`, change:
-   ```yaml
-   volumes:
-     - '/home/tim/Documents/loghi-models/:/home/tim/Documents/loghi-models/'
-   ```
-   To:
-   ```yaml
-   volumes:
-     - '/home/yourname/Downloads/htr-models/float32-generic-2023-02-15:/home/tim/Documents/loghi-models/'
-   ```
-
-3. Update `LOGHI_MODEL_PATH`:
+1. **Model path** — replace `/PATH/TO/LOGHI/MODEL/` with the full path to your HTR model directory (e.g., `/home/downloads/htr-models/generic-2023-02-15/`). This path appears in two places:
    ```yaml
    environment:
-     LOGHI_MODEL_PATH: '/home/tim/Documents/loghi-models/'
+     LOGHI_MODEL_PATH: '/PATH/TO/LOGHI/MODEL/'
+   volumes:
+     - '/PATH/TO/LOGHI/MODEL/:/PATH/TO/LOGHI/MODEL/'
+   ```
+
+2. **Output path** — replace `/PATH/TO/LOGHI/OUTPUT/` with where you want HTR output saved (e.g., `/tmp/loghi/htr/`). This path appears in two places:
+   ```yaml
+   environment:
+     LOGHI_OUTPUT_PATH: '/PATH/TO/LOGHI/OUTPUT/'
+   volumes:
+     - '/PATH/TO/LOGHI/OUTPUT/:/PATH/TO/LOGHI/OUTPUT/'
    ```
 
 #### Configure Loghi Tooling
 
-Update the configuration file path to point to your cloned repository:
-```yaml
-volumes:
-  - '/home/yourname/loghi/webservice/loghi-tooling/configuration.yml:/home/tim/Documents/loghi/webservice/loghi-tooling/configuration.yml'
-```
+Find the `loghi-tooling:` service and update:
+
+1. **Configuration file** — replace `/PATH/TO/LOGHI/TOOLING/CONFIGURATION.yml` with the full path to `configuration.yml` in your cloned repository (e.g., `/home/loghi/webservice/loghi-tooling/configuration.yml`). This path appears in the `command:` line and in `volumes:`:
+   ```yaml
+   command: '... server /PATH/TO/LOGHI/TOOLING/CONFIGURATION.yml'
+   volumes:
+     - '/PATH/TO/LOGHI/TOOLING/CONFIGURATION.yml:/PATH/TO/LOGHI/TOOLING/CONFIGURATION.yml'
+   ```
+
+2. **Storage location** — replace `/PATH/TO/STORAGE/LOCATION/` with where you want tooling output saved (e.g., `/tmp/loghi/tooling/`). This path appears in two places:
+   ```yaml
+   environment:
+     STORAGE_LOCATION: /PATH/TO/STORAGE/LOCATION/
+   volumes:
+     - '/PATH/TO/STORAGE/LOCATION/:/PATH/TO/STORAGE/LOCATION/'
+   ```
 
 ### 3. Remove GPU configuration (if not using GPU)
 
@@ -169,10 +178,7 @@ docker compose logs loghi-tooling --tail 50
 | Error | Solution |
 |-------|----------|
 | `FileNotFoundError: LAYPA_MODEL_BASE_PATH: ... is not found` | Check that volume mount points to your actual model directory and that `LAYPA_MODEL_BASE_PATH` matches the container path |
-| `Missing Laypa Environment variable: LAYPA_LEDGER_SIZE` | Add `LAYPA_LEDGER_SIZE: 1024` to the laypa environment variables |
 | `could not select device driver "nvidia"` | Remove the `deploy:` sections from the services (see step 3) |
-| `sh: 1: gunicorn: not found` (HTR service) | The pre-built HTR Docker image is missing gunicorn. Build the images from source: `cd .. && ./docker/buildAll.sh`, then return to webservice directory |
-| Services keep restarting | Verify model files exist at the paths you specified. Check file permissions. |
 
 :::{note}
 The pre-built Docker images (especially HTR) may have compatibility issues. If you encounter persistent problems, build the images from source by running `./docker/buildAll.sh` from the main loghi directory before starting the webservice.

@@ -81,7 +81,7 @@ lspci | grep -i nvidia
 
 **Possible outcomes:**
 
-1. **Nothing appears**: You don't have an NVIDIA GPU or it's not detected. Skip to [Download models](#5-download-models) and continue with CPU mode.
+1. **Nothing appears**: You don't have an NVIDIA GPU or it's not detected. Skip to [Download models](download-models) and continue with CPU mode.
 
 2. **Output appears** (e.g., "01:00.0 VGA compatible controller: NVIDIA Corporation GeForce GTX 1080"): You have an NVIDIA GPU. Continue to the next step.
 
