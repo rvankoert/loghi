@@ -47,8 +47,8 @@ Before starting, ensure you have:
 4. Open the `.env` file in a text editor and update the following variables:
    
    **Required changes**:
-   - `LAYPA_MODEL_PATH`: Full path to your downloaded Laypa model directory (for example `/home/Downloads/laypa-models/baseline`)
-   - `LOGHI_BASE_MODEL_DIR`: Full path to the directory containing HTR model(s) you downloaded (for example `/home/Downloads/loghi-models`)
+   - `LAYPA_MODEL_PATH`: Full path to your downloaded Laypa model directory (for example `/home/downloads/laypa-models/baseline`)
+   - `LOGHI_BASE_MODEL_DIR`: Full path to the directory containing HTR model(s) you downloaded (for example `/home/downloads/loghi-models`)
    - `LOGHI_MODEL_NAME`: Name of the specific HTR model to use (the folder name inside `LOGHI_BASE_MODEL_DIR`)
    - `TOOLING_CONFIG_FILE`: Full path to `loghi/webservice/loghi-tooling/configuration.yml` in your cloned repository
    - `LAYPA_OUTPUT_PATH`, `LOGHI_OUTPUT_PATH`, and `TOOLING_OUTPUT_PATH`: Change to where you want output files saved (directories must exist)
@@ -241,7 +241,7 @@ docker compose down
 
 ::::{tab-item} Python Setup
 
-1. Stop the Gradio interface: Press `Ctrl+C` in the terminal where `start_with_python.sh` is running
+1. Stop the Gradio interface: press `Ctrl+C` in the terminal, where `start_with_python.sh` is running.
 
 2. Stop the Docker containers:
    ```bash
