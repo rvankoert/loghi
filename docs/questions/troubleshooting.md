@@ -1,8 +1,17 @@
 # Troubleshooting
 
+:::{note}
+The contents of this page are under review.
+:::
+
 <!-- content to be updated, section headings to be added -->
 
-Here are some common issues that you could encounter. If you have a specific error message, you may also look at the open and close issues on the [GitHub Issues page](https://github.com/knaw-huc/loghi/issues) and see if someone else has encountered the same problem. Please [open a new issue] (#i-cannot-find-a-solution-to-my-error-in-this-page-or-the-github-issues-what-should-i-do) if you don't find a solution to your error.
+Here are some common issues that you could encounter. If you have a specific error message, you may also look at the open and close issues on the [GitHub Issues page](https://github.com/knaw-huc/loghi/issues) and see if someone else has encountered the same problem. Please [open a new issue](#i-cannot-find-a-solution-to-my-error-in-this-page-or-the-github-issues-what-should-i-do) if you don't find a solution to your error.
+
+## Path
+### The error message says "No such file or directory". What should I do?
+This is probablyt the most common issue you may encounter. You can verify the file name or directory: Does the file exist? Is the directory an absolute one or a relative one? Which folder are you currently in?
+<!-- update this part with more details -->
 
 ## Installation
 
@@ -12,7 +21,7 @@ You may need to change the permissions of the script by running:
 chmod +x scripts/inference-pipeline.sh
 ```
 
-<!-- wording to be revised, questions to be categorized -->
+<!-- wording to be converted into Q&A mode, questions to be categorized -->
 ## using Docker
 - Ensure that Docker is installed and running correctly on your system.
 - If you encounter permission issues, try adding your user to the Docker group.
@@ -25,11 +34,6 @@ chmod +x scripts/inference-pipeline.sh
 - If you are using a custom dataset, ensure that it is formatted correctly and that the paths to the images and annotations are correct.
 
 ## Others
-
-### The error message says "No such file or directory". What should I do?
-You can verify the file name or directory: Does the file exist? Is the directory an absolute one or a relative one? Which folder are you currently in?
-<!-- update this part with more details -->
-
 ### I got a runtime error. What should I do?
 You can try to verify that the paths to your models are correct and that the models are compatible with your version of Loghi.
 <!-- update this part with more details -->
@@ -38,21 +42,26 @@ You can try to verify that the paths to your models are correct and that the mod
 You can consider checking your GPU settings and ensuring that Docker is configured to utilize GPU resources effectively. On Linux you could use `nvidia-smi` or `nvtop` to check if the GPU is being used correctly.
 <!-- update this part with more details -->
 
+(anchor-name)=open-github-issue
 ### I cannot find a solution to my error in this page or the [GitHub Issues](https://github.com/knaw-huc/loghi/issues). What should I do?
 Please follow the steps below to open a new issue:
-1. Go to [GitHub Issues](https://github.com/knaw-huc/loghi/issues).
+1. Go to [the GitHub Issues page for Loghi](https://github.com/knaw-huc/loghi/issues).
 2. Click the green "New issue" button in the upper right corner of the page. 
 3. Add a clear title for your issue and provide a description as detailed as possible. You may consider this format:
 ```md
 ## Description
 Brifely describe the problem and what you were trying to do. 
 ## Steps to reproduce
-## Expected behavior
-## Actual behavior
+1.
+2.
+3.
+## Expected vs actual behavior
+Describe what was expected and what actually happened.
 ## Logs/Error message
 Paste the logs or the full error message here.
-## Environment
+## Environment details
 OS:
+Python version:
 Docker version:
+Install method:
 ```
-<!-- update this part with images? -->
