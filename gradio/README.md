@@ -12,10 +12,11 @@ This directory contains the Gradio demo for Loghi Software. It features a graphi
 
 ## Prerequisites
 
-Before you begin, ensure you have the necessary tools installed:
+Before you begin, ensure you have:
 
-- **Docker**: Required if you opt for the recommended Docker setup.
-- **Python and pip**: Necessary for running the demo using Python.
+- **Installed Docker**: Required if you opt for the recommended Docker setup.
+- **Installed Python and pip**: Necessary for running the demo using Python.
+- **Downloaded Laypa and HTR models**
 
 ## Setup and Running the Demo
 
@@ -33,11 +34,17 @@ Before you begin, ensure you have the necessary tools installed:
    cd docker
    ```
 
-3. Configure the variables in the `.env` file to suit your setup.
-3. To run the demo, execute:
+3. Configure the variables in the `.env` file to suit your setup:
+   - `LAYPA_MODEL_PATH`: Full path to your downloaded Laypa model directory (for example `/home/downloads/laypa-models/baseline`)
+   - `LOGHI_BASE_MODEL_DIR`: Note that unlike the previous variable, you need to split the full path to the HTR model into two parts. This one is the path to the directory containing HTR model(s) you downloaded (for example `/home/downloads/loghi-models`). 
+   - `LOGHI_MODEL_NAME`: Name of the specific HTR model to use (the folder name inside `LOGHI_BASE_MODEL_DIR`)
+   - `TOOLING_CONFIG_FILE`: Full path to `loghi/webservice/loghi-tooling/configuration.yml` in your cloned repository
+   - `LAYPA_OUTPUT_PATH`, `LOGHI_OUTPUT_PATH`, and `TOOLING_OUTPUT_PATH`: Change to where you want output files saved (directories must exist)
+
+4. To run the demo, execute:
 
    ```bash
-   docker-compose up
+   docker compose up
    ```
 
    This starts all necessary services including the Gradio server.
