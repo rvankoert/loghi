@@ -4,7 +4,7 @@
 This page is under construction.
 :::
 
-<!-- content in the original training.md, I have adjusted the formatting, but content needs to be updated and explained -->
+<!-- content below is copied from the original `docs/training.md`, it's obviously not complete yet -->
 
 ## Laypa
 The Laypa training pipeline (scripts/laypa-train-pipeline.sh) is designed to train or fine-tune a Laypa model using Docker. Key steps include:
