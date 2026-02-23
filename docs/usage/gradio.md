@@ -14,10 +14,10 @@ The Gradio Demo features an interactive graphical user interface (GUI) for proce
 ## Prerequisites
 
 Before starting, ensure you have:
-- Cloned the Loghi repository (see [Clone the Repository](clone-repo))
-- Installed Docker (see [Install Docker](install-docker))
+- Cloned the Loghi repository (see [Installation: Clone the Repository](clone-repo))
+- Installed Docker (see [Installation: Install Docker](install-docker))
 - Installed Docker Compose (usually included with Docker; verify with `docker compose version`)
-- Downloaded Loghi models (see [Download Models](download-models))
+- Downloaded Loghi models (see [Installation: Download Models](download-models))
 - Installed Python and pip (**optional**, only if you opt for the Python setup)
 
 ## Setup and Running the Demo
@@ -53,10 +53,11 @@ Before starting, ensure you have:
    - `TOOLING_CONFIG_FILE`: Full path to `loghi/webservice/loghi-tooling/configuration.yml` in your cloned repository
    - `LAYPA_OUTPUT_PATH`, `LOGHI_OUTPUT_PATH`, and `TOOLING_OUTPUT_PATH`: Change to where you want output files saved (directories must exist)
 
-   **Optional changes** (GPU configuration):
+   **Optional changes** (for GPU configuration):
    - Keep both `LAYPA_GPU_COUNT` and `HTR_GPU_COUNT` at `0` for CPU mode, or
    - Leave `LAYPA_GPU_COUNT` at `0` and set `HTR_GPU_COUNT` to `1` if you have a single GPU, or
    - Set both `LAYPA_GPU_COUNT` and `HTR_GPU_COUNT` to `1` if you have multiple GPUs
+
 
 5. Save the changes in the `.env` file, then run the demo:
 
@@ -231,7 +232,7 @@ The following screenshots provide a visual overview of the Gradio interface and 
 
 ::::{tab-item} Docker Setup
 
-To stop the demo
+To stop the demo:
 
 ```bash
 docker compose down

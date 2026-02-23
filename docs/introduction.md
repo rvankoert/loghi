@@ -25,7 +25,7 @@ Together, these components form a comprehensive ecosystem for handling HTR tasks
 
 4. **Post-processing:** Apply necessary post-processing steps, such as merging HTR results into PageXML format, recalculating reading order, and splitting text into words.
 
-To sum up, the Loghi framework offers a modular approach, allowing users to engage with individual components based on their specific needs, while also providing a cohesive solution for end-to-end handwritten text recognition. The approach also allows users to also utilize other PageXML based frameworks for different steps. As such it is possible to use Transkribus for layout analysis and Loghi HTR for text transcription, or Laypa for layout analysis and Kraken for text transcription. As long as the input and output is PageXML it should be possible to mix and match different tools.
+To sum up, the Loghi framework offers a modular approach, allowing users to engage with individual components based on their specific needs, while also providing a cohesive solution for end-to-end handwritten text recognition. The approach also allows users to utilize other PageXML based frameworks for different steps. As such it is possible to use Transkribus for layout analysis and Loghi HTR for text transcription, or Laypa for layout analysis and Kraken for text transcription. As long as the input and output is PageXML it should be possible to mix and match different tools.
 
 [^laypa-github]: https://github.com/knaw-huc/laypa/
 [^detectron2]: https://github.com/facebookresearch/detectron2
