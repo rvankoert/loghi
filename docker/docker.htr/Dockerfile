@@ -13,8 +13,8 @@ WORKDIR /src/
 
 COPY .tf_configure.bazelrc /tmp/.tf_configure.bazelrc
 
-RUN --mount=target=/var/lib/apt/lists,type=cache,id=apt-lists \
-    --mount=target=/var/cache/apt,type=cache,id=apt-cache \
+RUN --mount=target=/var/lib/apt/lists,type=cache,id=apt-lists-builder,sharing=locked \
+    --mount=target=/var/cache/apt,type=cache,id=apt-cache-builder,sharing=locked \
     apt-get update && apt-get install -y \
       software-properties-common wget git python3-pip python3 python3-dev \
       pkg-config libhdf5-dev ffmpeg libsm6 libxext6 libcudnn9-cuda-12 \
@@ -71,8 +71,8 @@ ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
 
 # Runtime-only system packages (no build tools, no JDK, no LLVM, no Bazel)
-RUN --mount=target=/var/lib/apt/lists,type=cache,id=apt-lists \
-    --mount=target=/var/cache/apt,type=cache,id=apt-cache \
+RUN --mount=target=/var/lib/apt/lists,type=cache,id=apt-lists-runtime,sharing=locked \
+    --mount=target=/var/cache/apt,type=cache,id=apt-cache-runtime,sharing=locked \
     apt-get update && apt-get install -y \
       locales libhdf5-dev ffmpeg libsm6 libxext6 libcudnn9-cuda-12 \
       libtcmalloc-minimal4t64 && \
