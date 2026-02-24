@@ -38,10 +38,13 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,id=apt-lists-builder,sharing=lo
     git clone --depth=1 --branch v2.20.0 https://github.com/tensorflow/tensorflow.git && \
     mv /tmp/.tf_configure.bazelrc /src/tensorflow/.tf_configure.bazelrc && \
     cd /src/tensorflow && \
+    bazel clean --expunge && \
     bazel build //tensorflow/tools/pip_package:wheel \
       --repo_env=USE_PYWRAP_RULES=1 \
       --repo_env=WHEEL_NAME=tensorflow \
-      --config=cuda --config=cuda_wheel --config=opt && \
+      --config=cuda --config=cuda_wheel --config=opt \
+      --copt=-mevex512 --host_copt=-mevex512 \
+      --action_env=BAZEL_CACHE_BUST=evex512 && \
     # ── CTCWordBeamSearch wheel ──────────────────────────────────────────────
     cd /src && \
     git clone --depth=1 https://github.com/rvankoert/CTCWordBeamSearch.git && \
