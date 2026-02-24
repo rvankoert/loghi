@@ -26,6 +26,12 @@ build:opt --host_copt=-mfma
 #       compiler and it silently ignores / errors on this flag.
 
 # ── AVX-512 foundation (Skylake-X / Zen4+) ──────────────────────────────────
+# -mevex512 must be set alongside -mavx512f: clang-20 no longer implicitly
+# enables 512-bit EVEX encoding when avx512f is present, which causes
+# avx512vlintrin.h masked-load intrinsics (e.g. in ruy/pack_avx512.cc) to
+# fail with "requires target feature 'evex512'".
+build:opt --copt=-mevex512
+build:opt --host_copt=-mevex512
 build:opt --copt=-mavx512f
 build:opt --host_copt=-mavx512f
 build:opt --copt=-mavx512cd
