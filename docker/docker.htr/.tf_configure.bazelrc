@@ -66,8 +66,8 @@ build:opt --copt=-mvpclmulqdq
 build:opt --host_copt=-mvpclmulqdq
 
 # ── AMX (Sapphire Rapids / Emerald Rapids / Granite Rapids) ─────────────────
-build:opt --copt=-mamx-avx512
-build:opt --host_copt=-mamx-avx512
+# Note: -mamx-avx512 is clang-20+ only; the individual flags below cover the
+# same ISA extensions and are supported from clang-17 onwards.
 build:opt --copt=-mamx-int8
 build:opt --host_copt=-mamx-int8
 build:opt --copt=-mamx-bf16
