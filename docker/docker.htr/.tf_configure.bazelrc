@@ -9,6 +9,21 @@ build --action_env LD_LIBRARY_PATH="/usr/local/cuda/extras/CUPTI/lib64:/usr/loca
 build --config=cuda_clang
 build --action_env CLANG_CUDA_COMPILER_PATH="/usr/lib/llvm-20/bin/clang"
 
+# ── clang-20 evex512 – applied unconditionally (not under build:opt) ─────────
+# clang-20 no longer implicitly enables 512-bit EVEX encoding alongside
+# -mavx512f. This causes avx512vlintrin.h always_inline functions (e.g.
+# _mm256_setzero_ps) to fail in any TU compiled without 'evex512', including
+# external dependencies such as ruy that Bazel compiles separately.
+# Setting this at the top-level 'build' scope (not 'build:opt') ensures it
+# applies to ALL targets – first-party and external – regardless of config.
+build --copt=-mevex512
+build --host_copt=-mevex512
+# Belt-and-suspenders: also force it per-file on the ruy avx512 source
+# directly, in case Bazel's external repo sandboxing strips top-level copts.
+build --per_file_copt=external/ruy/ruy/pack_avx512.cc@-mevex512
+build --per_file_copt=external/ruy/ruy/pack_avx512.cc@-mavx512f
+build --per_file_copt=external/ruy/ruy/pack_avx512.cc@-mavx512vl
+
 # ── SSE / baseline ──────────────────────────────────────────────────────────
 build:opt --copt=-msse4.1
 build:opt --host_copt=-msse4.1
@@ -26,12 +41,6 @@ build:opt --host_copt=-mfma
 #       compiler and it silently ignores / errors on this flag.
 
 # ── AVX-512 foundation (Skylake-X / Zen4+) ──────────────────────────────────
-# -mevex512 must be set alongside -mavx512f: clang-20 no longer implicitly
-# enables 512-bit EVEX encoding when avx512f is present, which causes
-# avx512vlintrin.h masked-load intrinsics (e.g. in ruy/pack_avx512.cc) to
-# fail with "requires target feature 'evex512'".
-build:opt --copt=-mevex512
-build:opt --host_copt=-mevex512
 build:opt --copt=-mavx512f
 build:opt --host_copt=-mavx512f
 build:opt --copt=-mavx512cd

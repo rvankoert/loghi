@@ -43,7 +43,6 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,id=apt-lists-builder,sharing=lo
       --repo_env=USE_PYWRAP_RULES=1 \
       --repo_env=WHEEL_NAME=tensorflow \
       --config=cuda --config=cuda_wheel --config=opt \
-      --copt=-mevex512 --host_copt=-mevex512 \
       --action_env=BAZEL_CACHE_BUST=evex512 && \
     # ── CTCWordBeamSearch wheel ──────────────────────────────────────────────
     cd /src && \
