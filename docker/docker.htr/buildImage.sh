@@ -34,7 +34,11 @@ echo "Building docker image..."
 #docker buildx build --platform linux/amd64 -t loghi/docker.htr .
 #docker buildx build --platform linux/amd64 --no-cache -t loghi/docker.htr .
 #docker buildx build --platform linux/arm64 -t loghi/docker.htr .
-docker build --no-cache . -t loghi/docker.htr
+# Enable BuildKit for multi-stage build support and layer caching
+DOCKER_BUILDKIT=1 docker build \
+  --target runtime \
+  --no-cache \
+  . -t loghi/docker.htr
 
 
 #rm -rf ./$htr_folder

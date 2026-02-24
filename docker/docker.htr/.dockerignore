@@ -1,0 +1,16 @@
+# Don't send anything unnecessary to the build daemon.
+# The Dockerfile pulls all sources from git at build time.
+**/.git
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/.idea
+**/.vscode
+**/node_modules
+**/venv
+**/.env
+**/checkpoints
+**/output
+**/models
+**/results
+
