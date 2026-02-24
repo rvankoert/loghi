@@ -5,24 +5,9 @@ build:cuda --repo_env HERMETIC_CUDA_VERSION="12.8.1"
 build:cuda --repo_env HERMETIC_CUDNN_VERSION="9.7.1"
 build:cuda --repo_env HERMETIC_CUDA_COMPUTE_CAPABILITIES="sm_60,sm_70,sm_80,sm_89,sm_120,compute_90,compute_100"
 build --action_env LD_LIBRARY_PATH="/usr/local/cuda/extras/CUPTI/lib64:/usr/local/cuda/compat/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64"
-# cuda_clang: use clang-20 as both host and device compiler (deduplicated)
+# TF 2.20 officially tested with clang-17; clang-20 breaks ruy AVX-512 (evex512 split)
 build --config=cuda_clang
-build --action_env CLANG_CUDA_COMPILER_PATH="/usr/lib/llvm-20/bin/clang"
-
-# ── clang-20 evex512 – applied unconditionally (not under build:opt) ─────────
-# clang-20 no longer implicitly enables 512-bit EVEX encoding alongside
-# -mavx512f. This causes avx512vlintrin.h always_inline functions (e.g.
-# _mm256_setzero_ps) to fail in any TU compiled without 'evex512', including
-# external dependencies such as ruy that Bazel compiles separately.
-# Setting this at the top-level 'build' scope (not 'build:opt') ensures it
-# applies to ALL targets – first-party and external – regardless of config.
-build --copt=-mevex512
-build --host_copt=-mevex512
-# Belt-and-suspenders: also force it per-file on the ruy avx512 source
-# directly, in case Bazel's external repo sandboxing strips top-level copts.
-build --per_file_copt=external/ruy/ruy/pack_avx512.cc@-mevex512
-build --per_file_copt=external/ruy/ruy/pack_avx512.cc@-mavx512f
-build --per_file_copt=external/ruy/ruy/pack_avx512.cc@-mavx512vl
+build --action_env CLANG_CUDA_COMPILER_PATH="/usr/lib/llvm-17/bin/clang"
 
 # ── SSE / baseline ──────────────────────────────────────────────────────────
 build:opt --copt=-msse4.1

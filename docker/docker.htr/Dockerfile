@@ -18,13 +18,15 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,id=apt-lists-builder,sharing=lo
     apt-get update && apt-get install -y \
       software-properties-common wget git python3-pip python3 python3-dev \
       pkg-config libhdf5-dev ffmpeg libsm6 libxext6 libcudnn9-cuda-12 \
-      llvm-15 apt-transport-https curl gnupg \
-      build-essential zip unzip openjdk-21-jdk coreutils bash lld && \
+      apt-transport-https curl gnupg \
+      build-essential zip unzip openjdk-21-jdk coreutils bash && \
     apt-get dist-upgrade -y && \
-    # ── LLVM-20 (clang for CUDA build) ──────────────────────────────────────
+    # ── LLVM-17 (TF 2.20's officially tested clang; clang-20 breaks ruy AVX-512)
     wget -O llvm.sh https://apt.llvm.org/llvm.sh && \
-    chmod +x llvm.sh && ./llvm.sh 20 all && \
-    update-alternatives --install /usr/bin/clang clang /usr/bin/clang-20 100 && \
+    chmod +x llvm.sh && ./llvm.sh 17 all && \
+    update-alternatives --install /usr/bin/clang   clang   /usr/lib/llvm-17/bin/clang   100 && \
+    update-alternatives --install /usr/bin/clang++ clang++ /usr/lib/llvm-17/bin/clang++ 100 && \
+    update-alternatives --install /usr/bin/lld     lld     /usr/lib/llvm-17/bin/lld     100 && \
     rm llvm.sh && \
     # ── Bazel 7.4.1 (built from source, no external apt repo needed) ────────
     mkdir -p /src/bazel-dist && \
@@ -42,8 +44,7 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,id=apt-lists-builder,sharing=lo
     bazel build //tensorflow/tools/pip_package:wheel \
       --repo_env=USE_PYWRAP_RULES=1 \
       --repo_env=WHEEL_NAME=tensorflow \
-      --config=cuda --config=cuda_wheel --config=opt \
-      --action_env=BAZEL_CACHE_BUST=evex512 && \
+      --config=cuda --config=cuda_wheel --config=opt && \
     # ── CTCWordBeamSearch wheel ──────────────────────────────────────────────
     cd /src && \
     git clone --depth=1 https://github.com/rvankoert/CTCWordBeamSearch.git && \
