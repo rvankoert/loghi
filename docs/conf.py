@@ -14,12 +14,18 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
-extensions = ['myst_parser']
+extensions = ['myst_parser', 'sphinx_design']
+
+# MyST parser configuration
+myst_enable_extensions = [
+    "colon_fence",
+]
+
 
 # -- Project information -----------------------------------------------------
 
 project = 'Loghi'
-copyright = '2025, Rutger van Koert, Stefan Klut, Tim Koornstra, Luke Peters'
+copyright = '2026, Rutger van Koert, Stefan Klut, Tim Koornstra, Luke Peters'
 author = 'Rutger van Koert, Stefan Klut, Tim Koornstra, Luke Peters'
 
 # The short X.Y version
@@ -56,5 +62,8 @@ exclude_patterns = []
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['static']
+# html_static_path = ['static']
 
+html_title = "Loghi Documentation"
+html_theme = "sphinx_rtd_theme"
+html_static_path = ["_static"]
