@@ -184,7 +184,7 @@ docker compose logs loghi-tooling --tail 50
 The pre-built Docker images (especially HTR) may have compatibility issues. If you encounter persistent problems, build the images from source by running `./docker/buildAll.sh` from the main loghi directory before starting the webservice.
 :::
 
-If problems persist, consider using the simpler [inference pipeline](../installation/installation.md#24-run-loghi) instead.
+If problems persist, consider using the simpler [inference pipeline](run-loghi) instead.
 
 ### 6. Process your documents
 
@@ -195,7 +195,7 @@ cd webservice-scripts
 # See the README for usage instructions
 ```
 
-See the [webservice-scripts README](https://github.com/knaw-huc/loghi/tree/main/webservice/webservice-scripts/README.md) for detailed examples of calling each API endpoint.
+See the [webservice-scripts README](https://github.com/knaw-huc/loghi/tree/main/webservice/webservice-scripts/README.md)[^webservice-scripts-readme] for detailed examples of calling each API endpoint.
 
 ### 7. Stop the services
 
@@ -219,3 +219,5 @@ These services work together in a pipeline, with each service handling a specifi
 - The webservice provides more flexibility than the basic inference pipeline, allowing you to call individual services and integrate them into custom workflows
 - All services are stateless APIs - they don't store results permanently. Output files are written to the configured output directories
 - For production use, you may need to adjust worker counts, queue sizes, and other performance parameters in the environment variables
+
+[^webservice-scripts-readme]: https://github.com/knaw-huc/loghi/tree/main/webservice/webservice-scripts/README.md

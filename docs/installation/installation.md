@@ -20,7 +20,7 @@ docker --version
 ```
 **Possible outcomes:**
 
-1. **A message similar to "Docker version 29.1.2, build 890dcca"**: Docker has been installed. You can proceed to [build Docker images](#3-build-docker-images).
+1. **A message similar to "Docker version 29.1.2, build 890dcca"**: Docker has been installed. You can proceed to [build Docker images](build_docker_images).
 
 2. **A message reading "docker: command not found"**: No Docker installation has been found. Follow 
 [the official guide](https://docs.docker.com/engine/install/)[^docker-install] to install Docker using the `apt` version. 
@@ -36,6 +36,7 @@ When installing Docker:
 2. Make sure that you install Docker using the `apt` repository, as Loghi might not work with the snap version of Docker. 
 :::
 
+(build-docker-images)=
 ## 3. Build Docker Images
 
 A Docker image is not a picture, but a special package that prepares the environment for running tools. There are two ways to build Docker images: you can either use pre-built ones, or build them yourself. Both could take some time to complete.
@@ -122,7 +123,7 @@ Go to [our SURFdrive page](https://surfdrive.surf.nl/files/index.php/s/YA8HJuukI
 
 :::{tab-item} Recommended models for NVIDIA GPU
 
-If you have a NVIDIA GPU, we recommend these two models: [laypa general baseline2](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/laypa/general/baseline2?accept=zip)[^laypa-baseline2] and [loghi-htr generic-2023-02-15](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/generic-2023-02-15?accept=zip)[^htr-generic] (it works ok on 17th and 18th century handwritten Dutch; if you want best results, see [training](../usage/training) to finetune the models on your specific data).
+If you have a NVIDIA GPU, we recommend these two models: [laypa general baseline2](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/laypa/general/baseline2?accept=zip)[^laypa-baseline2] and [loghi-htr generic-2023-02-15](http://surfdrive.surf.nl/public.php/dav/files/YA8HJuukIUKznSP/loghi-htr/generic-2023-02-15?accept=zip)[^htr-generic] (it works ok on 17th and 18th century handwritten Dutch; if you want best results, see the [training page](../usage/training) to finetune the models on your specific data).
 
 :::
 
