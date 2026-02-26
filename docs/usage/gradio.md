@@ -49,16 +49,19 @@ Before starting, ensure you have:
    **Required changes**:
    - `LAYPA_MODEL_PATH`: Full path to your downloaded Laypa model directory (e.g., `/home/downloads/laypa-models/general/baseline`)
    - `LOGHI_BASE_MODEL_DIR`: Full path to the parent directory containing your HTR model(s) (e.g., `/home/downloads/loghi-htr-models`)
-   - `LOGHI_MODEL_NAME`: Name of the specific HTR model folder inside `LOGHI_BASE_MODEL_DIR` (e.g., `float32-generic-2023-02-15`)
+   - `LOGHI_MODEL_NAME`: Name of the specific HTR model folder inside `LOGHI_BASE_MODEL_DIR` (e.g., `generic-2023-02-15`)
    - `TOOLING_CONFIG_FILE`: Full path to `configuration.yml` in your cloned repository (e.g., `/home/loghi/webservice/loghi-tooling/configuration.yml`)
-   - `LAYPA_OUTPUT_PATH`, `LOGHI_OUTPUT_PATH`, and `TOOLING_OUTPUT_PATH`: Directories where output files will be saved. These directories must exist before running the container, otherwise you will get permission errors. Use `/tmp` paths for the simplest setup (e.g., `/tmp/loghi/laypa`, `/tmp/loghi/htr`, `/tmp/loghi/tooling`).
+   - `LAYPA_OUTPUT_PATH`, `LOGHI_OUTPUT_PATH`, and `TOOLING_OUTPUT_PATH`: Directories where output files will be saved. You must create these directories before running `docker compose up`, and these must be under `/tmp` (e.g., `/tmp/loghi-output/laypa`, `/tmp/loghi-output/htr`, `/tmp/loghi-output/tooling`):
+     ```bash
+     mkdir -p /tmp/loghi-output/laypa /tmp/loghi-output/htr /tmp/loghi-output/tooling
+     ```
 
    **Optional changes**:
    - `MY_UID` and `MY_GID`: User and group IDs for file ownership. Default is `1000`, which is the standard first user on most Linux systems. Run `id -u` and `id -g` to check yours.
    - GPU configuration:
      - Keep both `LAYPA_GPU_COUNT` and `HTR_GPU_COUNT` at `0` for CPU mode, or
      - Leave `LAYPA_GPU_COUNT` at `0` and set `HTR_GPU_COUNT` to `1` if you have a single GPU, or
-     - Set both `LAYPA_GPU_COUNT` and `HTR_GPU_COUNT` to `1` if you have multiple GPUs
+     - Set both `LAYPA_GPU_COUNT` and `HTR_GPU_COUNT` to `1` if you have multiple GPUs.
    - `GRADIO_QUEUE_SIZE`: Maximum number of queued requests (default: `10`)
    - `GRADIO_WORKERS`: Number of concurrent workers (default: `1`)
 
@@ -106,7 +109,16 @@ If your system uses legacy Compose v1, run `docker-compose up` instead.
    ```
    
    :::{note}
-   Using `/tmp` is the simplest option. These directories are cleared on reboot, so copy any results you want to keep. If you prefer persistent storage, use a directory elsewhere (e.g., `~/loghi-output/`) but make sure the permissions allow Docker containers to write to it.
+   Using `/tmp` is the simplest option. These directories are cleared every time you restart your computer, so copy any results you want to keep. If you want your results to be saved permanently, you can use a folder in your home directory (for example, `~/loghi-output/`).
+
+   If you do this, make sure you create the folder yourself before running the containers, and that you (the user running Docker) have permission to write to it. You can check this by running:
+   ```bash
+   ls -ld ~/loghi-output
+   ```
+   The output should show your username. If not, you may need to change the permissions with:
+   ```bash
+   chmod 755 ~/loghi-output
+   ```
    :::
    
    **2.3 Start the services:**
@@ -163,10 +175,8 @@ If your system uses legacy Compose v1, run `docker-compose up` instead.
    - `/path/to/your/laypa/model/`: Full path to your Laypa model directory (must match in both `-e` and `-v`)
    - `/path/to/your/htr/models/directory/`: Full path to the parent directory containing your HTR model(s) (must match in both `-e` and `-v`)
    - `your-model-folder-name`: The folder name of your HTR model inside the above directory (e.g., `generic-2023-02-15`)
-   - `/path/to/loghi/webservice/loghi-tooling/configuration.yml`: Full path to `configuration.yml` in your cloned repository
-   
-   **Note:** The HTR model must include a `config.json` file. If your model is missing this file, the service will not work properly.
-   
+   - `/path/to/loghi/webservice/loghi-tooling/configuration.yml`: Full path to `configuration.yml` in your cloned repository (e.g., `/home/loghi/webservice/loghi-tooling/configuration.yml`)
+      
    **For GPU support:** Add `--gpus all` after `docker run` in the Laypa and HTR commands and remove the `--user` flag.
    
    :::
@@ -204,7 +214,7 @@ If your system uses legacy Compose v1, run `docker-compose up` instead.
 
 After you've set up the demo using Docker or Python, here's how you can proceed with using it:
 
-1. Navigate to the Gradio web interface at `http://localhost:7860`.
+1. Navigate to the Gradio web interface at [http://localhost:7860](http://localhost:7860).
 2. Upload a document image to start the processing.
 3. View the Laypa results to see the layout analysis.
 4. Check the HTR results for the extracted text.
@@ -216,19 +226,19 @@ The following screenshots provide a visual overview of the Gradio interface and 
 
 1. **Start Screen with Uploaded Image**: This is the initial screen where users can upload a document image to process. It's the starting point of the demo where you begin your interaction with the Loghi tools.
 
-   ![Start Screen with Uploaded Image](https://github.com/rvankoert/loghi/assets/89044870/d343dae8-ca74-4e25-b438-05f3d1fbcb6d)
+   ![Start Screen with Uploaded Image](./_static/start_screen_with_uploaded_image.png)
 
 2. **Laypa Result**: After processing, the demo shows the Laypa results, displaying the layout analysis of the uploaded document. It segments the document into lines, facilitating further processing.
 
-   ![Laypa Result](https://github.com/rvankoert/loghi/assets/89044870/1a8662d4-2c78-4df4-b48e-adb0e9df1905)
+   ![Laypa Result](./_static/laypa_result.png)
 
 3. **HTR Result**: The Handwritten Text Recognition (HTR) result screen showcases the extracted text from the document. This screen validates the accuracy and quality of the text recognition process.
 
-   ![HTR Result](https://github.com/rvankoert/loghi/assets/89044870/7d0dd0eb-d2ac-4504-b9e1-77cf437483f7)
+   ![HTR Result](./_static/htr_result.png)
 
 4. **PageXML Output**: The demo allows users to download the PageXML file, which contains detailed annotations of the text and its structure as recognized by the tool. This file can be used for a variety of downstream tasks and applications.
 
-   ![PageXML Output](https://github.com/rvankoert/loghi/assets/89044870/b2bb96a2-d19d-41d7-995d-a738e7640c56)
+   ![PageXML Output](./_static/pagexml_output.png)
 
 
 ## Stopping the Demo
