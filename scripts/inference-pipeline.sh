@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=2.2.33
+VERSION=2.3.0
 set -e
 set -o pipefail
 
@@ -207,7 +207,7 @@ if [[ $HTRLOGHI -eq 1 ]]; then
         -v "$tmpdir":"$tmpdir" \
         -v "$LOGHIDIR":"$LOGHIDIR" \
         $DOCKERLOGHIHTR \
-            bash -c "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 python3 /src/loghi-htr/src/main.py \
+            bash -c "TF_USE_LEGACY_KERAS=0 LD_PRELOAD=/usr/lib/`arch`-linux-gnu/libtcmalloc_minimal.so.4 python3 /src/loghi-htr/src/main.py \
             --model $HTRLOGHIMODEL  \
             --batch_size 64 \
             --inference_list \"$tmpdir\"/lines.txt \
@@ -221,7 +221,7 @@ if [[ $HTRLOGHI -eq 1 ]]; then
         -v "$tmpdir":"$tmpdir" \
         -v "$LOGHIDIR":"$LOGHIDIR" \
         $DOCKERLOGHIHTR \
-            bash -c "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 python3 /src/loghi-htr/src/main.py \
+            bash -c "TF_USE_LEGACY_KERAS=0 LD_PRELOAD=/usr/lib/`arch`-linux-gnu/libtcmalloc_minimal.so.4 python3 /src/loghi-htr/src/main.py \
             --model $HTRLOGHIMODEL  \
             --batch_size 64 \
             --inference_list \"$tmpdir\"/lines.txt \

@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=2.2.33
+VERSION=2.3.0
 set -e
 set -o pipefail
 
@@ -94,7 +94,7 @@ docker run $DOCKERGPUPARAMS --rm -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m 
     -v $datadir:$datadir \
     -v $outputdir:$outputdir \
     $DOCKERLOGHIHTR \
-        python3 /src/loghi-htr/src/main.py \
+        bash -c "TF_USE_LEGACY_KERAS=0 python3 /src/loghi-htr/src/main.py \
         --train_list $trainlist \
         --do_validate \
         --validation_list $validationlist \
@@ -108,7 +108,7 @@ docker run $DOCKERGPUPARAMS --rm -u $(id -u ${USER}):$(id -g ${USER}) -m 32000m 
         --aug_multiply $multiply \
         --model_name $model_name \
         --output $outputdir \
-        $REPLACEFINAL
+        $REPLACEFINAL "
 
 echo "Results can be found at:"
 echo $tmpdir
