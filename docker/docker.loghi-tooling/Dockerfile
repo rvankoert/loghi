@@ -2,7 +2,7 @@ FROM docker.base
 
 EXPOSE 9006
 
-RUN useradd -u 1000 rutger
+RUN (userdel ubuntu || true) && useradd -u 1000 rutger
 
 RUN apt-get update && \
   apt-get install -y locales && rm -rf /var/lib/apt
