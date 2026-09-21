@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:26.04
 ENV SUDO_FORCE_REMOVE=yes
 ENV HOME=/root
 ENV TZ=Europe/Amsterdam
@@ -10,11 +10,12 @@ COPY buildAndInstallOpencv.sh .
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
   && apt-get update && apt-get --no-install-recommends install -y sudo libjna-jni git make libtool m4 automake g++ gawk autoconf-archive libleptonica-dev \
   leptonica-progs pkg-config git libjpeg8-dev libavcodec-dev libavformat-dev \
-  libswscale-dev libv4l-dev qt5-default libgtk2.0-dev libtbb-dev libatlas-base-dev libfaac-dev libmp3lame-dev libtheora-dev \
+  libswscale-dev libv4l-dev qtbase5-dev libgtk2.0-dev libtbb-dev libfaac-dev libmp3lame-dev libtheora-dev \
   libvorbis-dev libxvidcore-dev libopencore-amrnb-dev libopencore-amrwb-dev x264 v4l-utils \
   libprotobuf-dev protobuf-compiler libgoogle-glog-dev libgflags-dev libgphoto2-dev libeigen3-dev \
-  libhdf5-dev doxygen cmake default-jdk ant libtbb2 libtbb-dev maven \
-  libjpeg-dev libpng-dev libtiff-dev libdc1394-22-dev libopenblas-base libopenblas-dev \
+  libhdf5-dev doxygen cmake openjdk-17-jdk ant maven \
+  libjpeg-dev libpng-dev libtiff-dev libdc1394-dev libopenblas-dev \
+  libstdc++6 libgcc-s1 \
   && apt-get dist-upgrade -y \
   && apt-get clean \
   && ./buildAndInstallOpencv.sh \
@@ -22,16 +23,20 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
   && ldconfig \
   && rm -rf /src \
   && rm -rf /usr/local/share/opencv4/samples \
-  && rm -rf rm -rf /var/lib/apt \
-  && apt-get remove -y libjna-jni make libtool m4 automake g++ gawk autoconf-archive libleptonica-dev \
+  && rm -rf /var/lib/apt \
+  && apt-get remove -y --purge sudo libjna-jni make libtool m4 automake g++ gawk autoconf-archive libleptonica-dev \
   leptonica-progs pkg-config git libjpeg8-dev libavcodec-dev libavformat-dev \
-  libswscale-dev libv4l-dev qt5-default libgtk2.0-dev libtbb-dev libatlas-base-dev libfaac-dev libmp3lame-dev libtheora-dev \
+  libswscale-dev libv4l-dev qtbase5-dev libgtk2.0-dev libtbb-dev libfaac-dev libmp3lame-dev libtheora-dev \
   libvorbis-dev libxvidcore-dev libopencore-amrnb-dev libopencore-amrwb-dev x264 v4l-utils \
   libprotobuf-dev protobuf-compiler libgoogle-glog-dev libgflags-dev libgphoto2-dev libeigen3-dev \
-  libhdf5-dev doxygen cmake default-jdk ant libtbb2 libtbb-dev \
-  libjpeg-dev libpng-dev libtiff-dev libdc1394-22-dev libopenblas-base libopenblas-dev \
-  gcc-9 cpp-9 default-jre-headless default-jre openjdk-11-jre-headless openjdk-11-jre sudo maven \
-  && apt autoremove -y
+  libhdf5-dev doxygen cmake ant maven \
+  openjdk-17-jdk openjdk-17-jdk-headless openjdk-17-jre openjdk-17-jre-headless \
+  g++-15 gcc-15 cpp-15 libstdc++-15-dev libgcc-15-dev \
+  libjpeg-dev libpng-dev libtiff-dev libdc1394-dev libopenblas-dev \
+  && apt-get autoremove -y \
+  && apt-get clean \
+  && MISSING=$(ldd /usr/local/lib/libopencv_core.so.414 | grep "not found" | grep -v "libtbb.so" || true) \
+  && if [ -n "$MISSING" ]; then echo "FATAL: missing OpenCV runtime libs in base: $MISSING"; exit 1; fi
 
 
 #git clone https://github.com/opencv/opencv_contrib.git \

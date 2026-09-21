@@ -14,6 +14,9 @@ echo "Change to directory of script..."
 DIR_OF_SCRIPT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd $DIR_OF_SCRIPT
 
+# clear stale build leftovers so 'cp -r' below replaces instead of nesting into existing dirs
+rm -rf dependency-check-data loghi-tooling prima-core-libs
+
 dependency_check_data_dir="$HOME/.m2/repository/org/owasp/dependency-check-data"
 
 echo "Copy files for building docker..."
