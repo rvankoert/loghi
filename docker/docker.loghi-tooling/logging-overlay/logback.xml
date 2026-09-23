@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Default logging configuration for the loghi-tooling minions.
+
+  Without a logback.xml on the classpath, Logback falls back to its built-in
+  default: root level DEBUG, which floods the pipeline output with lines such
+  as "DEBUG ... OpenCVWrapper - Mat released successfully".
+
+  This file sets the default to INFO. To temporarily enable DEBUG for a
+  specific package while investigating, add a <logger> entry below, e.g.:
+      <logger name="nl.knaw.huc.di.images.layoutanalyzer" level="DEBUG"/>
+-->
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
